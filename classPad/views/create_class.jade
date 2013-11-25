@@ -1,0 +1,20 @@
+!!! 5
+html
+  head
+    script(src='/javascripts/libs/jquery-2.0.3.js')
+    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-responsive.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    block content
+      #login-container
+        form(action='/create_class', method="post")#login-form.well.span4
+          h1 Create a new class:
+          label Title
+          input(type="text", name="title", id='title-tf').span4.required
+          label Visibility
+            label.radio.control-label Private
+              input(type="radio", name="visibility", value="private")
+            label.radio.control-label Public
+              input(type="radio", name="visibility", value="public")
+          button(type="submit", id='submitBtn')#btn-login.btn.btn-primary Create!

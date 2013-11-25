@@ -1,0 +1,117 @@
+!!! 5
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+    link(href='https://fonts.googleapis.com/css?family=Limelight|Flamenco|Federo|Yesteryear|Josefin Sans|Spinnaker|Sansita One|Handlee|Droid Sans|Oswald:400,300,700', media='screen', rel='stylesheet', type='text/css')
+    link(href='/stylesheets/bootstrap.css', media='screen', rel='stylesheet', type='text/css')
+    link(href='/stylesheets/bootstrap-responsive.css', media='screen', rel='stylesheet', type='text/css')
+    link(href='/stylesheets/common.css', media='screen', rel='stylesheet', type='text/css')
+    link(href='/stylesheets/fontawesome.css', media='screen', rel='stylesheet', type='text/css')
+    link(href='/stylesheets/notepad.css', media='screen', rel='stylesheet', type='text/css')
+    //script(src='/javascripts/jspdf.js')
+    //script(src='/javascripts/jspdf.plugin.addimage.js')
+    //script(src='/javascripts/FileSaver.js')
+    //script(src='/javascripts/bytescoutpdf1.04.84.js')
+    
+    script(src='/socket.io/socket.io.js')
+    script(src='/javascripts/libs/paper.js')
+    script(src='/javascripts/libs/json2.js')
+    script(src='/javascripts/libs/jquery-2.0.3.js')
+    script(src='/javascripts/libs/GestIT.js')
+    script(src='/javascripts/libs/GestITouch.js')
+    script(src='/javascripts/pad.js')
+    script(src='/javascripts/tools.js')
+    script(src='/javascripts/multitouch.js')
+    script(src='/javascripts/helpers.js')
+    
+    script(type='text/javascript')
+    
+      //Set-up paper.js globally
+      //paper.install(window);
+      
+      //Global variables
+      var pad = new Pad();
+      var thisPage = function(){
+        return window.pad.Pages[window.pad.currPg];
+      }
+      var iWasDrawing;
+      var bgnd = "none"; //default to none
+      //tools
+      var pen = new Pen("black",7); //init
+      var eraser = new Eraser(20); //init
+      var selector = new Selector(); //init
+      var activeTool;
+      var mdCb,mmCb,muCb;
+      var td1,tm1,tu1,ab,td2,tm2,tu2;
+      var startP1,startP2,endP1,endP2;
+      
+      document.onready = function(){
+        multitouchInit();
+        lazyInit();
+        pad.bgdScope.setup(document.getElementById("background"));
+        pad.rcvScope.setup(document.getElementById("fromMaster"));
+        pad.drwScope.setup(document.getElementById("paper"));
+        pad.drwScope.activate();
+      }
+      
+    script(src='/javascripts/ui.js')
+    block head_scripts
+    
+    title ClassPad
+  body
+    #absolute-wrapper
+      .row-fluid
+        span.span12
+    .container
+      .well.well-1.well-2
+        .navbar
+          .navbar-inner
+            .responsive-container
+              a.btn.btn-navbar
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+              a.brand(href='#') ClassPad 
+              .nav-collapse.collapse
+        .well.well-3
+          .btn-toolbar
+            .btn-group
+              button#rwd.btn.btn-inverse
+                i.icon.icon-arrow-left
+              button#fwd.btn.btn-inverse
+                i.icon.icon-arrow-right
+            .btn-group
+              button#rows.btn.btn-inverse Rows
+              button#grid.btn.btn-inverse Grid
+              button#none.btn.btn-inverse None
+            .btn-group
+              button#undo.btn.btn-inverse Undo
+              button#redo.btn.btn-inverse Redo
+            .btn-group
+              button#save.btn.btn-inverse Save as PDF
+        .row-fluid
+          span.span1
+            .well.well-1
+              .btn-toolbar
+                .btn-group.btn-group-vertical
+                  button#small.btn.btn-large
+                  button#medium.btn.btn-large
+                  button#big.btn.btn-large
+              .btn-group.btn-group-vertical
+                button#black.btn.btn-large
+                button#red.btn.btn-large
+                button#green.btn.btn-large
+                button#blue.btn.btn-large
+                button#yellow.btn.btn-large
+              .btn-group.btn-group-vertical.btn-group-vertical-1
+                button#eraser.btn.btn-large
+                button#pen.btn.btn-large Pen
+                button#select.btn.btn-large Selector
+                
+          span.span10
+             #cnvsBg.well.well-10
+                canvas#background
+                canvas#fromMaster
+                canvas#paper
+  

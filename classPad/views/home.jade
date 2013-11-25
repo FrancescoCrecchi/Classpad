@@ -1,0 +1,20 @@
+html
+  head
+    title  ClassPad Home Page 
+  body
+    h1  Welcome to ClassPad home page!
+    button(onclick="location.href=\'/login'") Login
+    button(onclick="location.href=\'/register'") Register
+    h2 Classes list:
+    table#listaClassi
+      tr
+        td  Title
+        td  Author
+        td  Date
+      each clss in classes
+        tr
+          td
+            a(href='/class/#{clss.id}')=clss.title
+          td=clss.author
+          td=clss.date
+      

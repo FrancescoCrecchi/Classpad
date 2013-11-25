@@ -1,0 +1,26 @@
+!!! 5
+html
+  head
+    script(src='/javascripts/libs/jquery-2.0.3.js')
+    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-responsive.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    block content
+      #login-container
+        form(action='/login', method="post")#login-form.well.span4
+          h1 Welcome to ClassPad!
+          p.subheading Please Login To Your Account
+          label Username
+          input(type="text", name="username", id='user-tf').span4.required
+          label Password
+          input(type="password", name="password", id='pass-tf').span4.required
+          button(type="submit", id='submitBtn')#btn-login.btn.btn-primary
+            i.icon-lock.icon-white 
+            | Sign in
+          label#remember-me.checkbox Remember Me
+            input(type="checkbox", checked='checked')
+          div.clear-fix
+          hr
+          div.btm-links
+            a(href='#')#forgot-password Forgot Your Password?

@@ -1,0 +1,65 @@
+function multitouchInit(){
+  //get a sensor for touch events
+  var canvas = document.getElementById("paper");
+  var sensor = listenTouch(canvas);
+  var Abort = sensor.createFeature();
+  sensor.defineFeature(Abort);
+  
+  //sameid function
+  var sameid = function(id){
+    return function(e) {return e.id === id};
+  };
+  
+  window.td1 = new GroundTerm(TouchFeature.TouchDown, sameid(id));
+  window.tm1 = new GroundTerm(TouchFeature.TouchMove, sameid(id));
+  window.tu1 = new GroundTerm(TouchFeature.TouchUp, sameid(id));
+  window.ab = new GroundTerm(Abort);
+  window.td2 = new GroundTerm(TouchFeature.TouchDown, sameid(id));
+  window.tm2 = new GroundTerm(TouchFeature.TouchMove, sameid(id));
+  window.tu2 = new GroundTerm(TouchFeature.TouchUp, sameid(id));
+  
+  //Draw Net
+  new Choice([new Sequence([window.td1, new Choice([new Iter(window.tm1), window.tu1])]),window.ab]).toGestureNet(sensor);
+  
+  //Pinch Net
+  var move = new Choice([new Iter(new Choice([window.tm1,window.tm2])),window.tu2]);
+  new Sequence([window.td1,new Choice([new Sequence([window.td2,move]),window.tu1])]).toGestureNet(sensor);
+  
+  window.td1.gesture.add(returnPoint(function(point){
+    with(paper)
+    {
+      window.startP1 = new Point(point.x,point.y);
+    }
+  }));
+  window.td2.gesture.add(returnPoint(function(point){
+    //triggering Draw Net abort event
+    sensor.trigger(Abort,{});
+    with(paper)
+    {
+      window.startP2 = new Point(point.x,point.y);
+    }
+  }));
+  window.tm1.gesture.add(returnPoint(function(point){
+    with(paper)
+    {
+      window.endP1 = new Point(point.x,point.y);
+      //check if i'm moving the first finger and hold down the second
+      if(typeof window.endP2 !== "undefined")
+	zoom();
+    }
+  }));
+  window.tm2.gesture.add(returnPoint(function(point){
+    with(paper)
+    {
+      window.endP2 = new Point(point.x,point.y);
+	if(typeof window.endP1 !== "undefined")
+	  zoom();
+    }
+  }));
+  window.tu1.gesture.add(function(){
+    window.endP1 = null; 
+  });
+  window.tu2.gesture.add(function(){
+    window.endP2 = null; 
+  });
+}

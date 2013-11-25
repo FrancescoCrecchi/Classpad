@@ -1,0 +1,280 @@
+//Adding methods to Array object
+Array.prototype.last = function(){
+  return this[this.length - 1];
+};
+
+//Overload toString methods to obtain a JSON string
+with(paper){
+  Path.prototype.toString = function () {
+      return JSON.stringify(this);
+  };
+}
+
+//Background
+function clearBg(){
+  window.pad.bgdScope.activate(); //activate the rigth paperscopes
+  console.log("clear background: " + paper);
+  for(var i=0; i < window.thisPage().background.length; i++)
+    window.thisPage().background[i].removeSegments();
+  for(var i=0; i < window.thisPage().background.length; i++)
+    window.thisPage().background.pop();
+}
+
+function drawGrid(offsetY,offsetX){
+  with(paper) {
+    window.pad.bgdScope.activate(); //activate the rigth paperscopes
+    var bgCanvas = document.getElementById("background");
+    console.log("drawGrid: " + paper);
+    if(typeof offsetX != "undefined")
+    {
+      //vertical lines
+      for(var i=0; i < bgCanvas.clientWidth; i+=offsetX)
+      {
+	window.thisPage().background.push(new Path({
+	strokeWidth: 0.5,
+	strokeColor: "grey"
+	}));
+	window.thisPage().background.last().add(new Point(i,0));
+	window.thisPage().background.last().add(new Point(i,bgCanvas.clientHeight));
+      }
+    }
+    else
+      offsetY *=1.5; //rows only
+      //horizontal lines
+    for(var i=0; i < bgCanvas.clientHeight; i+=offsetY)
+    {
+      window.thisPage().background.push(new Path({
+	strokeWidth: 0.5,
+	strokeColor: "grey"
+      }));
+      window.thisPage().background.last().add(new Point(0,i));
+      window.thisPage().background.last().add(new Point(bgCanvas.clientWidth,i));
+    }
+  }
+}
+
+//clear/load canvas
+function clearCanvas(){
+  window.pad.drwScope.activate();
+  //variables
+  var dwL = window.thisPage().drawed.length;
+  var ldL = window.thisPage().loaded.length;
+  var rsL = window.thisPage().restored.length;
+  var ofML = window.thisPage().ofMaster.length;
+  
+  console.log("clear canvas: " + paper);
+  //clear the canvas to simulate the change
+  var upCanvas = document.getElementById("paper");
+  upCanvas.width = upCanvas.width; //this should clear the canvas
+  //cleaning drawed paths
+  if(dwL > 0)
+  {
+    for(var i=0; i < dwL; i++)
+      window.thisPage().drawed[i].removeSegments();
+    for(var i=0; i < dwL; i++)
+      window.thisPage().drawed.pop();
+  }
+  //cleaning loaded paths
+  if(ldL > 0)
+  {
+    for(var i=0; i < ldL; i++)
+      window.thisPage().loaded[i].removeSegments();
+    for(var i=0; i < ldL; i++)
+      window.thisPage().loaded.pop();
+  }
+  //cleaning restored paths
+  if(rsL > 0)
+  {
+    for(var i=0; i < rsL; i++)
+      window.thisPage().restored[i].removeSegments();
+    for(var i=0; i < rsL; i++)
+      window.thisPage().restored.pop();
+  }
+  //cleaning ofMaster paths
+  if(ofML > 0)
+  {
+    for(var i=0; i < ofML; i++)
+      window.thisPage().ofMaster[i].removeSegments();
+    for(var i=0; i < ofML; i++)
+      window.thisPage().ofMaster.pop();
+  }
+}
+
+function loadCanvas(jsonArray,dstArray,scope){
+  scope.activate();
+  console.log("load canvas: " + paper);
+  with(paper) {
+    // load the content previously created
+    for(var i=0;i < jsonArray.length ; i++)
+    {
+      var path_i_str = jsonArray[i];
+      var objs = JSON.parse(path_i_str); //Object
+      var nPath = new Path({
+	strokeColor: objs[1].strokeColor,
+	strokeWidth: objs[1].strokeWidth
+      });
+      if(typeof objs[1].segments != "undefined")
+	nPath["segments"] = objs[1].segments.slice();
+      if(typeof objs[1].blendMode != "undefined")
+	nPath["blendMode"] = objs[1].blendMode;
+    dstArray.push(nPath);
+    }
+  }
+}
+
+//master sync paths function
+function sendData(){
+  var socket = io.connect("/");
+  if(typeof socket != "undefined")
+  {
+    console.log("Connected to the server!");
+    // sending to the server
+    //create object
+    var masterArray = new Array();
+    for(var i=0; i < window.pad.Pages.length; i++)
+      masterArray.push(window.pad.Pages[i].PgArray.slice()); //independent array copy
+      
+    socket.emit('sync', masterArray);
+    //logging
+    console.log("Sending data to the server... ");
+  }
+  else
+    console.log("ERROR CONNECTING TO THE SERVER");
+}
+
+//integrate slave pad
+function array_diff(aOld, aNew){
+  var res = [];
+  for(var i = 0; i < aNew.length; i++){
+    if(aOld.indexOf(aNew[i]) === -1)
+      res.push(aNew[i]);
+  }
+  return res;
+}
+
+Array.prototype.integrate = function(newArray){
+  var res = array_diff(this,newArray);
+  return this.concat(res); //concateno il risultato della differenza tra le nuove pG e le vecchie
+};
+
+// GestIT bind
+function bind2(tool){
+  if(typeof window.activeTool != "undefined")
+  {
+    //removing older event handlers
+    window.td1.gesture.remove(window.mdCb);
+//     window.tm1.gesture.remove(window.mmCb);
+//     window.tu1.gesture.remove(window.muCb);
+    
+    //check if i had selected something
+    if(window.activeTool === window.selector && typeof window.selector.selectGroup != "undefined" && window.selector.selectGroup.hasChildren())
+    {
+      //deselect them
+      for(var i = 0; i < window.selector.selectGroup.children.length; i++)
+	  window.selector.selectGroup.children[i].selected = false; 
+    }
+  }
+  else
+    //init multitouch
+    multitouchInit();  
+  
+  //setting the activeTool
+  window.activeTool = tool;
+  //adding new events
+  window.mdCb = window.td1.gesture.add(returnPoint(window.activeTool.onMouseDown));
+}
+
+//isIn function: check if a path is contained into a rectangle
+function isIn(path,rectangle){
+  //ricerca incerta di un punto del path contenuto nel rettangolo
+  var j = 0;
+  var found = false;
+  while(j < path.segments.length && !found)
+  {
+    if(rectangle.contains(path.segments[j].point))
+      found = true;
+    j++;
+  }
+  if(found)
+    return true;
+  return false;
+}
+
+//my indexOf() prototype: first occurrence
+Array.prototype.getIndexOf = function(obj){
+  var found = false;
+  var i = 0;
+  while(i < this.length && !found)
+  {
+    if(this[i] === obj)
+      found = true;
+    else
+      i++;
+  }
+  if(found)
+    return i;
+  return -1;
+};
+
+//function to parse event (mouse/touch event) into a [x,y] point
+function parseEvent(e){
+//   var type;
+//   switch(e.type){
+//     case "mousedown": type = "MouseEvent"; break;
+//     case "mousemove": type = "MouseEvent"; break;
+//     //case "mouseup": type = "MouseEvent"; break;
+//     case "click": type = "MouseEvent"; break; //!
+//     case "touchstart": type = "TouchEvent"; break;
+//     case "touchmove": type = "TouchEvent"; break;
+//     //case "touchend": type = "TouchEvent"; break;
+//     default: return;
+//   }
+//   if(type === "MouseEvent")
+//     return {x: e.offsetX, y: e.offsetY};
+//   else
+//   {
+//     e.preventDefault();
+    var x = e.evt.clientX - e.evt.target.getBoundingClientRect().left;
+    var y = e.evt.clientY - e.evt.target.getBoundingClientRect().top;
+    return {x: x, y: y};
+//   }
+}
+
+//gets an event and a callback, then register the callback with the parsed point
+function returnPoint(callback){
+  return function(event) {
+    var point = parseEvent(event); //parsing event
+    callback(point); //calling the callback
+  };
+}
+
+//calculate delta
+function calculateDelta(newPoint,startPoint){
+  return {x: newPoint.x - startPoint.x, y: newPoint.y - startPoint.y};
+}
+
+// refesh the 3 layers
+function refresh(){
+  window.pad.bgdScope.view.draw();
+  window.pad.rcvScope.view.draw();
+  window.pad.drwScope.view.draw();
+}
+
+//zoom
+function zoom(){
+  with(paper){
+    //zoom = scale all of the items contained in thisPage()
+    var group = new Group();
+    //adding drawed paths
+    group.addChildren(window.thisPage().drawed);
+    //select every item contained in the group (DEBUGGING PURPOSE)
+    //for(var i=0; i < group.children.length; i++)
+    //  group.children[i].selected = true;
+    //calculating the scale factor as the ratio between the old dist and the new dist
+    var sF = window.startP1.getDistance(window.startP2) / window.endP1.getDistance(window.endP2); 
+    //now we have to scale(zoom) the group by that value
+    //group.scale(sF); 
+    //alert(sF);
+    console.log("sF");
+  }
+}

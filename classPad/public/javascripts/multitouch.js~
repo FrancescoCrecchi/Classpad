@@ -1,0 +1,89 @@
+function multitouchInit() {
+  var canvas = document.getElementById("paper");
+  var sensor = listenTouch(canvas);
+  var Abort = sensor.createFeature();
+  sensor.defineFeature(Abort);
+  var ab = new GroundTerm(Abort);
+  
+  // Attach a gesture to a sensor and detach it as soon as it is complete
+  var trackNet = function (trackExpr){
+    var net = trackExpr.toInternalGestureNet(sensor);
+//     trackExpr.gesture.add(function (e) {
+//       net.dispose();
+//     });
+  };
+
+  //to track each finger separately
+  var sameid = function (id){
+    return function(e) { return e.identifier == id };
+  };
+
+  var draw = function(id){
+    var tm1 = new GroundTerm(TouchFeature.TouchMove, sameid(id));
+    var tu1 = new GroundTerm(TouchFeature.TouchUp, sameid(id));
+    //bind
+    tm1.gesture.add(returnPoint(window.activeTool.onMouseDrag));
+    tu1.gesture.add(returnPoint(window.activeTool.onMouseUp));
+    //window.tu1.gesture.add(function(){sensor.trigger(Abort,{});}); //!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //Draw Net
+    return new Choice([new Choice([new Iter(tm1), tu1]), ab]); // !!!!!!!!!!!!!!
+  };
+
+  var pinch = function(id){
+   var td2 = new GroundTerm(TouchFeature.TouchDown);
+   td2.gesture.add(function (e) { trackNet(bind_pinch(id, e.evt.identifier)); });
+   td2.gesture.add(returnPoint(function(point){
+     with(paper)
+     {
+        window.startP2 = new Point(point.x, point.y);
+        sensor.trigger(Abort,{});
+     }
+    }));
+   var tu1 = new GroundTerm(TouchFeature.TouchUp, sameid(id));
+   tu1.gesture.add(function(){
+       window.endP1 = null; 
+   });
+   return new Choice([td2, tu1]);
+  }
+  
+  window.td1 = new GroundTerm(TouchFeature.TouchDown);
+  //Start recognising the nets
+  window.td1.gesture.add(function(e) {
+    //attaching the draw net
+    trackNet(draw(e.evt.identifier));
+    //attaching the pinch net
+    trackNet(pinch(e.evt.identifier));
+    with(paper)
+    {
+      window.td1.gesture.add(returnPoint(function(point){
+	window.startP1 = new Point(point.x, point.y);
+      }));
+    }
+  });
+  window.td1.toGestureNet(sensor); // ???????????????????????????????????
+
+ //pinch functionality
+ function bind_pinch(id1,id2){
+   var tm1 = new GroundTerm(TouchFeature.TouchMove, sameid(id1));
+   var tm2 = new GroundTerm(TouchFeature.TouchMove, sameid(id2));
+   var tu2 = new GroundTerm(TouchFeature.TouchUp, sameid(id2));
+   
+  
+  tm1.gesture.add(returnPoint(function(point){
+    window.endP1 = new paper.Point(point.x+1,point.y+1);
+    //check if i'm moving the first finger and hold down the second
+    if(typeof window.endP2 !== "undefined")
+      zoom();
+  }));
+  tm2.gesture.add(returnPoint(function(point){
+    window.endP2 = new paper.Point(point.x+1,point.y+1);
+    if(typeof window.endP1 !== "undefined")
+      zoom();
+  }));
+  tu2.gesture.add(function(){
+      window.endP2 = null; 
+  });
+
+  return new Choice([new Iter(new Choice([tm1,tm2])),tu2]);  
+ }
+}

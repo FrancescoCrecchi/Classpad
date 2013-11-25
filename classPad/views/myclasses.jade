@@ -1,0 +1,41 @@
+html
+  head
+    script
+      function changeVisibility(id,visibility){
+          var form = document.createElement('form');
+          form.setAttribute('method', 'post');
+          form.setAttribute('action', '/changeVisibility');
+          form.style.display = 'hidden';
+          //id
+          var ID = document.createElement('input');
+          ID.setAttribute('type',"hidden");
+          ID.setAttribute('name',"id");
+          ID.setAttribute('value',id);
+          form.appendChild(ID);
+          document.body.appendChild(form);
+          form.submit();
+        }
+    title  ClassPad Home Page 
+  body
+    button(onclick="location.href=\'/create_class'") Create class
+    button(onclick="location.href=\'/logout'") Logout
+    form(action='/deleteSelected', method="post")
+      h2 Classes list:
+      table#listaClassi
+        tr
+          td  Title
+          td  Author
+          td  Date
+          td  Visibility
+        each obj in list
+          tr
+            td
+              a(href='/class/#{obj.id}')=obj.title
+            td=obj.author
+            td=obj.date
+            td=obj.visibility
+            td
+              input(type="checkbox", name=obj.id)
+            td
+              button(type="button", onClick="changeVisibility('#{obj.id}')") Change Visibility
+      button(type="submit") Delete Selected
