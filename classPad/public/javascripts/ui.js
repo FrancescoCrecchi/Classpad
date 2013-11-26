@@ -1,4 +1,6 @@
 $(window).ready(function(){
+	
+  
   //================ Buttons ============================
   //size
   $("#small").on("click", function (){

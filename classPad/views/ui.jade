@@ -4,10 +4,8 @@ html(lang='en')
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
     link(href='https://fonts.googleapis.com/css?family=Limelight|Flamenco|Federo|Yesteryear|Josefin Sans|Spinnaker|Sansita One|Handlee|Droid Sans|Oswald:400,300,700', media='screen', rel='stylesheet', type='text/css')
-    link(href='/stylesheets/bootstrap.css', media='screen', rel='stylesheet', type='text/css')
-    link(href='/stylesheets/bootstrap-responsive.css', media='screen', rel='stylesheet', type='text/css')
     link(href='/stylesheets/common.css', media='screen', rel='stylesheet', type='text/css')
-    link(href='/stylesheets/fontawesome.css', media='screen', rel='stylesheet', type='text/css')
+    link(href='/stylesheets/font-awesome.css', media='screen', rel='stylesheet', type='text/css')
     link(href='/stylesheets/notepad.css', media='screen', rel='stylesheet', type='text/css')
     
     script(src='/socket.io/socket.io.js')
@@ -55,6 +53,7 @@ html(lang='en')
         pad.drwScope.setup(document.getElementById("paper"));
         pad.drwScope.activate();
         transMonitor();
+
       }
       
     script(src='/javascripts/ui.js')
@@ -62,58 +61,97 @@ html(lang='en')
     
     title ClassPad
   body
-    #absolute-wrapper
-      .row-fluid
-        span.span12
-    .container
-      .well.well-1.well-2
+    table.container
+     tr.header
+      td
         .navbar
           .navbar-inner
             .responsive-container
-              a.btn.btn-navbar
-                span.icon-bar
-                span.icon-bar
-                span.icon-bar
               a.brand(href='#') ClassPad 
-              .nav-collapse.collapse
-        .well.well-3
+              .subtitle the best shared digital paper
           .btn-toolbar
-            .btn-group
-              button#rwd.btn.btn-inverse
-                i.icon.icon-arrow-left
-              button#fwd.btn.btn-inverse
-                i.icon.icon-arrow-right
-            .btn-group
-              button#rows.btn.btn-inverse Rows
-              button#grid.btn.btn-inverse Grid
-              button#none.btn.btn-inverse None
-            .btn-group
-              button#undo.btn.btn-inverse Undo
-              button#redo.btn.btn-inverse Redo
-            .btn-group
-              button#fitzoom.btn.btn-inverse Fit zoom
-              button#saveAsPdf.btn.btn-inverse Save as PDF
-              button#uploadPdf.btn.btn-inverse Upload PDF
-        .row-fluid
-          span.span1
-            .well.well-1
+            table.button-section
+             tr
+              td
+               .btn-group
+                 button#rwd.btn.btn-inverse
+                   i.fa.fa-arrow-left
+                 button#fwd.btn.btn-inverse
+                   i.fa.fa-arrow-right
+                 .clear
+             tr
+              td.descr navigation
+            table.button-section
+             tr
+              td
+               .btn-group
+                 button#rows.btn.btn-inverse 
+                  i.fa.fa-align-justify
+                 button#grid.btn.btn-inverse
+                  i.fa.fa-th
+                 button#none.btn.btn-inverse
+                  i.fa.fa-square-o
+                 .clear
+             tr
+              td.descr paper type
+            table.button-section
+             tr
+              td
+               .btn-group
+                 button#undo.fa.fa-undo
+                 button#redo.fa.fa-rotate-right
+                 button#fitzoom.fa.fa-arrows-alt
+                 .clear
+             tr
+              td.descr actions
+            table.button-section
+             tr
+              td
+               .btn-group
+                 button#saveAsPdf.fa.fa-download
+                 button#uploadPdf.fa.fa-upload
+                 .clear
+             tr
+              td.descr pdf
+           .clear
+     tr
+      td     
+        table.row-fluid
+          tr
+           td.left-buttons
               .btn-toolbar
+                .btn-group.btn-group-collapse
+                 button#black.btn.btn-large
+                  span.fa.fa-circle
+                 button#red
+                  span.fa.fa-circle
+                 button#green.btn.btn-large 
+                  span.fa.fa-circle
+                 button#yellow.btn.btn-large 
+                  span.fa.fa-circle
+                 .clear
                 .btn-group.btn-group-vertical
-                  button#small.btn.btn-large
-                  button#medium.btn.btn-large
-                  button#big.btn.btn-large
-              .btn-group.btn-group-vertical
-                button#black.btn.btn-large
-                button#red.btn.btn-large
-                button#green.btn.btn-large
-                button#blue.btn.btn-large
-                button#yellow.btn.btn-large
-              .btn-group.btn-group-vertical.btn-group-vertical-1
-                button#eraser.btn.btn-large
-                button#pen.btn.btn-large Pen
-                button#select.btn.btn-large Selector
-                
-          span.span10
+                 button.small-pen
+                  span.fa.fa-circle
+                  span.label small
+                 button.medium-pen
+                  span.fa.fa-circle
+                  span.label medium
+                 button.large-pen
+                  span.fa.fa-circle
+                  span.label large
+                .btn-group.btn-group-vertical.btn-group-vertical-1
+                 button#eraser.btn.btn-large
+                  span.fa.fa-eraser
+                  span.label eraser
+                 button
+                  span.fa.fa-pencil
+                  span.label pen
+                 button#select.btn.btn-large 
+                  span.fa.fa-pencil-square-o
+                  span.label select
+               .clear
+           td.canvas    
             #cnvsBg.well.well-10
               canvas#background
               canvas#forPdf
