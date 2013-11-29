@@ -1,0 +1,366 @@
+/* ===[ FONTS ] === */
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300,600);
+@import url(http://fonts.googleapis.com/css?family=Lato:100,300,400,700,300italic,400italic);
+@import url(http://fonts.googleapis.com/css?family=Lobster+Two:400,400italic);
+ 
+ /* GABRIELE */
+ * {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+ }
+ 
+ html,
+ body {
+	 width: 100%;
+	 height: 100%;
+	 margin: 0;
+	 padding: 0;
+	 font-family: "Open Sans", "Helvetica", sans-serif;
+	 color: rgba(90, 104, 127, 1);
+	 font-size: 14px;
+ }
+ body {
+	 /*background: url("../images/retina_wood.png") repeat;*/
+	 background: #F4f7f9;/*rgba(118, 124, 141, 1);*/
+	 font-family: "Open Sans", Helvetica, sans-serif;
+ }
+ button {
+	 color: #FFF;
+	 background: #2b2c30;
+	 padding: 10px 10px;
+	 border-radius: 2px;
+	 border: none;
+	 font-size: 16px;
+	 font-weight: 300;
+	 font-family: "Open Sans", Helvetica, sans-serif;
+ }
+ button .fa {
+ 	font-size: 14px;
+ 	opacity: 0.7;
+ 	margin-right: 5px;
+ }
+ .well {
+	 padding: 0px 0px;
+ }
+ a {
+	 color: #fff;
+	 text-decoration: none;
+ }
+ .clear {
+	 clear: both;
+	 with: 0px;
+	 height: 0px;
+	 display: block;
+ }
+ .container {
+	 width: 100%;
+	 height: 152px;
+	 border-collapse: collapse;
+	 margin: 0;
+	 padding: 0;
+	 border: 0;
+	 border-spacing: 0;
+ }
+ .container tr,
+ .container tr td {
+	 border-collapse: collapse;
+	 margin: 0;
+	 padding: 0;
+	 border: 0;
+	 border-spacing: 0;
+	 height: 100%;
+	 background: rgba(235,235,235,1);
+ }
+ table,
+ table tr,
+ table tr td {
+	 border-collapse: collapse;
+ }
+ 
+ /* ===[ NAV BAR ] === */
+  .container tr.header td {
+  }
+ .navbar {
+	 width: 100%;
+	 padding: 40px 0px 40px 0px;
+	 font-size: 50px;
+ }
+ .navbar .brand {
+	 font-family: "Lobster Two", cursive;
+	 /*text-shadow: rgba(0,0,0,0.2) -1px -1px, rgba(255,255,255,1) 1px 1px;*/
+	 color: rgba(90, 104, 127, 1);
+	 font-style: italic;
+	 padding-left: 40px;
+	 line-height: 48px;
+	 font-weight: normal;
+ }
+ .navbar .subtitle {
+	 font-size: 12px;
+	 font-style: italic;
+	 padding-left: 55px;	
+	color: rgba(118, 124, 141, 1);
+	margin-top:0px; 
+ }
+.navbar-inner {
+	font-family: "Lato", "Helvetica Neue", sans-serif;
+	
+}
+.content-container {
+	width: 100%;
+	font-weight: 400;
+}
+.subheader {
+	margin: 15px 40px 0 40px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid rgba(118, 124, 141, 0.3);
+}
+.loginmessage {
+	color: #444649;
+	font-style: italic;
+	font-weight: 400;
+	float: left;
+	line-height: 44px;
+}
+.subheader button {
+	padding: 10px 16px;
+	background: none;
+	border: 1px solid rgba(118, 124, 141, 1);
+	border-radius: 3px;
+	color: rgba(90, 104, 127, 1);
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all linear 0.2s;
+}
+.subheader button:hover {
+	color: #FFF;
+	background: rgba(90, 104, 127, 1);
+}
+.data-container {
+	padding: 15px 40px 50px 40px;
+}
+.data-container h2 {
+	font-size: 35px;
+	font-weight: 400;
+	font-style: italic;
+	color: #444649;
+}
+.listaClassi-container {	
+	border: 1px solid rgba(118, 124, 141, 0.3);
+	border-radius: 3px;
+}
+#listaClassi {
+	margin: 10px 20px;
+}
+#listaClassi td {
+	width: 33%;
+}
+#listaClassi td.thead {
+	color: #444649;
+	font-size: 14px;
+	font-style: italic;
+}
+#listaClassi td a {
+	
+}
+
+ /* ===[ BUTTONS ]=== */
+ .btn-toolbar {
+	 float: left;
+	 margin-left: 50px;
+	font-family: "Lato", "Helvetica Neue", sans-serif;
+ }
+  .btn-toolbar .button-section {
+	  border-collapse: collapse;
+	  text-align: center;
+  }
+  .btn-toolbar .button-section,
+  .btn-toolbar .button-section tr,
+  .btn-toolbar .button-section tr td {
+	  vertical-align: middle;
+  }
+ .btn-toolbar .button-section {
+	 font-size: 13px;
+	 font-style: italic;	
+	 float: left;
+	 
+ }
+ .btn-toolbar .btn-group {
+ }
+ .btn-toolbar .button-section:first-child {
+	 float: left;
+	 margin-left: 0px;
+ }
+ 
+ /* ===[ Left Buttons ]=== */
+ table.row-fluid {
+	 border-collapse: collapse;
+	 height: 100%;
+	 width: 100%;
+	 overflow: hidden;
+ }
+ .left-buttons {
+	 width: 20%;
+	 background: rgba(0,0,0,0.5);
+	 min-width: 158px;
+ }
+ .left-buttons .btn-toolbar,
+ .left-buttons button,
+ .left-buttons .btn-group {
+	 width: auto;
+ }
+  .left-buttons .btn-group 
+  {
+	  padding-top: 10px;
+	  padding-bottom: 14px;
+  }
+  .left-buttons .btn-group:first-child {
+	  padding-top: 0;
+  }
+  .left-buttons .btn-group:last-child {
+	  border-bottom: 0;
+	  padding-bottom: 0;
+  }
+ .left-buttons .btn-toolbar {
+	 margin: 0 20px 0 20px;
+	 float: none;
+ }
+  .left-buttons button {
+	  background: none;
+	  height: 44px;
+	  margin: 0;
+	  padding: 0;
+	  border: none;
+	  display: block;
+	  line-height: 40px;
+	  margin-top: 5px;
+  }
+ .left-buttons button span.fa {
+	width: 40px;
+	height: 40px;
+	background: none;
+	float: left;
+	border: 2px solid rgba(118, 124, 141, 1);
+	border-radius: 22px;
+	color: rgba(118, 124, 141, 1);
+	display: block;
+	  line-height: 40px;
+	font-size: 13px;
+}
+.left-buttons button .label {
+	height: 40px;
+	background: none;
+	float: left;
+	display: block;
+	  line-height: 40px;
+	 font-size: 13px;	
+	color: rgba(118, 124, 141, 1); 
+	text-align: left;
+	margin-left: 0px;
+}
+.left-buttons button .label:before {
+	content:"";
+	height: 1px;
+	width:15px;
+	display:block;
+	background: rgba(118, 124, 141, 1);
+	margin-top: 21px;
+	margin-left: 0;
+	margin-right: 5px;
+	float: left;
+}
+	
+.left-buttons button.small-pen span.fa {
+	font-size: 10px;
+}
+.left-buttons button.large-pen span.fa {
+	font-size: 17px;
+}
+button#black span.fa {
+	color: #222;
+	font-size: 40px;
+}
+button#red span.fa {
+	color: #C74439;
+	font-size: 40px;
+}
+button#green span.fa {
+	color: #64A854;
+	font-size: 40px;
+}
+button#yellow span.fa {
+	color: #C3C333;
+	font-size: 40px;
+}
+
+/* === [ Collapsed buttons ] === */
+.left-buttons .btn-group-collapse button {
+	width: 44px;
+	float: left;
+	margin-right: 5px;
+}
+ /* ===[ Canvas ]=== */
+ td.canvas {
+	 width: 80%;
+ }
+ #cnvsBg {
+	 background: #FFF;
+	 position: relative;
+	 width: 100%;
+	 height: 100%;
+ }
+ #background{
+   position: absolute;
+   left: 0px;
+   right: 0px;
+   bottom: 0px;
+   top: 0px;
+   z-index:0;
+   width: 100%;
+   height:100%;
+}
+
+ #fromMaster{
+   position: absolute;
+   left: 0px;
+   right: 0px;
+   bottom: 0px;
+   top: 0px;
+   z-index:2;
+   width: 100%;
+   height:100%;
+}
+
+ #forPdf{
+   position: absolute;
+   left: 0px;
+   right: 0px;
+   bottom: 0px;
+   top: 0px;
+   z-index:1;
+   width: 100%;
+   height:100%;
+}
+
+ #paper{
+   position: relative;
+   left: 0px;
+   right: 0px;
+   bottom: 0px;
+   top: 0px;
+   z-index:3;
+   width: 100%;
+   height:100%;
+}
+ 
+ #absolute-wrapper p, #absolute-wrapper h1, #absolute-wrapper h2, #absolute-wrapper h3, #absolute-wrapper h4, #absolute-wrapper h5, #absolute-wrapper h6 {
+   margin-top: 0 !important;
+ }
+ #absolute-wrapper {
+   position: relative;
+   width: 980px;
+   margin: 0 auto;
+   height: 1px;
+ }
+ #absolute-wrapper .row-fluid {
+ }

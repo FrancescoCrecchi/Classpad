@@ -1,17 +1,48 @@
 html
-  head
-    title  ClassPad Home Page 
+ head
+    title  ClassPad
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+    link(href='https://fonts.googleapis.com/css?family=Limelight|Flamenco|Federo|Yesteryear|Josefin Sans|Spinnaker|Sansita One|Handlee|Droid Sans|Oswald:400,300,700', media='screen', rel='stylesheet', type='text/css')
+    link(href='/stylesheets/font-awesome.css', media='screen', rel='stylesheet', type='text/css')
+    link(href='/stylesheets/webstyle.css', media='screen', rel='stylesheet', type='text/css')
+    
+    script(src='/javascripts/libs/jquery-2.0.3.js')
+ body
   body
-    h1  Welcome to ClassPad home page!
-    button(onclick="location.href=\'/login'") Login
-    button(onclick="location.href=\'/register'") Register
-    h2 Classes list:
-    table#listaClassi
-      tr
-        td  Title
-        td  Author
-        td  Date
-      each clss in classes
+   table.container
+     tr.header
+      td
+        .navbar
+          .navbar-inner
+            .responsive-container
+              a.brand(href='#') ClassPad 
+              .subtitle the best shared digital paper
+   .content-container      
+    .subheader
+     .loginmessage Login or register
+     .btn-toolbar
+      table.button-section
+       tr
+        td
+         .btn-group
+           button(onclick="location.href=\'/login'") 
+            span.fa.fa-arrow-circle-o-right
+            span.content Login
+           button(onclick="location.href=\'/register'") 
+            span.fa.fa-arrow-circle-o-up
+            span.content Register
+         .clear
+     .clear
+    .data-container  
+     h2 Class list
+     .listaClassi-container
+      table#listaClassi
+       tr
+         td.thead  Title
+         td.thead  Author
+         td.thead  Date
+       each clss in classes
         tr
           td
             a(href='/class/#{clss.id}')=clss.title
