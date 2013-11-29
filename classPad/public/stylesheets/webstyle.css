@@ -33,6 +33,7 @@
 	 font-size: 16px;
 	 font-weight: 300;
 	 font-family: "Open Sans", Helvetica, sans-serif;
+	 display: inline-block;
  }
  button .fa {
  	font-size: 14px;
@@ -122,7 +123,7 @@
 	line-height: 44px;
 }
 .subheader button {
-	padding: 10px 16px;
+	padding: 14px 16px;
 	background: none;
 	border: 1px solid rgba(118, 124, 141, 1);
 	border-radius: 3px;
@@ -159,11 +160,42 @@
 	color: #444649;
 	font-size: 14px;
 	font-style: italic;
+	padding-top: 0;
 }
 #listaClassi td a {
 	
 }
+td {
+	padding-top: 5px;
+}
 
+#listaClassi td .fa {
+    width: 52px;
+	padding: 10px 16px;
+	background: none;
+	border: 1px solid rgba(118, 124, 141, 1);
+	border-radius: 3px;
+	color: rgba(90, 104, 127, 0.7);
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all linear 0.2s;
+	margin-left: 20px;
+	 
+ }
+ #listaClassi td .fa span.linkcontent {
+	color: rgba(90, 104, 127, 1);
+	text-indent: 5px;	 
+ }
+#listaClassi td .fa:hover
+ {
+	color: #FFF;
+	background: rgba(90, 104, 127, 1);
+}
+#listaClassi td .fa:hover span.linkcontent {
+	color: #FFF;
+	
+}
  /* ===[ BUTTONS ]=== */
  .btn-toolbar {
 	 float: left;

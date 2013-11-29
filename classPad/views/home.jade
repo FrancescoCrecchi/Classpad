@@ -42,10 +42,13 @@ html
          td.thead  Title
          td.thead  Author
          td.thead  Date
+         td.thead
        each clss in classes
         tr
-          td
-            a(href='/class/#{clss.id}')=clss.title
+          td=clss.title
           td=clss.author
           td=clss.date
+          td
+           a.fa.fa-eye(href='/class/#{clss.id}') 
+            span.linkcontent Open
       
