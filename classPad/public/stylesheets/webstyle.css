@@ -122,8 +122,9 @@
 	float: left;
 	line-height: 44px;
 }
-.subheader button {
-	padding: 14px 16px;
+.subheader button,
+td.buttoncontent button {
+	padding: 10px 16px;
 	background: none;
 	border: 1px solid rgba(118, 124, 141, 1);
 	border-radius: 3px;
@@ -133,7 +134,8 @@
 	cursor: pointer;
 	transition: all linear 0.2s;
 }
-.subheader button:hover {
+.subheader button:hover,
+td.buttoncontent button:hover {
 	color: #FFF;
 	background: rgba(90, 104, 127, 1);
 }
@@ -166,12 +168,11 @@
 	
 }
 td {
-	padding-top: 5px;
 }
 
-#listaClassi td .fa {
+#listaClassi td .button {
     width: 52px;
-	padding: 10px 16px;
+	padding: 12px 16px;
 	background: none;
 	border: 1px solid rgba(118, 124, 141, 1);
 	border-radius: 3px;
@@ -195,6 +196,51 @@ td {
 #listaClassi td .fa:hover span.linkcontent {
 	color: #FFF;
 	
+}
+
+/* Logged in */
+.loggedin #listaClassi {
+	width: 96%;
+}
+.loggedin #listaClassi td .button {
+	margin-left: 0px;	 
+ }
+
+.loggedin #listaClassi td:first-child {
+	width: auto;
+	padding-right: 10px;
+}
+.loggedin #listaClassi td:nth-child(2) {
+	width: auto;
+	padding-right: 20px;
+}
+.loggedin #listaClassi td:nth-child(3) {
+	width: auto;
+	padding-right: 20px;
+}
+.loggedin #listaClassi td:nth-child(4) {
+	width: auto;
+	padding-right: 20px;
+}
+.loggedin #listaClassi td:nth-child(5) {
+	width: auto;
+	padding-right: 20px;
+}
+.loggedin #listaClassi td:nth-child(6) {
+	width: 165px;
+}
+.loggedin #listaClassi td:nth-child(7) {
+	width: 60px;
+	text-align: right;
+}
+
+.loggedin h2 {
+margin-bottom: 10px;
+}
+button.delete {
+	font-size: 13px;
+	margin-top: 5px;
+	margin-bottom: 15px;
 }
  /* ===[ BUTTONS ]=== */
  .btn-toolbar {

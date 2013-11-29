@@ -1,5 +1,13 @@
 html
-  head
+  head 
+    title ClassPad - Your Classes
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+    link(href='https://fonts.googleapis.com/css?family=Limelight|Flamenco|Federo|Yesteryear|Josefin Sans|Spinnaker|Sansita One|Handlee|Droid Sans|Oswald:400,300,700', media='screen', rel='stylesheet', type='text/css')
+    link(href='/stylesheets/font-awesome.css', media='screen', rel='stylesheet', type='text/css')
+    link(href='/stylesheets/webstyle.css', media='screen', rel='stylesheet', type='text/css')
+    
+    script(src='/javascripts/libs/jquery-2.0.3.js')
     script
       function changeVisibility(id,visibility){
           var form = document.createElement('form');
@@ -15,27 +23,61 @@ html
           document.body.appendChild(form);
           form.submit();
         }
-    title  ClassPad Home Page 
-  body
-    button(onclick="location.href=\'/create_class'") Create class
-    button(onclick="location.href=\'/logout'") Logout
-    form(action='/deleteSelected', method="post")
-      h2 Classes list:
-      table#listaClassi
+ body
+  .body.loggedin
+   table.container
+     tr.header
+      td
+        .navbar
+          .navbar-inner
+            .responsive-container
+              a.brand(href='#') ClassPad 
+              .subtitle the best shared digital paper
+   .content-container      
+    .subheader
+     .loginmessage Login or register
+     .btn-toolbar
+      table.button-section
+       tr
+        td
+         .btn-group
+           button(onclick="location.href=\'/create_class'") 
+            span.fa.fa-file
+            span.content New class
+           button(onclick="location.href=\'/register'") 
+            span.fa.fa-arrow-circle-o-down
+            span.content Logout
+         .clear
+     .clear
+    .data-container  
+     form(action='/deleteSelected', method="post")
+      h2 Class list
+      button.delete(type="submit") 
+            span.fa.fa-trash-o
+            span.content Delete selected
+      .clear
+      .listaClassi-container
+       table#listaClassi
         tr
-          td  Title
-          td  Author
-          td  Date
-          td  Visibility
+          td.thead
+          td.thead  Title
+          td.thead  Author
+          td.thead  Date
+          td.thead  Visibility
+          td.thead
         each obj in list
-          tr
-            td
-              a(href='/class/#{obj.id}')=obj.title
-            td=obj.author
-            td=obj.date
-            td=obj.visibility
-            td
-              input(type="checkbox", name=obj.id)
-            td
-              button(type="button", onClick="changeVisibility('#{obj.id}')") Change Visibility
-      button(type="submit") Delete Selected
+         tr
+           td
+            input(type="checkbox", name=obj.id)
+           td=obj.title
+           td=obj.author
+           td=obj.date
+           td=obj.visibility
+           td.buttoncontent
+            button(type="button", onClick="changeVisibility('#{obj.id}')")
+             span.fa.fa-eye
+             span.content Change Visibility
+           td
+            a.button.fa.fa-edit(href='/class/#{obj.id}') 
+             span.linkcontent Open
+      

@@ -9,7 +9,7 @@ html
     
     script(src='/javascripts/libs/jquery-2.0.3.js')
  body
-  body
+  .body
    table.container
      tr.header
       td
@@ -49,6 +49,6 @@ html
           td=clss.author
           td=clss.date
           td
-           a.fa.fa-eye(href='/class/#{clss.id}') 
+           a.button.fa.fa-edit(href='/class/#{clss.id}') 
             span.linkcontent Open
       
