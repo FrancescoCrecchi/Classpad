@@ -142,9 +142,9 @@ routes.listPublicClasses = function(req,res){
 //Export the pad as PDF document
 routes.exportAsPdf = function(req,res){
   console.log("======= EXPORT AS PDF REQUEST RECEIVED ========");  
-  if(req.body &&  req.body.pad){
+  if(req.body &&  req.body.pad && req.body.classTitle){
     //create a new pdf document
-    var doc = new PDFDocument({size:'letter',layout:'landscape'}); //the first page of the docuemnt is added automatically
+    var doc = new PDFDocument({size:'letter',layout:'portrait'}); //the first page of the docuemnt is added automatically
 //     doc.info['Title'] = req.body.title;
 //     doc.info['Author'] = req.user.username;
     //in the req.body i expect to find the page array of the pad so for every page in the pad
@@ -154,21 +154,30 @@ routes.exportAsPdf = function(req,res){
     {
       if(i > 0)
 	doc.addPage();
-      //PgArray (JSON SVG strings)
-      for(var j = 0; j < pad.pages[i].length; j++)
-      {
-	var pg = pad.pages[i][j];
-	console.log(pg);
-	//the graphics primitive exported in SVG format from Paper.js
-	doc.strokeColor(pg["mix-blend-mode"] == 'destination-out' ? 'white' : pg.stroke)
-	   .lineWidth(pg["stroke-width"])
-	   .path(pg.d)
-	   .stroke();
+	//PgArray (JSON SVG strings)
+	for(var j = 0; j < pad.pages[i].length; j++)
+	{
+	  var pg = pad.pages[i][j];
+	  console.log(pg);
+	  //the graphics primitive exported in SVG format from Paper.js
+	  if(pg != null && pg.d != null) //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
+	  {
+	    doc.strokeColor(pg["mix-blend-mode"] == 'destination-out' ? 'white' : pg.stroke)
+	      .lineWidth(pg["stroke-width"])
+	      .path(pg.d)
+	      .stroke();
+	  }
+	 }
       }
-    }
     res.setHeader('Content-Type', 'application/pdf');
-    doc.write('pad.pdf');
-    res.redirect('/pad.pdf');
+    
+    var preamble = "";
+    if(req.user && req.user.username)
+      preamble = req.body.classTitle +"_"+ req.user.username +"_"+ new Date().toJSON();
+    else
+      preamble = req.body.classTitle +"_"+ "unknownUser" +"_"+ new Date().toJSON();
+    doc.write('files/' + preamble + '.pdf');
+    res.redirect('files/' + preamble +'.pdf');
   }
   else
     res.send(500,"couldn't create PDF!- #0");

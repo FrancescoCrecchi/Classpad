@@ -8,6 +8,7 @@ var http = require('http');
 var path = require('path');
 var connect_mongo = require('connect-mongo')(express);
 var passport = require('passport');
+var fs = require('fs');
 
 var app = express();
 var database = require('./db.js')();
@@ -110,17 +111,20 @@ database.connect('mongodb://localhost/classPadDB',function() {
     //Class
     app.get("/class/:id", function(req,res){
       database.Classes.findById(req.params.id,function(err,obj){
-      if(err)
-	res.send(500,"Internal server error: " + err);
-      else if(!obj)
-	res.send(404,"couldn't find your class! - #0");
-      else
-      {
-	if(req.user && req.user.username == obj.author)
-	  res.render('master',{"id":req.params.id});
+// 	console.log("======================== CLASS FOUND! =========================");
+// 	console.log(obj);  
+// 	console.log("===============================================================");  
+	if(err)
+	  res.send(500,"Internal server error: " + err);
+	else if(!obj)
+	  res.send(404,"couldn't find your class! - #0");
 	else
-	  res.render('slave',{"id":req.params.id});
-      }
+	{
+	  if(req.user && req.user.username == obj.author)
+	    res.render('master',{"id":req.params.id, "title": obj.title});
+	  else
+	    res.render('slave',{"id":req.params.id, "title": obj.title});
+	}
       });
     });
     //Master
@@ -157,8 +161,14 @@ database.connect('mongodb://localhost/classPadDB',function() {
     //Download Pdf
     app.get("/:file(*)",function(req,res){
       var file = req.params.file;
-      
-      res.download(file);
+// 	console.log(typeof file);
+      res.download(file, function(){
+	//deleting pdf file
+// 	fs.unlink(file, function (err) {
+// 	  if (err) throw err;
+// 	  console.log('successfully deleted');
+// 	});
+      });
     });
     
     //Starting server

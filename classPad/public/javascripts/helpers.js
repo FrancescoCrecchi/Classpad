@@ -348,11 +348,14 @@ function paths2send(source_array){
   var retObj = [];
   for(var i = 0; i < source_array.length; i++)
   {
-    var dom_obj = source_array[i]; //.exportSVG({asString:true});
-    var expr = /rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/;
-    var color = expr.exec(dom_obj.getAttribute("stroke"));
-    var rgb_color = [color[1],color[2],color[3]];
-    retObj[i] = {"d": dom_obj.getAttribute("d"), "stroke": rgb_color , "stroke-width": dom_obj.getAttribute("stroke-width"),"mix-blend-mode": dom_obj.getAttribute("mix-blend-mode")};
+    var dom_obj = source_array[i].exportSVG({asString:true});
+    if(dom_obj != null)
+    {
+      var expr = /rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/;
+      var color = expr.exec(source_array[i].strokeColor.toCSS());//expr.exec(dom_obj.getAttribute("stroke"));
+      var rgb_color = [color[1],color[2],color[3]];
+      retObj[i] = {"d": dom_obj.getAttribute("d"), "stroke": rgb_color , "stroke-width": source_array[i].strokeWidth, "mix-blend-mode": dom_obj.getAttribute("mix-blend-mode")}; 
+    }
   }
   return retObj;
 }
@@ -370,13 +373,22 @@ function pdfRequester(){
   form.setAttribute('action', '/exportAsPdf');
   form.style.display = 'hidden';
   //id
-  var DATA = document.createElement('input');
-  DATA.setAttribute('type',"hidden");
-  DATA.setAttribute('name',"pad");
-  DATA.setAttribute('value',JSON.stringify(pad));
-  form.appendChild(DATA);
+  var PAD = document.createElement('input');
+  PAD.setAttribute('type',"hidden");
+  PAD.setAttribute('name',"pad");
+  PAD.setAttribute('value',JSON.stringify(pad));
+  form.appendChild(PAD);
+  
+  var TITLE = document.createElement('input');
+  TITLE.setAttribute('type',"hidden");
+  TITLE.setAttribute('name',"classTitle");
+  TITLE.setAttribute('value',window.classTitle);
+  form.appendChild(TITLE);
+  
   document.body.appendChild(form);
   form.submit();
+  document.body.removeChild(form);
+  window.pad.drwScope.activate();
 }
 
 //Create a temporary canvas with the content of the current page
@@ -402,7 +414,9 @@ function exportTempCanvas(page){
   var res = paths2send(gruppo.children);
   //Deleting groups paths
   gruppo.removeChildren();
-  
+  //remove temporary canvas
+  document.body.removeChild(canvas);
+    
   return res;
 }
 

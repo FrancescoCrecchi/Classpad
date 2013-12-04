@@ -30,6 +30,7 @@ html(lang='en')
       //Global variables
       var pad = new Pad();
       var classId = "#{id}"; //getting the id from jade
+      var classTitle = "#{title}"; //getting the title from jade
       var thisPage = function(){
         return window.pad.Pages[window.pad.currPg];
       }
@@ -131,20 +132,20 @@ html(lang='en')
                   span.fa.fa-circle
                  .clear
                 .btn-group.btn-group-vertical
-                 button.small-pen
+                 button#small.small-pen
                   span.fa.fa-circle
                   span.label small
-                 button.medium-pen
+                 button#medium.medium-pen
                   span.fa.fa-circle
                   span.label medium
-                 button.large-pen
+                 button#big.large-pen
                   span.fa.fa-circle
                   span.label large
                 .btn-group.btn-group-vertical.btn-group-vertical-1
                  button#eraser.btn.btn-large
                   span.fa.fa-eraser
                   span.label eraser
-                 button
+                 button#pen.btn.btn-large
                   span.fa.fa-pencil
                   span.label pen
                  button#select.btn.btn-large 
