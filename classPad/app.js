@@ -106,7 +106,10 @@ database.connect('mongodb://localhost/classPadDB',function() {
     app.get("/", routes.listPublicClasses);
     //Login Page
     app.get("/login", function(req,res){
-      res.render('login');
+      if(req.session.passport.user)
+	res.redirect('/myclasses');
+      else
+	res.render('login');
     });
     //Class
     app.get("/class/:id", function(req,res){

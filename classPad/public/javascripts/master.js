@@ -16,6 +16,10 @@
 // };
 
 function lazyInit(){
+  //we won't provide the Selector tool to Master
+  document.getElementById("select").style.visibility = 'hidden';
+  
+  //start handshake
   var socket = io.connect("/");
   socket.emit("hello",window.classId);
   socket.on("HELLO",function(pad){
