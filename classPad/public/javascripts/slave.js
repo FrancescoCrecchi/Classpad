@@ -51,7 +51,8 @@ function lazyInit()
       if(data.n > window.pad.currPg)
 	document.getElementById("fwd").disabled = false;
      
-      window.pad.Pages[data.n].received = window.pad.Pages[data.n].received.integrate(data.PgArray); //1:1 master's page/slave's pages
+//       window.pad.Pages[data.n].received = window.pad.Pages[data.n].received.integrate(data.PgArray); //1:1 master's page/slave's pages
+      window.pad.Pages[data.n].received = data.PgArray;
       console.log("Pad integrated!");
       
       //clearing the ofMaster paths

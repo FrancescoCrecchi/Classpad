@@ -138,8 +138,11 @@ $(window).ready(function(){
   $("#redo").on("click", function(){
     window.iWasDrawing = false;
     //hack to reuse loadCanvas code....
-    tmpArray.push(window.thisPage().saved.pop()); //tmpArray e' un array di paths in formato json 
+    tmpArray.push(window.thisPage().saved.pop()); //tmpArray e' un array di paths in formato json
     loadCanvas(tmpArray.slice(counter,counter + 1),window.thisPage().restored,window.pad.drwScope);
+    // e anche nella memoria
+    window.thisPage().PgArray.push(tmpArray.slice(counter,counter + 1));
+    //incremento il counter
     counter++;
     //buttons
     if(window.thisPage().restored.length > 0)
