@@ -508,5 +508,12 @@ button#yellow span.fa {
  
 /* FRANCESCO DISABLED BUTTONS CLASS  */
 .disabled {
+  opacity:0.5;
+}
+
+.glowing {
   
+  -moz-box-shadow: 0 0 5px 5px #00f;
+  -webkit-box-shadow: 0 0 5px 5px #00f;
+  box-shadow: 0 0 5px 5px #00f;
 }

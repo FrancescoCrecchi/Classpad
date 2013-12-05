@@ -27,7 +27,11 @@ function Pen(sColor,sWidth){
       //undo/redo variabile
       window.iWasDrawing = true;
       if(window.thisPage().drawed.length > 0)
+      {
 	document.getElementById("undo").disabled = false;
+	if($("#undo").hasClass("disabled"))
+	  $("#undo").removeClass("disabled");
+      }
       //Save the page content
       window.thisPage().PgArray.push(window.thisPage().drawed.last().toString()); //toString metod defined in helpers
       pressed = false;

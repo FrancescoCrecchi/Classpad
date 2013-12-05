@@ -32,7 +32,11 @@ function lazyInit(){
       loadCanvas(window.thisPage().PgArray,window.thisPage().loaded,window.pad.drwScope);
       refresh();
       if(window.pad.currPg > 0)
+      {
 	document.getElementById("rwd").disabled = false;
+	if($("#rwd").hasClass("disabled"))
+	  $("#rwd").removeClass("disabled");
+      }
     console.log("Connected to the server!");
   });
 
@@ -82,17 +86,28 @@ function sD()
     refresh();
   }
   document.getElementById("rwd").disabled = false;
+  
   console.log("DEBUG PRINT: Cambiato la pagina corrente in:" + pad.currPg);
   
   //sync the slave pages
   sD();
   document.getElementById("undo").disabled = true;
-  
+  if(!$("#undo").hasClass("disabled"))
+    $("#undo").addClass("disabled");
+
   //buttons
   if(window.thisPage().saved.length > 0)
+  {
     document.getElementById("redo").disabled = false;
+    if($("#redo").hasClass("disabled"))
+      $("#redo").removeClass("disabled");
+  }
   else
-    document.getElementById("redo").disabled = true;
+  {
+    document.getElementById("redo").disabled = true; 
+    if(!$("#redo").hasClass("disabled"))
+      $("#redo").addClass("disabled");
+  }
   //reactivating the drawing scope
   window.pad.drwScope.activate();
 }
@@ -112,8 +127,11 @@ $("#rwd").on("click", function(){
   if(window.pad.currPg > 0)
     window.pad.currPg--;
   if(window.pad.currPg === 0)
-    //disable the button
-    document.getElementById("rwd").disabled = true;  
+  { //disable the button
+    document.getElementById("rwd").disabled = true;
+    if(!$("#rwd").hasClass("disabled"))
+      $("#rwd").addClass("disabled");
+  }
   console.log("DEBUG PRINT: Cambiato la pagina corrente in:" + window.pad.currPg);
   //load the background
   if(window.bgnd != "none")
@@ -128,10 +146,20 @@ $("#rwd").on("click", function(){
   refresh();
   //buttons
   document.getElementById("undo").disabled = true;
+  if(!$("#undo").hasClass("disabled"))
+      $("#undo").addClass("disabled");
   if(window.thisPage().saved.length > 0)
-    document.getElementById("redo").disabled = false;
+  {
+    document.getElementById("redo").disabled = false; 
+    if($("#redo").hasClass("disabled"))
+      $("#redo").removeClass("disabled");
+  }
   else
+  {
     document.getElementById("redo").disabled = true;
+    if(!$("#redo").hasClass("disabled"))
+      $("#redo").addClass("disabled");
+  }
   //reactivating the drawing scope
   window.pad.drwScope.activate();
 });

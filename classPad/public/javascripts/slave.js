@@ -8,6 +8,9 @@
 function lazyInit()
 {
   document.getElementById("fwd").disabled = true;
+  if(!$("#fwd").hasClass("disabled"))
+	$("#fwd").addClass("disabled");
+  
   var socket = io.connect("/");
   if(typeof socket != "undefined")
   {
@@ -22,7 +25,13 @@ function lazyInit()
       loadCanvas(window.thisPage().received,window.thisPage().ofMaster,window.pad.rcvScope);
       refresh();
       if(window.pad.currPg > 0)
+      {
 	document.getElementById("rwd").disabled = false;
+	if($("#rwd").hasClass("disabled"))
+	  $("#rwd").removeClass("disabled");
+      }
+	
+      
       //+ message
       socket.on('+',function(n){
 	console.log("SYNC THE MASTER PAD #PAGES...");
@@ -36,6 +45,9 @@ function lazyInit()
 	  window.pad.addPage();
 	
 	document.getElementById("fwd").disabled = false;
+	if($("#fwd").hasClass("disabled"))
+	  $("#fwd").removeClass("disabled");
+	
 	console.log("#pages = " + pad.Pages.length);
 	console.log("...Done :D");
       });
@@ -49,7 +61,11 @@ function lazyInit()
       while(window.pad.Pages.length <= data.n)
 	window.pad.addPage();
       if(data.n > window.pad.currPg)
+      {
 	document.getElementById("fwd").disabled = false;
+	if($("#fwd").hasClass("disabled"))
+	  $("#fwd").removeClass("disabled");
+      }
      
 //       window.pad.Pages[data.n].received = window.pad.Pages[data.n].received.integrate(data.PgArray); //1:1 master's page/slave's pages
       window.pad.Pages[data.n].received = data.PgArray;
@@ -114,19 +130,39 @@ function lazyInit()
       refresh();
     }
     else
+    {
       document.getElementById("fwd").disabled = true;
+      if(!$("#fwd").hasClass("disabled"))
+	$("#fwd").addClass("disabled");
+    }
     document.getElementById("rwd").disabled = false;
+    if($("#rwd").hasClass("disabled"))
+	$("#rwd").removeClass("disabled");
+    
     if((pad.currPg + 1) >= pad.Pages.length)
+    {
       document.getElementById("fwd").disabled = true;
+      if(!$("#fwd").hasClass("disabled"))
+	$("#fwd").addClass("disabled");
+    }
     
     console.log("DEBUG PRINT: Cambiato la pagina corrente in:" + pad.currPg);
     
+   
     //buttons
     if(window.thisPage().saved.length > 0)
+    {
       document.getElementById("redo").disabled = false;
+      if($("#redo").hasClass("disabled"))
+	  $("#redo").removeClass("disabled");
+    }
     else
+    {
       document.getElementById("redo").disabled = true;
-    
+      if(!$("#redo").hasClass("disabled"))
+	  $("#redo").addClass("disabled");
+    }
+      
     //reactivating the drawing scope
     window.pad.drwScope.activate();
   }
@@ -134,6 +170,8 @@ function lazyInit()
   // ================= Rwd =============================
   $("#rwd").on("click", function(){
     document.getElementById("fwd").disabled = false;
+    if($("#fwd").hasClass("disabled"))
+	$("#fwd").removeClass("disabled");
     //check if some restored paths to save
     if(window.thisPage().restored.length > 0)
     {
@@ -150,8 +188,13 @@ function lazyInit()
     if(window.pad.currPg > 0)
       window.pad.currPg--;
     if(window.pad.currPg === 0)
+    {
       //disable the button
-      document.getElementById("rwd").disabled = true;  
+      document.getElementById("rwd").disabled = true;
+      if(!$("#rwd").hasClass("disabled"))
+	$("#rwd").addClass("disabled");
+    }
+    
     console.log("DEBUG PRINT: Cambiato la pagina corrente in:" + window.pad.currPg);
     //load the background
     if(window.bgnd != "none")
@@ -168,11 +211,22 @@ function lazyInit()
     loadCanvas(window.thisPage().received,window.thisPage().ofMaster,window.pad.rcvScope);
     refresh();
     //buttons
-    document.getElementById("undo").disabled = true;
-    if(window.thisPage().saved.length > 0)
-      document.getElementById("redo").disabled = false;
-    else
-      document.getElementById("redo").disabled = true;
+//     document.getElementById("undo").disabled = true;
+//     if(!$("#undo").hasClass("disabled"))
+// 	$("#undo").addClass("disabled");
+//     
+//     if(window.thisPage().saved.length > 0)
+//     {
+//       document.getElementById("redo").disabled = false;
+//       if($("#redo").hasClass("disabled"))
+// 	$("#redo").removeClass("disabled");
+//     }
+//     else
+//     {
+//       document.getElementById("redo").disabled = true;
+//       if(!$("#redo").hasClass("disabled"))
+// 	$("#redo").addClass("disabled");
+//     }
     
     //reactivating the drawing scope
     window.pad.drwScope.activate();

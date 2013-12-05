@@ -1,6 +1,12 @@
 !!! 5
 html(lang='en')
   head
+    //test no caching web page
+    meta(http-equiv='Cache-Control', content='no-cache, no-store, must-revalidate')
+    meta(http-equiv='Pragma', content='no-cache')
+    meta(http-equiv='Expires', content='0')
+    
+    // default page
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
     link(href='https://fonts.googleapis.com/css?family=Limelight|Flamenco|Federo|Yesteryear|Josefin Sans|Spinnaker|Sansita One|Handlee|Droid Sans|Oswald:400,300,700', media='screen', rel='stylesheet', type='text/css')
@@ -47,6 +53,11 @@ html(lang='en')
       var toRedraw = false;
       var pdfLoaded = false;
       
+      function stopScrolling(touchEvent)
+      {
+        touchEvent.preventDefault();
+      }
+      
       document.onready = function(){
         lazyInit();
         pad.bgdScope.setup(document.getElementById("background"));
@@ -54,7 +65,11 @@ html(lang='en')
         pad.drwScope.setup(document.getElementById("paper"));
         pad.drwScope.activate();
         transMonitor();
-
+        
+        //document.addEventListener( 'touchstart' , stopScrolling , false );
+        document.addEventListener( 'touchmove' , stopScrolling , false );
+        $("#paper").focus();
+        $("#black").click();
       }
       
     script(src='/javascripts/ui.js')
