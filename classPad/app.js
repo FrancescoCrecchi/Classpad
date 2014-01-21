@@ -102,32 +102,32 @@ database.connect('mongodb://localhost/classPadDB',function() {
 //     });
     
     //ROUTES
+    //testEvents path
+    app.get("/testEvents",function(req,res){
+      res.render('testEvents');
+    });
     //Home Page
     app.get("/", routes.listPublicClasses);
     //Login Page
     app.get("/login", function(req,res){
       if(req.session.passport.user)
-	res.redirect('/myclasses');
+						res.redirect('/myclasses');
       else
-	res.render('login');
+						res.render('login');
     });
     //Class
     app.get("/class/:id", function(req,res){
       database.Classes.findById(req.params.id,function(err,obj){
-// 	console.log("======================== CLASS FOUND! =========================");
-// 	console.log(obj);  
-// 	console.log("===============================================================");  
-	if(err)
-	  res.send(500,"Internal server error: " + err);
-	else if(!obj)
-	  res.send(404,"couldn't find your class! - #0");
-	else
-	{
-	  if(req.user && req.user.username == obj.author)
-	    res.render('master',{"id":req.params.id, "title": obj.title});
-	  else
-	    res.render('slave',{"id":req.params.id, "title": obj.title});
-	}
+        if(err)
+            res.send(500,"Internal server error: " + err);
+        else if(!obj)
+            res.send(404,"couldn't find your class! - #0");
+        else{
+            if(req.user && req.user.username == obj.author)
+                res.render('master',{"id":req.params.id, "title": obj.title});
+            else
+                res.render('slave',{"id":req.params.id, "title": obj.title});
+        }
       });
     });
     //Master
@@ -164,15 +164,15 @@ database.connect('mongodb://localhost/classPadDB',function() {
     //Download Pdf
     app.get("/:file(*)",function(req,res){
       var file = req.params.file;
-// 	console.log(typeof file);
+      // 	console.log(typeof file);
       res.download(file, function(){
-	//deleting pdf file
-// 	fs.unlink(file, function (err) {
-// 	  if (err) throw err;
-// 	  console.log('successfully deleted');
-// 	});
+	    //deleting pdf file
+      // 	fs.unlink(file, function (err) {
+      // 	  if (err) throw err;
+      // 	  console.log('successfully deleted');
+      // 	});
       });
-    });
+    });          
     
     //Starting server
     httpServer.listen(app.get('port'));

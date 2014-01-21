@@ -6,7 +6,7 @@ Array.prototype.last = function(){
 //Overload toString methods to obtain a JSON string
 with(paper){
   Path.prototype.toString = function () {
-      return JSON.stringify(this);
+    return JSON.stringify(this);
   };
 }
 
@@ -30,13 +30,13 @@ function drawGrid(offsetY,offsetX){
     var inv_zoom = 1.0 / the_view.zoom;
     
     var drawLine = function (s, e) {
-        var bg = window.thisPage().background;
-	bg.push(new Path({
-	strokeWidth: inv_zoom,
-	strokeColor: new Color(0.5, Math.min(1.0, the_view.zoom))
-	}));
-	bg.last().add(s);
-	bg.last().add(e);
+      var bg = window.thisPage().background;
+      bg.push(new Path({
+       strokeWidth: inv_zoom,
+       strokeColor: new Color(0.5, Math.min(1.0, the_view.zoom))
+     }));
+      bg.last().add(s);
+      bg.last().add(e);
     };
 
     var mid_pixel_coord = 0.5 * inv_zoom;
@@ -46,20 +46,20 @@ function drawGrid(offsetY,offsetX){
     {
       //vertical lines
       for(var i=mid_pixel_coord; i < the_view.bounds.right; i+=offsetX)
-	drawLine(new Point(i,the_view.bounds.top), new Point(i,the_view.bounds.bottom));
-      for(var i=mid_pixel_coord-offsetX; i > the_view.bounds.left; i-=offsetX)
-	drawLine(new Point(i,the_view.bounds.top), new Point(i,the_view.bounds.bottom));
-    }
-    else
+       drawLine(new Point(i,the_view.bounds.top), new Point(i,the_view.bounds.bottom));
+     for(var i=mid_pixel_coord-offsetX; i > the_view.bounds.left; i-=offsetX)
+       drawLine(new Point(i,the_view.bounds.top), new Point(i,the_view.bounds.bottom));
+   }
+   else
       offsetY *=1.5; //rows only
       //horizontal lines
-    for(var i=mid_pixel_coord; i < the_view.bounds.bottom; i+=offsetY)
-	drawLine(new Point(the_view.bounds.left,i), new Point(the_view.bounds.right,i));
-    for(var i=mid_pixel_coord-offsetY; i > the_view.bounds.top; i-=offsetY)
-	drawLine(new Point(the_view.bounds.left,i), new Point(the_view.bounds.right,i));
-  }
-  window.pad.drwScope.activate();
-}
+      for(var i=mid_pixel_coord; i < the_view.bounds.bottom; i+=offsetY)
+       drawLine(new Point(the_view.bounds.left,i), new Point(the_view.bounds.right,i));
+     for(var i=mid_pixel_coord-offsetY; i > the_view.bounds.top; i-=offsetY)
+       drawLine(new Point(the_view.bounds.left,i), new Point(the_view.bounds.right,i));
+   }
+   window.pad.drwScope.activate();
+ }
 
 //clear/load canvas
 function clearCanvas(){
@@ -118,16 +118,16 @@ function loadCanvas(jsonArray,dstArray,scope){
       var path_i_str = jsonArray[i];
       var objs = JSON.parse(path_i_str); //Object
       var nPath = new Path({
-	strokeColor: objs[1].strokeColor,
-	strokeWidth: objs[1].strokeWidth
-      });
+       strokeColor: objs[1].strokeColor,
+       strokeWidth: objs[1].strokeWidth
+     });
       if(typeof objs[1].segments != "undefined")
-	nPath["segments"] = objs[1].segments.slice();
-      if(typeof objs[1].blendMode != "undefined")
-	nPath["blendMode"] = objs[1].blendMode;
-    dstArray.push(nPath);
-    }
-  }
+       nPath["segments"] = objs[1].segments.slice();
+     if(typeof objs[1].blendMode != "undefined")
+       nPath["blendMode"] = objs[1].blendMode;
+     dstArray.push(nPath);
+   }
+ }
 }
 
 //master sync paths function
@@ -171,17 +171,17 @@ function bind2(tool){
     {
       //deselect them
       for(var i = 0; i < window.selector.selectGroup.children.length; i++)
-	  window.selector.selectGroup.children[i].selected = false; 
-    }
-  }
-  else
+       window.selector.selectGroup.children[i].selected = false; 
+   }
+ }
+ else
     //init multitouch
-    multitouchInit();  
+  multitouchInit();  
   
   //setting the activeTool
   window.activeTool = tool;
   //adding new events
-  window.mdCb = window.td1.gesture.add(returnViewPoint(window.activeTool.onMouseDown));
+  window.mdCb = window.td1.gesture.add(returnViewPoint(window.activeTool.onMouseDown));       //?????????????? RETURN VIEWPOINT E' PER IL SELECTOR?!
 }
 
 //isIn function: check if a path is contained into a rectangle
@@ -218,9 +218,9 @@ Array.prototype.getIndexOf = function(obj){
 
 //function to parse event (mouse/touch event) into a [x,y] point
 function parseEvent(e){
-    var x = e.evt.clientX - e.evt.target.getBoundingClientRect().left;
-    var y = e.evt.clientY - e.evt.target.getBoundingClientRect().top;
-    return {x: x, y: y};
+  var x = e.evt.clientX - e.evt.target.getBoundingClientRect().left;
+  var y = e.evt.clientY - e.evt.target.getBoundingClientRect().top;
+  return {x: x, y: y};
 }
 
 //gets an event and a callback, then register the callback with the parsed point
@@ -246,13 +246,15 @@ function calculateDelta(newPoint,startPoint){
 
 // refesh the 3 layers
 function refresh(){
-  window.pad.bgdScope.view._handlingFrame = false;
-  window.pad.rcvScope.view._handlingFrame = false;
-  window.pad.drwScope.view._handlingFrame = false;
+  window.pad.bgdScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
+  window.pad.rcvScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
+  window.pad.drwScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
 
   window.pad.bgdScope.view.draw();
   window.pad.rcvScope.view.draw();
   window.pad.drwScope.view.draw();
+	
+	window.toRedraw = false;
 }
 
 //we have to scale all of 3 layers canvas!
@@ -263,9 +265,9 @@ function zoomAndPan(sF,sP){
 
 //saving transform point and factor to lazy redraw
 function saveTransform(sF,sP){
-  window.pad.bgdScope.view._handlingFrame = true;
-  window.pad.rcvScope.view._handlingFrame = true;
-  window.pad.drwScope.view._handlingFrame = true;
+  window.pad.bgdScope.view._handlingFrame = true;   //HACK TO MAKE DRAW GOING SMOOTH
+  window.pad.rcvScope.view._handlingFrame = true;   //HACK TO MAKE DRAW GOING SMOOTH
+  window.pad.drwScope.view._handlingFrame = true;   //HACK TO MAKE DRAW GOING SMOOTH
 
   //bgnd scope
   transformView(window.pad.bgdScope.view,window.scaleFactor,window.scalePoint);
@@ -283,7 +285,7 @@ function transformView(view,sF,sP){
   //check if a pdf has been loaded to the "forPdf" canvas
 //   if(window.pdfLoaded )
 //   {
-    
+
 //   }
 }
 
@@ -298,7 +300,6 @@ function TransformAll(){
     else
       drawGrid(window.interLines);
   }
-  window.toRedraw = false;
   refresh();
 }
 
@@ -416,37 +417,37 @@ function exportTempCanvas(page){
   gruppo.removeChildren();
   //remove temporary canvas
   document.body.removeChild(canvas);
-    
+
   return res;
 }
 
 //Upload a PDF document in background
 function uploadPdf(){
-  
+
   var url = 'http://www.lamma.rete.toscana.it/previ/ita/bollettino.pdf';
   
   // Disable workers to avoid yet another cross-origin issue (workers need the URL of
   // the script to be loaded, and currently do not allow cross-origin scripts)
   //
   PDFJS.disableWorker = true;
-//   PDFJS.workerSrc = '/javascripts/libs/pdf.js'
-  
-  var pdfDoc = null;
-  var pageNum = 1;
-  var scale = 1.5;
-  
+  //   PDFJS.workerSrc = '/javascripts/libs/pdf.js'
+
+	var pdfDoc = null;
+	var pageNum = 1;
+	var scale = 1.5;
+
   //create a temporary canvas to put before the background canvas
   var pdfCanvas = document.getElementById('forPdf');
-//   pdfCanvas.setAttribute('id','pdfCanvas');
-//   pdfCanvas.setAttribute('style','position: absolute;');
-//   pdfCanvas.setAttribute('style','position: absolute; left: 0px; top: 0px; z-index: 1;');
-//   pdfCanvas.setAttribute('width', 8.27 * 72); //72dpi
-//   pdfCanvas.setAttribute('height', 11.69 * 72); //72dpi
-  var ctx = pdfCanvas.getContext('2d');
+  //   pdfCanvas.setAttribute('id','pdfCanvas');
+	//   pdfCanvas.setAttribute('style','position: absolute;');
+	//   pdfCanvas.setAttribute('style','position: absolute; left: 0px; top: 0px; z-index: 1;');
+	//   pdfCanvas.setAttribute('width', 8.27 * 72); //72dpi
+	//   pdfCanvas.setAttribute('height', 11.69 * 72); //72dpi
+	var ctx = pdfCanvas.getContext('2d');
   //appending the new canvas before the background
-//   var cvsBg = document.getElementById('cnvsBg');
-//   cvsBg.insertBefore(pdfCanvas,cvsBg.childNodes[1]); //insert before 'background' canvas
-  
+	//   var cvsBg = document.getElementById('cnvsBg');
+	//   cvsBg.insertBefore(pdfCanvas,cvsBg.childNodes[1]); //insert before 'background' canvas
+	
   //
   // Get page info from document, resize canvas accordingly, and render page
   //
@@ -459,13 +460,13 @@ function uploadPdf(){
       
       // Render PDF page into canvas context
       var renderContext = {
-	canvasContext: ctx,
-	viewport: viewport
-      };
-      page.render(renderContext);
-    });
+       canvasContext: ctx,
+       viewport: viewport
+     };
+     page.render(renderContext);
+   });
   }
-    
+
   //
   // Asynchronously download PDF as an ArrayBuffer
   //
