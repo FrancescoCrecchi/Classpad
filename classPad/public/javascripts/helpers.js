@@ -4,130 +4,121 @@ Array.prototype.last = function(){
 };
 
 //Overload toString methods to obtain a JSON string
-with(paper){
-  Path.prototype.toString = function () {
-    return JSON.stringify(this);
-  };
-}
+Path.prototype.toString = function () {
+  return JSON.stringify(this);
+};
 
-//Background
-function clearBg(){
-  window.pad.bgdScope.activate(); //activate the rigth paperscopes
-  console.log("clear background: " + paper);
-  for(var i=0; i < window.thisPage().background.length; i++)
-    window.thisPage().background[i].removeSegments();
-  for(var i=0; i < window.thisPage().background.length; i++)
-    window.thisPage().background.pop();
-  //reactivate the drawing scope 
-  window.pad.drwScope.activate();
-}
+
+//function to draw a path
+function drawPath(path,ctx) {
+  //drawing
+  ctx.beginPath();
+  if(path.points.length > 0)
+  {
+    //init
+    var pts = path.points;
+    ctx.strokeStyle = path.strokeColor;
+    ctx.lineWidth = path.strokeWidth;
+    ctx.globalCompositeOperation = path.blendMode;
+    //drawing
+    ctx.moveTo(pts[0].x,pts[0].y);
+    for(var i = 0; i < pts.length; i++)
+    {
+      ctx.lineTo(pts[i].x,pts[i].y);
+    }
+    ctx.stroke();
+    ctx.closePath();
+  }  
+};
 
 function drawGrid(offsetY,offsetX){
-  with(paper) {
-    var the_view = window.pad.bgdScope.view;
-    window.pad.bgdScope.activate(); //activate the rigth paperscopes
+  //var the_view = window.pad.bgdScope.view;
+  // var inv_zoom = 1.0 / the_view.zoom
 
-    var inv_zoom = 1.0 / the_view.zoom;
-    
-    var drawLine = function (s, e) {
-      var bg = window.thisPage().background;
-      bg.push(new Path({
-       strokeWidth: inv_zoom,
-       strokeColor: new Color(0.5, Math.min(1.0, the_view.zoom))
-     }));
-      bg.last().add(s);
-      bg.last().add(e);
-    };
+  var mid_pixel_coord = 0.5; //* inv_zoom;
 
-    var mid_pixel_coord = 0.5 * inv_zoom;
+  console.log("drawGrid");
 
-    console.log("drawGrid: " + paper);
-    if(typeof offsetX != "undefined")
-    {
-      //vertical lines
-      for(var i=mid_pixel_coord; i < the_view.bounds.right; i+=offsetX)
-       drawLine(new Point(i,the_view.bounds.top), new Point(i,the_view.bounds.bottom));
-     for(var i=mid_pixel_coord-offsetX; i > the_view.bounds.left; i-=offsetX)
-       drawLine(new Point(i,the_view.bounds.top), new Point(i,the_view.bounds.bottom));
-   }
-   else
-      offsetY *=1.5; //rows only
-      //horizontal lines
-      for(var i=mid_pixel_coord; i < the_view.bounds.bottom; i+=offsetY)
-       drawLine(new Point(the_view.bounds.left,i), new Point(the_view.bounds.right,i));
-     for(var i=mid_pixel_coord-offsetY; i > the_view.bounds.top; i-=offsetY)
-       drawLine(new Point(the_view.bounds.left,i), new Point(the_view.bounds.right,i));
-   }
-   window.pad.drwScope.activate();
+  var bgCanvas = window.bCnvs;
+  if(typeof offsetX != "undefined")
+  {
+    //vertical lines
+    for(var i=mid_pixel_coord; i < bgCanvas.width; i+=offsetX)
+      drawPath({
+        points: [new Point(i, bgCanvas.clientTop), new Point(i,bgCanvas.clientHeight)],
+        strokeColor: 'gray',
+        strokeWidth: 1
+      },bCtx);
+    for(var i=mid_pixel_coord-offsetX; i > bgCanvas.clientLeft; i-=offsetX)
+      drawPath({
+        points: [new Point(i,bgCanvas.clientTop), new Point(i,bgCanvas.clientHeight)],
+        strokeColor: 'gray',
+        strokeWidth: 1
+      },bCtx);
+ }
+ else
+    offsetY *=1.5; //rows only
+    //horizontal lines
+    for(var i=mid_pixel_coord; i < bgCanvas.clientHeight; i+=offsetY)
+     drawPath({
+        points: [new Point(bgCanvas.clientLeft,i), new Point(bgCanvas.clientWidth,i)],
+        strokeColor: 'gray',
+        strokeWidth: 1
+      },bCtx);
+   for(var i=mid_pixel_coord-offsetY; i > bgCanvas.clientTop; i-=offsetY)
+      drawPath({
+        points: [new Point(bgCanvas.clientLeft,i), new Point(bgCanvas.clientWidth,i)],
+        strokeColor: 'gray',
+        strokeWidth: 1
+      },bCtx);
  }
 
-//clear/load canvas
-function clearCanvas(){
-  window.pad.drwScope.activate();
+//clear/load canvas (background/paper/fromMaster)
+function clearCanvas(cnvs){  
+  cnvs.getContext("2d").clearRect(0,0,cnvs.width,cnvs.height);
+  //window.toRedraw = true;
+}
+
+function restoreCleanPage(){
   //variables
   var dwL = window.thisPage().drawed.length;
   var ldL = window.thisPage().loaded.length;
   var rsL = window.thisPage().restored.length;
   var ofML = window.thisPage().ofMaster.length;
-  
-  console.log("clear canvas: " + paper);
-  //clear the canvas to simulate the change
-  var upCanvas = document.getElementById("paper");
-  upCanvas.width = upCanvas.width; //this should clear the canvas
   //cleaning drawed paths
   if(dwL > 0)
-  {
-    for(var i=0; i < dwL; i++)
-      window.thisPage().drawed[i].removeSegments();
     for(var i=0; i < dwL; i++)
       window.thisPage().drawed.pop();
-  }
+
   //cleaning loaded paths
   if(ldL > 0)
-  {
-    for(var i=0; i < ldL; i++)
-      window.thisPage().loaded[i].removeSegments();
     for(var i=0; i < ldL; i++)
       window.thisPage().loaded.pop();
-  }
+
   //cleaning restored paths
   if(rsL > 0)
-  {
-    for(var i=0; i < rsL; i++)
-      window.thisPage().restored[i].removeSegments();
     for(var i=0; i < rsL; i++)
       window.thisPage().restored.pop();
-  }
+
   //cleaning ofMaster paths
   if(ofML > 0)
-  {
-    for(var i=0; i < ofML; i++)
-      window.thisPage().ofMaster[i].removeSegments();
     for(var i=0; i < ofML; i++)
       window.thisPage().ofMaster.pop();
-  }
 }
 
-function loadCanvas(jsonArray,dstArray,scope){
-  scope.activate();
-  console.log("load canvas: " + paper);
-  with(paper) {
-    // load the content previously created
-    for(var i=0;i < jsonArray.length ; i++)
-    {
-      var path_i_str = jsonArray[i];
-      var objs = JSON.parse(path_i_str); //Object
-      var nPath = new Path({
-       strokeColor: objs[1].strokeColor,
-       strokeWidth: objs[1].strokeWidth
-     });
-      if(typeof objs[1].segments != "undefined")
-       nPath["segments"] = objs[1].segments.slice();
-     if(typeof objs[1].blendMode != "undefined")
-       nPath["blendMode"] = objs[1].blendMode;
-     dstArray.push(nPath);
-   }
- }
+
+function loadCanvas(jsonArray,dstArray,ctx){
+  console.log("load canvas: " + ctx.canvas);
+  // load the content previously created
+  for(var i=0;i < jsonArray.length ; i++)
+  {
+    var path_i_str = jsonArray[i];
+    var p = JSON.parse(path_i_str); //Object
+    //drawing path
+    drawPath(p,ctx);
+    //saving it into memory
+    dstArray.push(p);
+  }
 }
 
 //master sync paths function
@@ -136,28 +127,13 @@ function sendData(socket){
   {
     console.log("Connected to the server!");
     // sending to the server
-    socket.emit('sync', {"PgArray":window.thisPage().PgArray,"n":window.pad.currPg});
+    socket.emit('sync', {"PgArray":window.thisPage().PgArray,"cPg":window.pad.currPg});
     //logging
     console.log("Sending data to the server... ");
   }
   else
     console.log("ERROR CONNECTING TO THE SERVER");
 }
-
-//integrate slave pad
-function array_diff(aOld, aNew){
-  var res = [];
-  for(var i = 0; i < aNew.length; i++){
-    if(aOld.indexOf(aNew[i]) === -1)
-      res.push(aNew[i]);
-  }
-  return res;
-}
-
-Array.prototype.integrate = function(newArray){
-  var res = array_diff(this,newArray);
-  return this.concat(res); //concateno il risultato della differenza tra le nuove pG e le vecchie
-};
 
 // GestIT bind
 function bind2(tool){
@@ -181,7 +157,7 @@ function bind2(tool){
   //setting the activeTool
   window.activeTool = tool;
   //adding new events
-  window.mdCb = window.td1.gesture.add(returnViewPoint(window.activeTool.onMouseDown));       //?????????????? RETURN VIEWPOINT E' PER IL SELECTOR?!
+  window.mdCb = window.td1.gesture.add(returnPagePoint(window.activeTool.onMouseDown));       //?????????????? RETURN VIEWPOINT E' PER IL SELECTOR?!
 }
 
 //isIn function: check if a path is contained into a rectangle
@@ -244,18 +220,16 @@ function calculateDelta(newPoint,startPoint){
   return {x: newPoint.x - startPoint.x, y: newPoint.y - startPoint.y};
 }
 
-// refesh the 3 layers
+/*// refesh the 3 layers
 function refresh(){
-  window.pad.bgdScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
-  window.pad.rcvScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
-  window.pad.drwScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
+  //window.pad.bgdScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
+  //window.pad.rcvScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
+  //window.pad.drwScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
 
-  window.pad.bgdScope.view.draw();
-  window.pad.rcvScope.view.draw();
-  window.pad.drwScope.view.draw();
-	
+	$("#paper")[0].getContext("2d").stroke();
+  $("#background")[0].getContext("2d").stroke()
 	window.toRedraw = false;
-}
+}*/
 
 //we have to scale all of 3 layers canvas!
 function zoomAndPan(sF,sP){
@@ -421,7 +395,7 @@ function exportTempCanvas(page){
   return res;
 }
 
-//Upload a PDF document in background
+/*//Upload a PDF document in background
 function uploadPdf(){
 
   var url = 'http://www.lamma.rete.toscana.it/previ/ita/bollettino.pdf';
@@ -466,13 +440,49 @@ function uploadPdf(){
      page.render(renderContext);
    });
   }
+}
+//
+// Asynchronously download PDF as an ArrayBuffer
+//
+PDFJS.getDocument(url).then(function getPdfHelloWorld(_pdfDoc) {
+  pdfDoc = _pdfDoc;
+  renderPage(pageNum);
+  refresh();
+});
+*/
 
-  //
-  // Asynchronously download PDF as an ArrayBuffer
-  //
-  PDFJS.getDocument(url).then(function getPdfHelloWorld(_pdfDoc) {
-    pdfDoc = _pdfDoc;
-    renderPage(pageNum);
-    refresh();
-  });
+//Prevent browser scrolling function
+function stopScrolling(touchEvent)
+{
+  touchEvent.preventDefault();
+}
+
+//Return the this page function
+function thisPage(){
+  return window.pad.Pages[window.pad.currPg];
+}
+
+//Commodity function to set the canvas size based on page lauyout
+function setCanvasDims(id){
+  $("#" + id)[0].width = $("#" + id).css("width").replace('px','');
+  $("#" + id)[0].height = $("#" + id).css("height").replace('px','');
+}
+
+//Init canvases funcion
+function initCanvasElements(){
+  //canvas elements
+  window.bCnvs = $("#background")[0];
+  window.mCnvs = $("#fromMaster")[0];
+  window.pdfCnvs = $("#forPdf")[0];
+  window.dCnvs = $("#paper")[0];
+  // contexts
+  window.bCtx = window.bCnvs.getContext("2d");
+  window.mCtx = window.mCnvs.getContext("2d");
+  window.pdfCtx = window.pdfCnvs.getContext("2d");
+  window.dCtx = window.dCnvs.getContext("2d");
+  //initializing dimensions
+  setCanvasDims("background");
+  setCanvasDims("fromMaster");
+  setCanvasDims("forPdf");
+  setCanvasDims("paper");
 }

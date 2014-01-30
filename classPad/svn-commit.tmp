@@ -1,9 +1,0 @@
-
---This line, and those below, will be ignored--
-
-M    views/slave.jade
-M    views/master.jade
-M    views/ui.jade
-M    public/javascripts/slave.js
-M    public/javascripts/master.js
-M    public/stylesheets/notepad.css

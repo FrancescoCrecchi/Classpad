@@ -16,12 +16,11 @@ var DB = function(){
       date: Date,
       visibility: String, //"private" vs "public"
       pad: {
-	Pages:[{
-	  //paths
-	  pathsDrawed: [ String ],
-	  }],
-	currPg: {type:Number,default:0}
-      }
+             Pages: [{
+                      pathsDrawed:[ String ]
+                    }],
+	           currPg: {type:Number,default:0}
+           }
     });
   //defining interface  
   self.User = self.mongoose.model('User',self.userSchema);

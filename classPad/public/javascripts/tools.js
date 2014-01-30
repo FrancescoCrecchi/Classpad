@@ -1,85 +1,62 @@
-function Pen(sColor,sWidth){
-  this.sC = sColor;
-  this.sW = sWidth;
-  this.bM = "source-over";
-  var mythis = this;
-  var pressed = false;
+function Pen(sColor,sWidth,blendMode){
+	this.sC = sColor;
+	this.sW = sWidth;
+	this.bM = blendMode || "source-over"; //if blendMode is set use that else use "source-over" as default.
+	var mythis = this;
+	var pressed = false;
   
-  with(paper) {    
-    //Event listener
-    this.onMouseDown = function(){
-      window.thisPage().drawed.push(new Path({
-      strokeColor: mythis.sC,
-      strokeWidth: mythis.sW/window.pad.drwScope.view.zoom,
-      blendMode: mythis.bM
-      }));
-      pressed = true;
-    }
-    
-    this.onMouseDrag = function(point){
-      if(pressed){
-				var nP = new Point(point.x,point.y);
-				//var seg = window.thisPage().drawed.last().segments;
-				//if(seg.length == 0 || (seg.last() && seg.last().point.getDistance(nP) > 0.5))
-					window.thisPage().drawed.last().add(nP);
-				// TEST HACK TO MAKE IT REDRAW 30t/sec
-				window.pad.drwScope.view._handlingFrame = true; //HACK TO MAKE DRAW GOING SMOOTH
-				window.toRedraw = true;
-			}
-    }
-    
-    this.onMouseUp = function(){
-      window.thisPage().drawed.last().simplify();
-      paper.view.draw();
-      //undo/redo variabile
-      window.iWasDrawing = true;
-      if(window.thisPage().drawed.length > 0)
-      {
+	//Event listener
+	this.onMouseDown = function(point){
+	  // GraphLib object 
+	  window.thisPage().drawed.push(new Path({
+	  	strokeColor: mythis.sC,
+	  	strokeWidth: mythis.sW, ///window.pad.drwScope.view.zoom,
+	  	blendMode: mythis.bM
+	  }));
+	  // Canvas
+	  dCtx.beginPath(); //new Path()
+	  dCtx.strokeStyle = mythis.sC;
+	  dCtx.lineWidth = mythis.sW;
+	  dCtx.globalCompositeOperation = mythis.bM;
+	  dCtx.moveTo(point.x,point.y);
+	  // setting pressed to true
+	  pressed = true;
+	}
+
+	this.onMouseDrag = function(point){
+	  if(pressed)
+	  {
+		//GraphLib
+		window.thisPage().drawed.last().add(point);
+		//Canvas elements
+		dCtx.lineTo(point.x,point.y);
+		dCtx.stroke();
+		// say to not redraw!
+		//window.toRedraw = false;
+	  }
+	}
+
+	this.onMouseUp = function(){
+	  //window.thisPage().drawed.last().simplify();
+	  //paper.view.draw();
+	  //undo/redo variabile
+	  //window.iWasDrawing = true;
+	  /*if(window.thisPage().drawed.length > 0)
+	  {
 				document.getElementById("undo").disabled = false;
 				if($("#undo").hasClass("disabled"))
 					$("#undo").removeClass("disabled");
-      }
-      //Save the page content
-      window.thisPage().PgArray.push(window.thisPage().drawed.last().toString()); //toString metod defined in helpers
-      pressed = false;
-    }
-  }
-}
-
-function Eraser(sWidth){
-  this.sW = sWidth;
-  var pressed = false;
-  var mythis = this;
-  
-  with(paper) {
-    //Event listener
-    this.onMouseDown = function(){
-	window.thisPage().drawed.push(new Path({
-	strokeColor: "black",
-	strokeWidth: mythis.sW/window.pad.drwScope.view.zoom,
-	blendMode: "destination-out"
-      }));
-      pressed = true;
-    }
-    
-    this.onMouseDrag = function(point){
-      if(pressed)
-	window.thisPage().drawed.last().add(new Point(point.x,point.y));
-    }
-    
-    this.onMouseUp = function(){
-      window.thisPage().drawed.last().simplify();
-      //undo/redo variabile
-      window.iWasDrawing = true;
-      //Save the page content
-      window.thisPage().PgArray.push(window.thisPage().drawed.last().toString()); //toString metod defined in helpers
-      pressed = false;
-    }
-  }
+	  }*/
+	  //Save the page content
+	  window.thisPage().PgArray.push(window.thisPage().drawed.last().toString()); //toString metod defined in helpers
+	  //Close canvas path
+	  dCtx.closePath();
+	  pressed = false;
+	}
 }
 
 function Selector(){
-  this.selectGroup;
+  /* this.selectGroup;
   this.rectangle;
   this.rectPath;
   var selArray = new Array();
@@ -198,5 +175,5 @@ function Selector(){
 	dragging = false;
       }
     }
-  }
+  }*/
 }

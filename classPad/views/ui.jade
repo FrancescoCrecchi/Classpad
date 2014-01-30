@@ -1,4 +1,4 @@
-!!! 5
+doctype html
 html(lang='en')
   head
     //test no caching web page
@@ -15,7 +15,7 @@ html(lang='en')
     link(href='/stylesheets/notepad.css', media='screen', rel='stylesheet', type='text/css')
     
     script(src='/socket.io/socket.io.js')
-    script(src='/javascripts/libs/paper.js')
+    
     script(src='/javascripts/libs/json2.js')
     script(src='/javascripts/libs/jquery-2.0.3.js')
     script(src='/javascripts/libs/GestIT.js')
@@ -23,51 +23,52 @@ html(lang='en')
     script(src='/javascripts/libs/pdf.js')
     //script(src='/javascripts/libs/compatibility.js')
     //script(src='/javascripts/libs/worker_loader.js')
+    
     script(src='/javascripts/pad.js')
     script(src='/javascripts/tools.js')
     script(src='/javascripts/multitouch.js')
+    script(src='/javascripts/libs/GraphLib.js')
     script(src='/javascripts/helpers.js')
-    
-    script(type='text/javascript')
-    
-      //Set-up paper.js globally
-      //paper.install(window);
+
+    script(type='text/javascript').
       
       //Global variables
       var pad = new Pad();
-      var classId = "#{id}"; //getting the id from jade
-      var classTitle = "#{title}"; //getting the title from jade
-      var thisPage = function(){
-        return window.pad.Pages[window.pad.currPg];
-      }
-      var iWasDrawing;
-      var bgnd = "none"; //default to none
+      
       //tools
       var pen = new Pen("black",7); //init
-      var eraser = new Eraser(20); //init
+      var eraser = new Pen("black",20,"destination-out"); //init
       var selector = new Selector(); //init
       var activeTool;
+      
+      //commodity variables
       var td1,mdCb;
       var scaleFactor,scalePoint;
       var interLines = 20;
-      var toRedraw = false;
       var pdfLoaded = false;
+      var iWasDrawing;
+      var bgnd = "none"; //default to none
+
+      //canvases properties
+      var dCnvs,mCnvs,bCnvs,pdfCnvs;
+      var dCtx,mCtx,bCtx,pdfCtx;
+
+      //lastSendedObject
+      var lSO;
+
+      var classId = "#{id}"; //getting the id from jade
+      var classTitle = "#{title}"; //getting the title from jade
+
+      //To redraw at 30fps
+      var toRedraw = false;
       
-      function stopScrolling(touchEvent)
-      {
-        touchEvent.preventDefault();
-      }
-      
+      //when all DOM is ready
       document.onready = function(){
         lazyInit();
-        pad.bgdScope.setup(document.getElementById("background"));
-        pad.rcvScope.setup(document.getElementById("fromMaster"));
-        pad.drwScope.setup(document.getElementById("paper"));
-        pad.drwScope.activate();
-        transMonitor();
-        
-        //document.addEventListener( 'touchstart' , stopScrolling , false );
-        document.addEventListener( 'touchmove' , stopScrolling , false );
+        //transMonitor();
+        initCanvasElements();
+
+        document.addEventListener('touchmove',stopScrolling,false);
         $("#paper").focus();
         $("#black").click();
       }

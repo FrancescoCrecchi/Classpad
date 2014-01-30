@@ -1,25 +1,15 @@
 {
   "name": "classPad",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "3.3.8",
+    "express": "3.4.8",
     "jade": "*",
     "socket.io": "0.9.16",
-    "connect": "2.8.8",
-    "buffer-crc32": "0.2.1",
-    "methods": "0.0.1",
-    "debug": "0.7.2",
-    "mime": "1.2.11",
-    "fresh": "0.2.0",
-    "range-parser": "0.0.4",
-    "cookie-signature": "1.0.1",
-    "cookie": "0.1.0",
-    "send": "0.1.4",
-    "url": "0.7.9",
+    "session.socket.io": "*",
     "connect-mongo": "0.3.3",
     "mongoose": "3.8.0",
     "passport": "0.1.17",

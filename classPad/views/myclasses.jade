@@ -8,21 +8,21 @@ html
     link(href='/stylesheets/webstyle.css', media='screen', rel='stylesheet', type='text/css')
     
     script(src='/javascripts/libs/jquery-2.0.3.js')
-    script
+    script(type='text/javascript'). //FUCKIN' DOT!
       function changeVisibility(id,visibility){
-          var form = document.createElement('form');
-          form.setAttribute('method', 'post');
-          form.setAttribute('action', '/changeVisibility');
-          form.style.display = 'hidden';
-          //id
-          var ID = document.createElement('input');
-          ID.setAttribute('type',"hidden");
-          ID.setAttribute('name',"id");
-          ID.setAttribute('value',id);
-          form.appendChild(ID);
-          document.body.appendChild(form);
-          form.submit();
-        }
+       var form = document.createElement("form");
+       form.setAttribute("method", "post");
+       form.setAttribute("action", "/changeVisibility");
+       form.style.display = 'hidden';
+       //id
+       var ID = document.createElement('input');
+       ID.setAttribute('type',"hidden");
+       ID.setAttribute('name',"id");
+       ID.setAttribute('value',id);
+       form.appendChild(ID);
+       document.body.appendChild(form);
+       form.submit();
+      }
  body
   .body.loggedin
    table.container

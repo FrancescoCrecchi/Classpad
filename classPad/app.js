@@ -1,3 +1,4 @@
+
 /**
  * Module dependencies.
  */
@@ -75,37 +76,21 @@ if ('development' == app.get('env')) {
 //Connecting to mongodb
 //configuration which needs database, we do it last
 database.connect('mongodb://localhost/classPadDB',function() {
-  // DEBUG UTENTE DI PROVA
-//   var nuovoUtente = new database.User({username:"pippo",password:"prova"});
-//   nuovoUtente.save(function(err,user) {
-//     console.log("ERR: "+ err + user);
     var auth = require('./auth.js').start(app,database.User);
     var routes = require('./routes.js')(auth,database);
     var sockets = require('./sockets.js')(database,httpServer,sessionStore,cookieParser);
     
-    //Login
-//     app.get("/", midLogin, function(req,res){
-//       res.redirect("/class");
-//     });
-    
-    //nuova classe di prova public
-//     var nuovaClasse = new database.Classes({author: "Pincopallino", title:"Puppa", date: Date.now(), visibility: "public"}); 
-//     nuovaClasse.save(function(err,user){
-//       if(err)
-// 	console.log("ERR: "+ err + user);
-//     });
-//     //nuova classe di prova public
-//     var nuovaClasse2 = new database.Classes({author: "Pincopallino", title:"Mucca", date: Date.now(), visibility: "private"}); 
-//     nuovaClasse2.save(function(err,user){
-//       if(err)
-// 	console.log("ERR: "+ err + user);
-//     });
-    
     //ROUTES
-    //testEvents path
+    
+    /* testEvents path
     app.get("/testEvents",function(req,res){
       res.render('testEvents');
     });
+    app.get("/testWOG",function(req,res){
+      res.render('testWOG');
+    });
+	*/
+
     //Home Page
     app.get("/", routes.listPublicClasses);
     //Login Page
@@ -164,13 +149,7 @@ database.connect('mongodb://localhost/classPadDB',function() {
     //Download Pdf
     app.get("/:file(*)",function(req,res){
       var file = req.params.file;
-      // 	console.log(typeof file);
       res.download(file, function(){
-	    //deleting pdf file
-      // 	fs.unlink(file, function (err) {
-      // 	  if (err) throw err;
-      // 	  console.log('successfully deleted');
-      // 	});
       });
     });          
     

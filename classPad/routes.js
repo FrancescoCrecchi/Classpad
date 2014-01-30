@@ -12,11 +12,11 @@ routes.createUser = function(req,res){
     var newUser = new database.User({username: req.body.username, password:req.body.password});
     newUser.save(function(err,obj){
       if(err)
-	res.send(500,"couldn't create new user! - #0");
+      	res.send(500,"couldn't create new user! - #0");
       else if(!obj)
-	res.send(404,"couldn't create new user! - #1");
+      	res.send(404,"couldn't create new user! - #1");
       else
-	res.redirect('/');
+      	res.redirect('/');
     });
   }
   else
@@ -107,8 +107,6 @@ routes.changeVisibility = function(req,res){
   }
 }
 
-
-
 //List class per user
 routes.listClasses = function(req,res){
   console.log("======= LIST MY CLASSES ========");  
@@ -160,7 +158,7 @@ routes.exportAsPdf = function(req,res){
 	  var pg = pad.pages[i][j];
 	  console.log(pg);
 	  //the graphics primitive exported in SVG format from Paper.js
-	  if(pg != null && pg.d != null) //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
+	  if(pg != null && pg.d != null) //@@@@@@@@@@@@@@ TODO:Remove paper from here! @@@@@@@@@@@@@@@@@@@@ 
 	  {
 	    doc.strokeColor(pg["mix-blend-mode"] == 'destination-out' ? 'white' : pg.stroke)
 	      .lineWidth(pg["stroke-width"])

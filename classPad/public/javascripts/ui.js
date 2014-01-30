@@ -1,5 +1,4 @@
 $(window).ready(function(){
-  
   var inGlowing; //what button is glowing
   
   //glowing
@@ -19,111 +18,89 @@ $(window).ready(function(){
   $("#small").on("click", function (){
     window.pen.sW = 7;
     bind2(window.pen);
-    window.activeTool = window.pen;
-    window.pad.drwScope.activate();
     setGlow("#small");
   });
 
   $("#medium").on("click", function (){
     window.pen.sW = 12;
     bind2(window.pen);
-    window.activeTool = window.pen;
-    window.pad.drwScope.activate();
     setGlow("#medium");
   });
 
   $("#big").on("click", function (){
     window.pen.sW = 17;
     bind2(window.pen);
-    window.activeTool = window.pen;
-    window.pad.drwScope.activate();
     setGlow("#big");
   });
   //colors
   $("#black").on("click",function (){
     window.pen.sC = "black";
     bind2(window.pen);
-    window.activeTool = window.pen;
-    window.pad.drwScope.activate();
     setGlow("#black");
   });
 
   $("#red").on("click", function (){
     window.pen.sC = "red";
     bind2(window.pen);
-    window.activeTool = window.pen;
-    window.pad.drwScope.activate();
     setGlow("#red");
   });
 
   $("#green").on("click", function (){
     window.pen.sC = "green";
     bind2(window.pen);
-    window.activeTool = window.pen;
-    window.pad.drwScope.activate();
     setGlow("#green");
   });
 
   $("#blue").on("click", function (){
     window.pen.sC = "blue";
     bind2(window.pen);
-    window.activeTool = window.pen;
-    window.pad.drwScope.activate();
     setGlow("#blue");
   });
 
  $("#yellow").on("click", function (){
     window.pen.sC = "yellow";
     bind2(window.pen);
-    window.activeTool = window.pen;
-    window.pad.drwScope.activate();
     setGlow("#yellow");
   });
   // ============== Tools =================================
   //eraser
   $("#eraser").on("click", function(){
     bind2(window.eraser);
-    window.pad.drwScope.activate();
     setGlow("#eraser");
   });
 
   //pen
   $("#pen").on("click", function(){
     bind2(window.pen);
-    window.pad.drwScope.activate();
     setGlow("#pen");
   });
   
   $("#select").on("click",function(){
     bind2(window.selector);
-    window.pad.drwScope.activate();
     setGlow("#select");
   });
   //============== Background ============================= 
   $("#grid").on("click", function(){
-    clearBg();
+    clearCanvas(window.bCnvs);
     drawGrid(window.interLines,window.interLines);
     window.bgnd = "grid";
-    refresh();
-    window.pad.drwScope.activate();
+    // refresh();
   });
 
   $("#rows").on("click", function(){
-    clearBg();
+    clearCanvas(window.bCnvs);
     drawGrid(window.interLines);
     window.bgnd = "rows";
-    refresh();
-    window.pad.drwScope.activate();
+    // refresh();
   });
 
  $("#none").on("click", function(){
-    clearBg();
+    clearCanvas(window.bCnvs);
     window.bgnd = "none";
-    refresh();
-    window.pad.drwScope.activate();
+    // refresh();
   });
  
-  // ===================== Undo / Redo ========================
+  /*// ===================== Undo / Redo ========================
   $("#undo").on("click", function(){
   if((!window.iWasDrawing && window.thisPage().restored.length > 0) || (window.iWasDrawing && window.thisPage().drawed.length === 0 && window.thisPage().restored.length > 0))
   {
@@ -215,16 +192,16 @@ $(window).ready(function(){
   $("#uploadPdf").on("click",function(){
     uploadPdf();
   });
-  // ============================================================================================
+  // ============================================================================================*/
    //disable previous page button at the start-up
   document.getElementById("rwd").disabled = true;
 //   $("#rwd").click(false);
   $("#rwd").addClass("disabled");
-  //disable undo & redo button at startup
+ /* //disable undo & redo button at startup
   document.getElementById("undo").disabled = true;
 //   $("#undo").click(false);
   $("#undo").addClass("disabled");
   document.getElementById("redo").disabled = true;
 //   $("#redo").click(false);
-  $("#redo").addClass("disabled");
+  $("#redo").addClass("disabled");*/
 });
