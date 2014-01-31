@@ -113,11 +113,19 @@ function loadCanvas(jsonArray,dstArray,ctx){
   for(var i=0;i < jsonArray.length ; i++)
   {
     var path_i_str = jsonArray[i];
-    var p = JSON.parse(path_i_str); //Object
+    var obj = JSON.parse(path_i_str); //Object
+    // casting the generic object
+    var path = new Path({
+      strokeColor: obj.strokeColor,
+      strokeWidth: obj.strokeWidth,
+      blendMode: obj.blendMode,
+      selected: obj.selected
+    });
+    path.points = obj.points.slice(); 
     //drawing path
-    drawPath(p,ctx);
+    drawPath(path,ctx);
     //saving it into memory
-    dstArray.push(p);
+    dstArray.push(path);
   }
 }
 
@@ -165,9 +173,9 @@ function isIn(path,rectangle){
   //ricerca incerta di un punto del path contenuto nel rettangolo
   var j = 0;
   var found = false;
-  while(j < path.segments.length && !found)
+  while(j < path.points.length && !found)
   {
-    if(rectangle.contains(path.segments[j].point))
+    if(rectangle.contains(path.points[j]))
       found = true;
     j++;
   }

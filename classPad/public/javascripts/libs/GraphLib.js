@@ -20,10 +20,37 @@ function Path(props){
 	this.strokeColor = props.strokeColor; //String
 	this.strokeWidth = props.strokeWidth; //String
 	this.blendMode = props.blendMode; 	 //String
+	this.selected = props.selected || false;
 }
 Path.prototype.add = function(point){
 	this.points.push(point);
 }
+Path.prototype.contains = function(point){
+
+	var i = 0;
+	var found = false;
+
+	while(this.points[i] && this.points[i+1] && !found)
+	{
+		//si tratta di determinare se il punto appartiene o meno alla retta passante per due punti consecutivi
+		function testPointContained(p1,p2,pTest){
+			if((p2.y - p1.y)/(p2.x - p1.x)*(pTest.x - p1.x) + p1.y - pTest.y == 0)
+				return true;
+			else
+				return false;
+		}
+
+		if(testPointContained(this.points[i],this.points[i+1],point))
+			found = true;
+		i++;
+	}
+	return found;
+}
+Path.prototype.move = function(deltaX,deltaY){
+	for(var i=0; i < this.points.length; i++)
+		this.points[i] = new Point(this.points[i].x + deltaX,this.points[i].y + deltaY);
+}
+
 
 function Point(x,y){
 	this.x = x;
@@ -38,5 +65,44 @@ function PDF(){
 }
 
 function Group(){
-	this.elements = new Array(); //array of Paths
+	this.children = new Array(); //array of Paths
+}
+Group.prototype.hasChildren = function(){
+	if(this.children.length > 0)
+		return true;
+	else
+		return false;
+}
+Group.prototype.addChild = function(path){
+	this.children.push(path);
+}
+Group.prototype.hitTest = function(point){
+  	var i = 0;
+  	var found = false;
+
+  	while(this.children[i] && !found)
+  	{
+		found = this.children[i].contains(point); 
+		i++;
+  	}
+  	return found;  
+}
+Group.prototype.translate = function(delta){
+	for(var i = 0; i < this.children.length; i++)
+		this.children[i].move(delta.x,delta.y);
+}
+
+
+function Rectangle(props){
+	this.x = props.x;
+	this.y = props.y;
+	this.width = props.width;
+	this.height = props.height;
+}
+Rectangle.prototype.contains = function(point){
+	var x = point.x,
+		y = point.y;
+	return x >= this.x && y >= this.y
+		&& x <= this.x + this.width
+		&& y <= this.y + this.height;
 }
