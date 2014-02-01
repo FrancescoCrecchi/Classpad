@@ -119,7 +119,7 @@ function loadCanvas(jsonArray,dstArray,ctx){
       strokeColor: obj.strokeColor,
       strokeWidth: obj.strokeWidth,
       blendMode: obj.blendMode,
-      selected: obj.selected
+      //selected: obj.selected
     });
     path.points = obj.points.slice(); 
     //drawing path
@@ -154,8 +154,9 @@ function bind2(tool){
     if(window.activeTool === window.selector && typeof window.selector.selectGroup != "undefined" && window.selector.selectGroup.hasChildren())
     {
       //deselect them
-      for(var i = 0; i < window.selector.selectGroup.children.length; i++)
-       window.selector.selectGroup.children[i].selected = false; 
+      var l = window.selector.selectGroup.children.length;
+      for(var i = 0; i < l; i++)
+        window.selector.selectGroup.children.pop(); 
    }
  }
  else

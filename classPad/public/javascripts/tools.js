@@ -92,8 +92,12 @@ function Selector(){
 		//deselect eventual paths selected
 		if(typeof mythis.selectGroup != "undefined" && mythis.selectGroup.children.length > 0)
 		{
-	  		for(var i = 0; i < mythis.selectGroup.children.length; i++)
-	    		mythis.selectGroup.children[i].selected = false;
+	  		/*for(var i = 0; i < mythis.selectGroup.children.length; i++)
+	    		mythis.selectGroup.children[i].selected = false;*/
+	    	//deselect them
+			var l = window.selector.selectGroup.children.length;
+			for(var i = 0; i < l; i++)
+				window.selector.selectGroup.children.pop(); 
 		}
 	
 		mythis.selectGroup = new Group();
@@ -135,9 +139,10 @@ function Selector(){
 	  	console.log("DEVO TRANSLARE DI:" + dlt);
 	  	mythis.selectGroup.translate(dlt);
 	  	dCtx.setLineDash([]);
-		//i have to remove the group's paths form the PgArray
-		
-
+		//updating the thisPage().PgArray
+		for(var i = 0; i < groupRef.length; i++)
+	 		window.thisPage().PgArray[groupRef[i]] = mythis.selectGroup.children[i].toString(); //hope that works!
+	 	clearCanvas(window.dCnvs);
 		loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
       }
     }
@@ -152,7 +157,7 @@ function Selector(){
 	  		var thisPath = window.thisPage().drawed[i];
 	  		if(isIn(thisPath,mythis.rectangle))
 	 		{
-	    		thisPath.selected = true;
+	    		//thisPath.selected = true;
 	    		//Adding path to the group
 	    		mythis.selectGroup.addChild(thisPath);
 	  		}
@@ -163,7 +168,7 @@ function Selector(){
 	  		var thisPath = window.thisPage().loaded[i];
 	  		if(isIn(thisPath,mythis.rectangle) && thisPath.blendMode != "destination-out")
 	 		{
-	    		thisPath.selected = true;
+	    		//thisPath.selected = true;
 	    		//Adding path to the group
 	    		mythis.selectGroup.addChild(thisPath);
 	 		 }
@@ -174,12 +179,14 @@ function Selector(){
       }
       else if(dragging)
       {
-		//updating the thisPage().PgArray
-		for(var i = 0; i < groupRef.length; i++)
-	 		window.thisPage().PgArray[groupRef[i]] = mythis.selectGroup.children[i].toString(); //hope that works!
 		//deselect
-		for(var i = 0; i < mythis.selectGroup.children.length; i++)
-	  		mythis.selectGroup.children[i].selected = false;
+		//for(var i = 0; i < mythis.selectGroup.children.length; i++)
+	  	//	mythis.selectGroup.children[i].selected = false;
+
+	  	//deselect them
+     	var l = window.selector.selectGroup.children.length;
+      	for(var i = 0; i < l; i++)
+        	window.selector.selectGroup.children.pop(); 
 	
 		//empting the groupref array
 		var len = groupRef.length;

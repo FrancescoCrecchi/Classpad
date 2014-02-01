@@ -20,7 +20,7 @@ function Path(props){
 	this.strokeColor = props.strokeColor; //String
 	this.strokeWidth = props.strokeWidth; //String
 	this.blendMode = props.blendMode; 	 //String
-	this.selected = props.selected || false;
+	//this.selected = props.selected || false;
 }
 Path.prototype.add = function(point){
 	this.points.push(point);
@@ -40,7 +40,8 @@ Path.prototype.contains = function(point){
 				return false;
 		}
 
-		if(testPointContained(this.points[i],this.points[i+1],point))
+		//check the stroked point so i have to check even more other two points!
+		if(testPointContained(this.points[i],this.points[i+1],point) || testPointContained(this.points[i],this.points[i+1],new Point(point.x + this.strokeWidth,point.y + this.strokeWidth)) || testPointContained(this.points[i],this.points[i+1], new Point(point.x - this.strokeWidth,point.y - this.strokeWidth)))
 			found = true;
 		i++;
 	}
