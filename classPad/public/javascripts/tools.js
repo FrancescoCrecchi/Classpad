@@ -17,27 +17,29 @@ function Pen(sColor,sWidth){
     }
     
     this.onMouseDrag = function(point){
-      if(pressed){
-				var nP = new Point(point.x,point.y);
-				//var seg = window.thisPage().drawed.last().segments;
-				//if(seg.length == 0 || (seg.last() && seg.last().point.getDistance(nP) > 0.5))
-					window.thisPage().drawed.last().add(nP);
-				// TEST HACK TO MAKE IT REDRAW 30t/sec
-				window.pad.drwScope.view._handlingFrame = true; //HACK TO MAKE DRAW GOING SMOOTH
-				window.toRedraw = true;
-			}
+      with(paper){
+	if(pressed){
+		      var nP = new Point(point.x,point.y);
+		      window.thisPage().drawed.last().add(nP);
+		      //drawSegments(paper.view._context,window.thisPage().drawed.last());
+		      window.pad.bgdScope.view._handlingFrame = true;   //HACK TO MAKE DRAW GOING SMOOTH
+		      window.pad.rcvScope.view._handlingFrame = true;   //HACK TO MAKE DRAW GOING SMOOTH
+		      window.pad.drwScope.view._handlingFrame = true;   //HACK TO MAKE DRAW GOING SMOOTH
+		      window.toRedraw = true;
+		    }
+      }
     }
     
     this.onMouseUp = function(){
       window.thisPage().drawed.last().simplify();
-      paper.view.draw();
+      //paper.view.draw();
       //undo/redo variabile
       window.iWasDrawing = true;
       if(window.thisPage().drawed.length > 0)
       {
-				document.getElementById("undo").disabled = false;
-				if($("#undo").hasClass("disabled"))
-					$("#undo").removeClass("disabled");
+	document.getElementById("undo").disabled = false;
+	if($("#undo").hasClass("disabled"))
+		$("#undo").removeClass("disabled");
       }
       //Save the page content
       window.thisPage().PgArray.push(window.thisPage().drawed.last().toString()); //toString metod defined in helpers

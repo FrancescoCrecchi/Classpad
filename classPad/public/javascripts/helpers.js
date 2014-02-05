@@ -246,15 +246,15 @@ function calculateDelta(newPoint,startPoint){
 
 // refesh the 3 layers
 function refresh(){
-  window.pad.bgdScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
-  window.pad.rcvScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
-  window.pad.drwScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
-
-  window.pad.bgdScope.view.draw();
-  window.pad.rcvScope.view.draw();
-  window.pad.drwScope.view.draw();
-	
-	window.toRedraw = false;
+   window.pad.bgdScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
+   window.pad.rcvScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
+   window.pad.drwScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
+ 
+   window.pad.bgdScope.view.draw();
+   window.pad.rcvScope.view.draw();
+   window.pad.drwScope.view.draw();
+ 	
+   window.toRedraw = false;
 }
 
 //we have to scale all of 3 layers canvas!
