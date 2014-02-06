@@ -15,7 +15,6 @@ html(lang='en')
     link(href='/stylesheets/notepad.css', media='screen', rel='stylesheet', type='text/css')
     
     script(src='/socket.io/socket.io.js')
-    
     script(src='/javascripts/libs/json2.js')
     script(src='/javascripts/libs/jquery-2.0.3.js')
     script(src='/javascripts/libs/GestIT.js')
@@ -40,6 +39,9 @@ html(lang='en')
       var eraser = new Pen("black",20,"destination-out"); //init
       var selector = new Selector(); //init
       var activeTool;
+      //View
+      var view; //init when canvas is loaded
+      var translatePos; //half canvas point
       
       //commodity variables
       var td1,mdCb;
@@ -65,7 +67,7 @@ html(lang='en')
       //when all DOM is ready
       document.onready = function(){
         lazyInit();
-        //transMonitor();
+        transMonitor();
         initCanvasElements();
 
         document.addEventListener('touchmove',stopScrolling,false);

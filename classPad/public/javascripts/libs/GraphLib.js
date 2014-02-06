@@ -14,7 +14,7 @@ Node.prototype.addChild = function(o){ // i just need insertions
 		this.right = o;
 }*/
 
-// Objs
+// Path
 function Path(props){
 	this.points = new Array();
 	this.strokeColor = props.strokeColor; //String
@@ -52,19 +52,23 @@ Path.prototype.move = function(deltaX,deltaY){
 		this.points[i] = new Point(this.points[i].x + deltaX,this.points[i].y + deltaY);
 }
 
-
+//Point
 function Point(x,y){
 	this.x = x;
 	this.y = y;
 }
+Point.prototype.getDistance = function(p){
+	return Math.sqrt(((p.x - this.x)*(p.x - this.x)) + ((p.y - this.y)*(p.y - this.y)));
+}
 
-
+//PDF
 function PDF(){
 	this.url = null; //String
 	this.lenght = null; //Integer
 	this.numPage = null; //Integer
 }
 
+// Group
 function Group(){
 	this.children = new Array(); //array of Paths
 }
@@ -93,7 +97,7 @@ Group.prototype.translate = function(delta){
 		this.children[i].move(delta.x,delta.y);
 }
 
-
+// Rectangle
 function Rectangle(props){
 	this.x = props.x;
 	this.y = props.y;
@@ -106,4 +110,23 @@ Rectangle.prototype.contains = function(point){
 	return x >= this.x && y >= this.y
 		&& x <= this.x + this.width
 		&& y <= this.y + this.height;
+}
+
+//View
+function View(props){
+	this.canvas = props.canvas;
+	this.bounds = props.bounds, // Rectangle
+	this.zoom = props.zoomFactor || 1, //Number
+	this.center = props.center,
+	this.viewSize = { //init with the same dimensions of the canvas
+		width: this.bounds.width,
+		height: this.bounds.height
+	}
+}
+View.prototype.setCenter = function(cPoint){	
+	this.center = cPoint;
+	var ctx = this.canvas.getContext('2d');
+	ctx.save();
+	ctx.translate(cPoint.x - this.bounds.width/2,cPoint.y - this.bounds.height/2);
+	ctx.restore();
 }

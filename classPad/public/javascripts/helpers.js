@@ -217,28 +217,30 @@ function returnPagePoint(callback){
 }
 
 //gets an event and a callback, then register the callback with the parsed point
-function returnViewPoint(callback){
+/*function returnViewPoint(callback){
   return returnPagePoint(function(point) {
-    point.x = paper.view.bounds.x + point.x * paper.view.bounds.width / paper.view.viewSize.width;
-    point.y = paper.view.bounds.y + point.y * paper.view.bounds.height / paper.view.viewSize.height;
+    point.x = point.x / window.view.zoom;
+    point.y = point.y / window.view.zoom;
     callback(point); //calling the callback
   });
-}
+}*/
 //calculate delta
 function calculateDelta(newPoint,startPoint){
   return {x: newPoint.x - startPoint.x, y: newPoint.y - startPoint.y};
 }
 
-/*// refesh the 3 layers
+// refesh the 3 layers
 function refresh(){
-  //window.pad.bgdScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
-  //window.pad.rcvScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
-  //window.pad.drwScope.view._handlingFrame = false; //HACK TO MAKE DRAW GOING SMOOTH
-
-	$("#paper")[0].getContext("2d").stroke();
-  $("#background")[0].getContext("2d").stroke()
+  console.log("**************************************************");
+  console.log("REFRESH() FUNCTION CALLED!");
+  console.log("**************************************************");
+	clearCanvas(window.dCnvs);
+  restoreCleanPage();
+  loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
 	window.toRedraw = false;
-}*/
+  //restore the recently state of the canvas  ||<--]
+  window.dCtx.restore();
+}
 
 //we have to scale all of 3 layers canvas!
 function zoomAndPan(sF,sP){
@@ -248,28 +250,24 @@ function zoomAndPan(sF,sP){
 
 //saving transform point and factor to lazy redraw
 function saveTransform(sF,sP){
-  window.pad.bgdScope.view._handlingFrame = true;   //HACK TO MAKE DRAW GOING SMOOTH
-  window.pad.rcvScope.view._handlingFrame = true;   //HACK TO MAKE DRAW GOING SMOOTH
-  window.pad.drwScope.view._handlingFrame = true;   //HACK TO MAKE DRAW GOING SMOOTH
-
-  //bgnd scope
+  /*//bgnd scope
   transformView(window.pad.bgdScope.view,window.scaleFactor,window.scalePoint);
   //middle one
-  transformView(window.pad.rcvScope.view,window.scaleFactor,window.scalePoint);
+  transformView(window.pad.rcvScope.view,window.scaleFactor,window.scalePoint);*/
   //top one
-  transformView(window.pad.drwScope.view,window.scaleFactor,window.scalePoint);
+  transformView(window.view,window.scaleFactor,window.scalePoint);
   window.toRedraw = true;
 }
 
 //update the view
 function transformView(view,sF,sP){
-  view.setZoom(view.zoom * sF);
-  view.setCenter(new paper.Point(view.center.x + sP.x, view.center.y + sP.y));
-  //check if a pdf has been loaded to the "forPdf" canvas
-//   if(window.pdfLoaded )
-//   {
-
-//   }
+  var ctx = view.canvas.getContext("2d");
+  // save the states of the canvas: ||-->]
+  ctx.save(); 
+  view.zoom *= sF;
+  ctx.scale(view.zoom, view.zoom);
+  ctx.restore();
+  //view.setCenter(new Point(view.center.x + sP.x, view.center.y + sP.y));
 }
 
 //transform!
@@ -277,7 +275,7 @@ function TransformAll(){
   //   Redrawing the background
   if(window.bgnd != "none")
   {
-    clearBg();
+    clearCanvas(bCnvs);
     if(window.bgnd == "grid")
       drawGrid(window.interLines,window.interLines);
     else
@@ -479,19 +477,34 @@ function setCanvasDims(id){
 
 //Init canvases funcion
 function initCanvasElements(){
+
   //canvas elements
   window.bCnvs = $("#background")[0];
   window.mCnvs = $("#fromMaster")[0];
   window.pdfCnvs = $("#forPdf")[0];
   window.dCnvs = $("#paper")[0];
+  
   // contexts
   window.bCtx = window.bCnvs.getContext("2d");
   window.mCtx = window.mCnvs.getContext("2d");
   window.pdfCtx = window.pdfCnvs.getContext("2d");
   window.dCtx = window.dCnvs.getContext("2d");
+  
   //initializing dimensions
   setCanvasDims("background");
   setCanvasDims("fromMaster");
   setCanvasDims("forPdf");
   setCanvasDims("paper");
+
+  //init view
+  window.view = new View({
+    canvas: window.dCnvs,
+    bounds: new Rectangle({ //ACHTUNG! Probably we should use a view per canvas so 3/4 views at all.
+                  x: dCnvs.clientLeft,
+                  y: dCnvs.clientTop,
+                  width: dCnvs.clientWidth,
+                  height: dCnvs.clientHeight
+    }),
+    center: new Point(window.dCnvs.clientLeft + window.dCnvs.clientWidth/2, window.dCnvs.clientTop + window.dCnvs.clientHeight/2)
+  });
 }
