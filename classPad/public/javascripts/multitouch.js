@@ -85,7 +85,10 @@ function multitouchInit() {
    //calculating the scale factor
    window.scaleFactor = (o.e1).getDistance(o.e2) / (o.s1).getDistance(o.s2);
    //now we have to scale(zoom) the group by that value from a point that is in the middle of the ideal path from s1 to s2
-   window.scalePoint = new Point(((o.s1.x - o.e1.x) + (o.s2.x - o.e2.x))/(2*window.view.zoom),((o.s1.y - o.e1.y) + (o.s2.y - o.e2.y))/(2*window.view.zoom));
+   /*window.scalePoint = new Point(((o.s1.x - o.e1.x) + (o.s2.x - o.e2.x))/(2*window.view.zoom),((o.s1.y - o.e1.y) + (o.s2.y - o.e2.y))/(2*window.view.zoom));*/
+   var mp1 = new Point((o.s1.x + o.e1.x)/2,(o.s1.y + o.e1.y)/2*window.view.zoom);
+   var mp2 = new Point((o.s2.x + o.e2.x)/2,(o.s2.y + o.e2.y)/2*window.view.zoom);
+   window.scalePoint = new Point((mp1.x + mp2.x)/2,(mp1.y + mp2.y)/2);
    zoomAndPan(window.scaleFactor, window.scalePoint);
   }
 }

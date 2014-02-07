@@ -20,6 +20,7 @@ function Path(props){
 	this.strokeColor = props.strokeColor; //String
 	this.strokeWidth = props.strokeWidth; //String
 	this.blendMode = props.blendMode; 	 //String
+	this.zoomFactor = props.zoomFactor;
 	//this.selected = props.selected || false;
 }
 Path.prototype.add = function(point){
@@ -122,11 +123,4 @@ function View(props){
 		width: this.bounds.width,
 		height: this.bounds.height
 	}
-}
-View.prototype.setCenter = function(cPoint){	
-	this.center = cPoint;
-	var ctx = this.canvas.getContext('2d');
-	ctx.save();
-	ctx.translate(cPoint.x - this.bounds.width/2,cPoint.y - this.bounds.height/2);
-	ctx.restore();
 }

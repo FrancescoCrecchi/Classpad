@@ -11,7 +11,8 @@ function Pen(sColor,sWidth,blendMode){
 	  window.thisPage().drawed.push(new Path({
 	  	strokeColor: mythis.sC,
 	  	strokeWidth: mythis.sW, ///window.pad.drwScope.view.zoom,
-	  	blendMode: mythis.bM
+	  	blendMode: mythis.bM,
+	  	zoomFactor: window.view.zoom,
 	  }));
 	  // Canvas
 	  window.dCtx.beginPath(); //new Path()
@@ -19,7 +20,7 @@ function Pen(sColor,sWidth,blendMode){
 	  window.dCtx.strokeStyle = mythis.sC;
 	  window.dCtx.lineWidth = mythis.sW;
 	  window.dCtx.globalCompositeOperation = mythis.bM;
-	  window.dCtx.moveTo(point.x/window.view.zoom, point.y/window.view.zoom);
+	  window.dCtx.moveTo(point.x, point.y);
 	  // setting pressed to true
 	  pressed = true;
 	}
@@ -30,7 +31,7 @@ function Pen(sColor,sWidth,blendMode){
 		//GraphLib
 		window.thisPage().drawed.last().add(point);
 		//Canvas elements
-		dCtx.lineTo(point.x/window.view.zoom, point.y/window.view.zoom);
+		dCtx.lineTo(point.x, point.y);
 		dCtx.stroke();
 		// say to not redraw!
 		//window.toRedraw = false;
