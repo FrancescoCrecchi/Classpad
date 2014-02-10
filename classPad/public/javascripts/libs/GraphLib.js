@@ -20,7 +20,7 @@ function Path(props){
 	this.strokeColor = props.strokeColor; //String
 	this.strokeWidth = props.strokeWidth; //String
 	this.blendMode = props.blendMode; 	 //String
-	this.zoomFactor = props.zoomFactor;
+	this.scaleFactor = props.scaleFactor;
 	//this.selected = props.selected || false;
 }
 Path.prototype.add = function(point){

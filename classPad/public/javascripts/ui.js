@@ -100,7 +100,7 @@ $(window).ready(function(){
     // refresh();
   });
  
-  /*// ===================== Undo / Redo ========================
+/*  // ===================== Undo / Redo ========================
   $("#undo").on("click", function(){
   if((!window.iWasDrawing && window.thisPage().restored.length > 0) || (window.iWasDrawing && window.thisPage().drawed.length === 0 && window.thisPage().restored.length > 0))
   {
@@ -184,15 +184,15 @@ $(window).ready(function(){
   // ========================================= FIT ZOOM ========================================
   $("#fitzoom").on("click", function(){
     fitzoom();
-  });
+  });*/
   // ========================================= PDF =============================================
   $("#saveAsPdf").on("click",function(){
     pdfRequester();
   });
-  $("#uploadPdf").on("click",function(){
+  /*$("#uploadPdf").on("click",function(){
     uploadPdf();
-  });
-  // ============================================================================================*/
+  });*/
+  // ============================================================================================
    //disable previous page button at the start-up
   document.getElementById("rwd").disabled = true;
 //   $("#rwd").click(false);

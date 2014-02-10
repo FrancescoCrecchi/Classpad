@@ -1,5 +1,3 @@
-var oldZoom = 1;
-
 //Adding methods to Array object
 Array.prototype.last = function(){
   return this[this.length - 1];
@@ -24,13 +22,13 @@ function drawPath(path,ctx) {
     ctx.globalCompositeOperation = path.blendMode;
     //drawing
     ctx.moveTo(
-                pts[0].x/path.zoomFactor,
-                pts[0].y/path.zoomFactor);
+                pts[0].x / path.scaleFactor /*(window.view.zoom / path.scaleFactor)*/,
+                pts[0].y / path.scaleFactor/** (window.view.zoom / path.scaleFactor)*/);
     for(var i = 0; i < pts.length; i++)
     {
       ctx.lineTo(
-                pts[i].x/path.zoomFactor,
-                pts[i].y/path.zoomFactor);
+                pts[i].x / path.scaleFactor/** (window.view.zoom / path.scaleFactor)*/,
+                pts[i].y / path.scaleFactor/** (window.view.zoom / path.scaleFactor)*/);
     }
     ctx.stroke();
     ctx.closePath();
@@ -125,7 +123,7 @@ function loadCanvas(jsonArray,dstArray,ctx){
       strokeColor: obj.strokeColor,
       strokeWidth: obj.strokeWidth,
       blendMode: obj.blendMode,
-      zoomFactor: obj.zoomFactor
+      scaleFactor: obj.scaleFactor
     });
     path.points = obj.points.slice(); 
     //drawing path
@@ -257,7 +255,7 @@ function zoomAndPan(sF,sP){
 //saving transform point and factor to lazy redraw
 function saveTransform(sF,sP){
   window.view.zoom *= sF;   // set zoom
-  window.view.center = sP;  // set center
+  window.view.center = new Point(window.view.center.x + sP.x,window.view.center.y + sP.y) ;  // set center
   window.toRedraw = true;
 }
 
@@ -275,14 +273,14 @@ function transformView(view,sF,sP){
   //scaling..
   ctx.translate(view.center.x, view.center.y);
   ctx.scale(window.view.zoom, window.view.zoom);
-  ctx.translate(-view.center.x * window.view.zoom, -view.center.y * view.zoom); //??? al limite senza moltiplicazione
+  ctx.translate(-view.center.x, -view.center.y); //??? al limite senza moltiplicazione
 
   //drawing
   loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
   
   // restore the states of the canvas: <--||]
   ctx.restore();
-  
+
   //just redrawed!
   window.toRedraw = false;
   //view.setCenter(new Point(view.center.x + sP.x, view.center.y + sP.y));
@@ -343,7 +341,7 @@ function fitzoom(){
   saveTransform();
 }
 
-//function to ask node server to generate pdf
+/*//function to ask node server to generate pdf
 function paths2send(source_array){
   var retObj = [];
   for(var i = 0; i < source_array.length; i++)
@@ -358,10 +356,10 @@ function paths2send(source_array){
     }
   }
   return retObj;
-}
+}*/
 
 function pdfRequester(){
-  var pad = {"pages":[]};
+  var pad = {"pages": []};
   for(var i = 0; i < window.pad.Pages.length; i++)
   {
     var this_page = window.pad.Pages[i];
@@ -388,32 +386,33 @@ function pdfRequester(){
   document.body.appendChild(form);
   form.submit();
   document.body.removeChild(form);
-  window.pad.drwScope.activate();
 }
 
 //Create a temporary canvas with the content of the current page
 function exportTempCanvas(page){
-  //attaching paper to the new canvas
-  var tmpScope = new paper.PaperScope();
-  tmpScope.setup(canvas);
-  //creating group
-  var gruppo = new tmpScope.Group();
+  /*//creating group
+  var gruppo = Group();*/
   //create an HIDDEN html temporary canvas to render the content of the page
-  var canvas = document.createElement('canvas'); //visibility = 'hidden' ??????????????????
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d');
   canvas.setAttribute('id','tmpCanvas');
   canvas.setAttribute('style','visibility: hidden;');
   document.body.appendChild(canvas);
-  //now render the content of the page to the canvas using paper.js
-  for(var i=0; i < page.received.length; i++) //received paths
-    gruppo.addChild(tmpScope.Path.importJSON(page.received[i])); //to Object
-  for(var j=0; j < page.PgArray.length; j++) //received paths
-   gruppo.addChild(tmpScope.Path.importJSON(page.PgArray[j])); //to Object
-  //now that i have group i should fit the view to landscape A4 page format
-  var A4Layout = new tmpScope.Rectangle(0,0,8.27 * 72,11.69 * 72); //in inch 8.27 × 11.69 at 72dpi	
-  gruppo.fitBounds(A4Layout);
-  var res = paths2send(gruppo.children);
+
+  //now render the content of the page to the canvas using the loadCanvas function
+  loadCanvas(page.received,page.ofMaster,ctx);
+  loadCanvas(page.PgArray,page.drawed,ctx);
+
+  /*//now that i have group i should fit the view to landscape A4 page format
+  var A4Layout = new Rectangle(0,0,8.27 * 72,11.69 * 72); //in inch 8.27 × 11.69 at 72dpi	
+  // gruppo.fitBounds(A4Layout);*/
+
+  /*var res = paths2send(gruppo.children);
   //Deleting groups paths
-  gruppo.removeChildren();
+  gruppo.removeChildren();*/
+
+  var res = page.ofMaster.concat(page.drawed);
+
   //remove temporary canvas
   document.body.removeChild(canvas);
 

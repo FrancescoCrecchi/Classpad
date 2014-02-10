@@ -151,22 +151,33 @@ routes.exportAsPdf = function(req,res){
     for(var i = 0; i < pad.pages.length; i++)
     {
       if(i > 0)
-	doc.addPage();
-	//PgArray (JSON SVG strings)
-	for(var j = 0; j < pad.pages[i].length; j++)
-	{
-	  var pg = pad.pages[i][j];
-	  console.log(pg);
-	  //the graphics primitive exported in SVG format from Paper.js
-	  if(pg != null && pg.d != null) //@@@@@@@@@@@@@@ TODO:Remove paper from here! @@@@@@@@@@@@@@@@@@@@ 
-	  {
-	    doc.strokeColor(pg["mix-blend-mode"] == 'destination-out' ? 'white' : pg.stroke)
-	      .lineWidth(pg["stroke-width"])
-	      .path(pg.d)
-	      .stroke();
-	  }
-	 }
-      }
+        doc.addPage();
+      //for each graphic primitives in the page
+    	for(var j = 0; j < pad.pages[i].length; j++)
+    	{
+    	  var pg = pad.pages[i][j];
+    	  var toClass = {}.toString;
+        //console.log(toClass.call(pg));
+        //console.log(pg.points);
+    	  /*//the graphics primitive exported in SVG format from Paper.js
+    	  if(pg != null && pg.d != null) //@@@@@@@@@@@@@@ TODO:Remove paper from here! @@@@@@@@@@@@@@@@@@@@ 
+    	  {
+    	    doc.strokeColor(pg["mix-blend-mode"] == 'destination-out' ? 'white' : pg.stroke)
+    	      .lineWidth(pg["stroke-width"])
+    	      .path(pg.d)
+    	      .stroke();
+    	  }*/
+
+        doc.strokeColor(pg.blendMode == 'destination-out' ? 'white' : pg.strokeColor);
+        doc.lineWidth(pg.strokeWidth);
+
+        var pts = pg.points;
+        doc.moveTo(pts[0].x,pts[0].y);
+        for(var z = 1; z < pts.length; z++)
+          doc.lineTo(pts[z].x,pts[z].y);
+        doc.stroke();
+	     }
+    }
     res.setHeader('Content-Type', 'application/pdf');
     
     var preamble = "";

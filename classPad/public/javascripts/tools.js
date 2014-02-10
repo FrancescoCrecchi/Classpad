@@ -12,7 +12,7 @@ function Pen(sColor,sWidth,blendMode){
 	  	strokeColor: mythis.sC,
 	  	strokeWidth: mythis.sW, ///window.pad.drwScope.view.zoom,
 	  	blendMode: mythis.bM,
-	  	zoomFactor: window.view.zoom,
+	  	scaleFactor: window.view.zoom
 	  }));
 	  // Canvas
 	  window.dCtx.beginPath(); //new Path()
