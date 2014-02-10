@@ -48,33 +48,33 @@ function drawGrid(offsetY,offsetX){
   {
     //vertical lines
     for(var i=mid_pixel_coord; i < bgCanvas.width; i+=offsetX)
-      drawPath({
+      drawPath(new Path({
         points: [new Point(i, bgCanvas.clientTop), new Point(i,bgCanvas.clientHeight)],
         strokeColor: 'gray',
         strokeWidth: 1
-      },bCtx);
+      }),bCtx);
     for(var i=mid_pixel_coord-offsetX; i > bgCanvas.clientLeft; i-=offsetX)
-      drawPath({
+      drawPath(new Path({
         points: [new Point(i,bgCanvas.clientTop), new Point(i,bgCanvas.clientHeight)],
         strokeColor: 'gray',
         strokeWidth: 1
-      },bCtx);
+      }),bCtx);
  }
  else
     offsetY *=1.5; //rows only
     //horizontal lines
     for(var i=mid_pixel_coord; i < bgCanvas.clientHeight; i+=offsetY)
-     drawPath({
+     drawPath(new Path({
         points: [new Point(bgCanvas.clientLeft,i), new Point(bgCanvas.clientWidth,i)],
         strokeColor: 'gray',
         strokeWidth: 1
-      },bCtx);
+      }),bCtx);
    for(var i=mid_pixel_coord-offsetY; i > bgCanvas.clientTop; i-=offsetY)
-      drawPath({
+      drawPath(new Path({
         points: [new Point(bgCanvas.clientLeft,i), new Point(bgCanvas.clientWidth,i)],
         strokeColor: 'gray',
         strokeWidth: 1
-      },bCtx);
+      }),bCtx);
  }
 
 //clear/load canvas (background/paper/fromMaster)

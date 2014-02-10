@@ -147,6 +147,7 @@ routes.exportAsPdf = function(req,res){
 //     doc.info['Author'] = req.user.username;
     //in the req.body i expect to find the page array of the pad so for every page in the pad
     var pad = JSON.parse(req.body.pad);
+
     //for each page in pad
     for(var i = 0; i < pad.pages.length; i++)
     {
@@ -156,30 +157,21 @@ routes.exportAsPdf = function(req,res){
     	for(var j = 0; j < pad.pages[i].length; j++)
     	{
     	  var pg = pad.pages[i][j];
-    	  var toClass = {}.toString;
-        //console.log(toClass.call(pg));
-        //console.log(pg.points);
-    	  /*//the graphics primitive exported in SVG format from Paper.js
-    	  if(pg != null && pg.d != null) //@@@@@@@@@@@@@@ TODO:Remove paper from here! @@@@@@@@@@@@@@@@@@@@ 
-    	  {
-    	    doc.strokeColor(pg["mix-blend-mode"] == 'destination-out' ? 'white' : pg.stroke)
-    	      .lineWidth(pg["stroke-width"])
-    	      .path(pg.d)
-    	      .stroke();
-    	  }*/
-
+        
         doc.strokeColor(pg.blendMode == 'destination-out' ? 'white' : pg.strokeColor);
         doc.lineWidth(pg.strokeWidth);
 
         var pts = pg.points;
+        if(pts.length > 0)
+        {
         doc.moveTo(pts[0].x,pts[0].y);
         for(var z = 1; z < pts.length; z++)
           doc.lineTo(pts[z].x,pts[z].y);
         doc.stroke();
-	     }
+	      }
+      }
     }
-    res.setHeader('Content-Type', 'application/pdf');
-    
+    res.setHeader('Content-Type', 'application/pdf'); 
     var preamble = "";
     if(req.user && req.user.username)
       preamble = req.body.classTitle +"_"+ req.user.username +"_"+ new Date().toJSON();

@@ -16,11 +16,11 @@ Node.prototype.addChild = function(o){ // i just need insertions
 
 // Path
 function Path(props){
-	this.points = new Array();
+	this.points = props.points || [];
 	this.strokeColor = props.strokeColor; //String
 	this.strokeWidth = props.strokeWidth; //String
-	this.blendMode = props.blendMode; 	 //String
-	this.scaleFactor = props.scaleFactor;
+	this.blendMode = props.blendMode || "source-over"; 	 //String
+	this.scaleFactor = props.scaleFactor || 1;
 	//this.selected = props.selected || false;
 }
 Path.prototype.add = function(point){
