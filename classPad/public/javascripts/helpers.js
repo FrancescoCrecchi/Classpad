@@ -22,13 +22,13 @@ function drawPath(path,ctx) {
     ctx.globalCompositeOperation = path.blendMode;
     //drawing
     ctx.moveTo(
-                pts[0].x / path.scaleFactor /*(window.view.zoom / path.scaleFactor)*/,
-                pts[0].y / path.scaleFactor/** (window.view.zoom / path.scaleFactor)*/);
+                pts[0].x / path.scaleFactor,
+                pts[0].y / path.scaleFactor);
     for(var i = 0; i < pts.length; i++)
     {
       ctx.lineTo(
-                pts[i].x / path.scaleFactor/** (window.view.zoom / path.scaleFactor)*/,
-                pts[i].y / path.scaleFactor/** (window.view.zoom / path.scaleFactor)*/);
+                pts[i].x / path.scaleFactor,
+                pts[i].y / path.scaleFactor);
     }
     ctx.stroke();
     ctx.closePath();
@@ -47,17 +47,19 @@ function drawGrid(offsetY,offsetX){
   if(typeof offsetX != "undefined")
   {
     //vertical lines
-    for(var i=mid_pixel_coord; i < bgCanvas.width; i+=offsetX)
+    for(var i=mid_pixel_coord; i < bgCanvas.clientWidth; i+=offsetX)
       drawPath(new Path({
         points: [new Point(i, bgCanvas.clientTop), new Point(i,bgCanvas.clientHeight)],
         strokeColor: 'gray',
-        strokeWidth: 1
+        strokeWidth: 1,
+        scaleFactor: window.view.zoom
       }),bCtx);
     for(var i=mid_pixel_coord-offsetX; i > bgCanvas.clientLeft; i-=offsetX)
       drawPath(new Path({
         points: [new Point(i,bgCanvas.clientTop), new Point(i,bgCanvas.clientHeight)],
         strokeColor: 'gray',
-        strokeWidth: 1
+        strokeWidth: 1,
+        scaleFactor: window.view.zoom
       }),bCtx);
  }
  else
@@ -67,19 +69,21 @@ function drawGrid(offsetY,offsetX){
      drawPath(new Path({
         points: [new Point(bgCanvas.clientLeft,i), new Point(bgCanvas.clientWidth,i)],
         strokeColor: 'gray',
-        strokeWidth: 1
+        strokeWidth: 1,
+        scaleFactor: window.view.zoom
       }),bCtx);
    for(var i=mid_pixel_coord-offsetY; i > bgCanvas.clientTop; i-=offsetY)
       drawPath(new Path({
         points: [new Point(bgCanvas.clientLeft,i), new Point(bgCanvas.clientWidth,i)],
         strokeColor: 'gray',
-        strokeWidth: 1
+        strokeWidth: 1,
+        scaleFactor: window.view.zoom
       }),bCtx);
  }
 
 //clear/load canvas (background/paper/fromMaster)
 function clearCanvas(cnvs){  
-  cnvs.getContext("2d").clearRect(0,0,cnvs.width,cnvs.height);
+  cnvs.getContext("2d").clearRect(0,0,cnvs.width/window.view.zoom,cnvs.height/window.view.zoom);
   //window.toRedraw = true;
 }
 
@@ -255,34 +259,49 @@ function zoomAndPan(sF,sP){
 //saving transform point and factor to lazy redraw
 function saveTransform(sF,sP){
   window.view.zoom *= sF;   // set zoom
+  console.log("window.scaleFactor AGGIORNATO A: ");
+  console.log(window.view.zoom);
   window.view.center = new Point(window.view.center.x + sP.x,window.view.center.y + sP.y) ;  // set center
-  window.toRedraw = true;
+  //window.toRedraw = true;
+  transformView(window.view,sF,sP);
 }
 
+//var finishTransform = true;
 //update the view
 function transformView(view,sF,sP){
+  //finishTransform = false;
   var ctx = view.canvas.getContext("2d");
   
   //make clean
+  /*clearCanvas(window.bCnvs);*/
   clearCanvas(view.canvas);
   restoreCleanPage();
 
   // save the states of the canvas: ||-->]
-  ctx.save(); 
+  //ctx.save(); 
 
   //scaling..
-  ctx.translate(view.center.x, view.center.y);
-  ctx.scale(window.view.zoom, window.view.zoom);
-  ctx.translate(-view.center.x, -view.center.y); //??? al limite senza moltiplicazione
+  //ctx.translate(view.center.x/window.view.zoom, view.center.y/window.view.zoom);
+  ctx.scale(sF, sF);
+  //ctx.translate(-view.center.x/window.view.zoom, -view.center.y/window.view.zoom); //??? al limite senza moltiplicazione
 
+  /*//   Redrawing the background
+  if(window.bgnd != "none")
+  {
+    if(window.bgnd == "grid")
+      drawGrid(window.interLines,window.interLines);
+    else
+      drawGrid(window.interLines);
+  }*/
   //drawing
   loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
   
   // restore the states of the canvas: <--||]
-  ctx.restore();
+  //ctx.restore();
 
   //just redrawed!
-  window.toRedraw = false;
+  //window.toRedraw = false;
+  //finishTransform = true;
   //view.setCenter(new Point(view.center.x + sP.x, view.center.y + sP.y));
 }
 
@@ -301,14 +320,14 @@ function TransformAll(){
 }*/
 
 //watchdog function to check toRedraw variable 
-function watchDogTransform(){
-  if(window.toRedraw != false)
+/*function watchDogTransform(){
+  if(window.toRedraw != false && finishTransform)
     transformView(window.view,window.scaleFactor,window.scalePoint);
 }
 
 function transMonitor(){
   setInterval(watchDogTransform,33.33); //execute the function 30 times in a second
-}
+}*/
 
 
 //function to fit the zoom to the view
