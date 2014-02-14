@@ -21,14 +21,10 @@ function drawPath(path,ctx) {
     ctx.lineWidth = path.strokeWidth;
     ctx.globalCompositeOperation = path.blendMode;
     //drawing
-    ctx.moveTo(
-                pts[0].x / path.scaleFactor,
-                pts[0].y / path.scaleFactor);
+    ctx.moveTo( pts[0].x, pts[0].y);
     for(var i = 0; i < pts.length; i++)
     {
-      ctx.lineTo(
-                pts[i].x / path.scaleFactor,
-                pts[i].y / path.scaleFactor);
+      ctx.lineTo( pts[i].x,pts[i].y);
     }
     ctx.stroke();
     ctx.closePath();
@@ -37,9 +33,10 @@ function drawPath(path,ctx) {
 
 function drawGrid(offsetY,offsetX){
   //var the_view = window.pad.bgdScope.view;
-  // var inv_zoom = 1.0 / the_view.zoom
+  var inv_zoom = 1.0 / window.view.zoom
+  var bnds = window.view.getPageBounds();
 
-  var mid_pixel_coord = 0.5; //* inv_zoom;
+  var mid_pixel_coord = 0.5 * inv_zoom;
 
   console.log("drawGrid");
 
@@ -47,43 +44,39 @@ function drawGrid(offsetY,offsetX){
   if(typeof offsetX != "undefined")
   {
     //vertical lines
-    for(var i=mid_pixel_coord; i < bgCanvas.clientWidth; i+=offsetX)
+    for(var i=mid_pixel_coord; i < bnds.width; i+=offsetX)
       drawPath(new Path({
-        points: [new Point(i, bgCanvas.clientTop), new Point(i,bgCanvas.clientHeight)],
+        points: [new Point(i, bnds.y), new Point(i,bnds.height)],
         strokeColor: 'gray',
-        strokeWidth: 1,
-        scaleFactor: window.view.zoom
+        strokeWidth: 1
       }),bCtx);
-    for(var i=mid_pixel_coord-offsetX; i > bgCanvas.clientLeft; i-=offsetX)
+    for(var i=mid_pixel_coord-offsetX; i > bnds.x; i-=offsetX)
       drawPath(new Path({
-        points: [new Point(i,bgCanvas.clientTop), new Point(i,bgCanvas.clientHeight)],
+        points: [new Point(i,bnds.y), new Point(i,bnds.height)],
         strokeColor: 'gray',
-        strokeWidth: 1,
-        scaleFactor: window.view.zoom
+        strokeWidth: 1
       }),bCtx);
  }
  else
     offsetY *=1.5; //rows only
     //horizontal lines
-    for(var i=mid_pixel_coord; i < bgCanvas.clientHeight; i+=offsetY)
+    for(var i=mid_pixel_coord; i < bnds.height; i+=offsetY)
      drawPath(new Path({
-        points: [new Point(bgCanvas.clientLeft,i), new Point(bgCanvas.clientWidth,i)],
+        points: [new Point(bnds.x,i), new Point(bnds.width,i)],
         strokeColor: 'gray',
-        strokeWidth: 1,
-        scaleFactor: window.view.zoom
+        strokeWidth: 1
       }),bCtx);
-   for(var i=mid_pixel_coord-offsetY; i > bgCanvas.clientTop; i-=offsetY)
+   for(var i=mid_pixel_coord-offsetY; i > bnds.y; i-=offsetY)
       drawPath(new Path({
-        points: [new Point(bgCanvas.clientLeft,i), new Point(bgCanvas.clientWidth,i)],
+        points: [new Point(bnds.x,i), new Point(bnds.width,i)],
         strokeColor: 'gray',
-        strokeWidth: 1,
-        scaleFactor: window.view.zoom
+        strokeWidth: 1
       }),bCtx);
  }
 
 //clear/load canvas (background/paper/fromMaster)
 function clearCanvas(cnvs){  
-  cnvs.getContext("2d").clearRect(0,0,cnvs.width/window.view.zoom,cnvs.height/window.view.zoom);
+  cnvs.getContext("2d").clearRect(0,0,cnvs.width,cnvs.height);
   //window.toRedraw = true;
 }
 
@@ -116,7 +109,6 @@ function restoreCleanPage(){
 
 
 function loadCanvas(jsonArray,dstArray,ctx){
-  console.log("load canvas: " + ctx.canvas);
   // load the content previously created
   for(var i=0;i < jsonArray.length ; i++)
   {
@@ -217,7 +209,7 @@ function parseEvent(e){
 }
 
 //gets an event and a callback, then register the callback with the parsed point
-function returnPagePoint(callback){
+function returnViewPoint(callback){
   return function(event) {
     var point = parseEvent(event); //parsing event
     callback(point); //calling the callback
@@ -225,13 +217,12 @@ function returnPagePoint(callback){
 }
 
 //gets an event and a callback, then register the callback with the parsed point
-/*function returnViewPoint(callback){
-  return returnPagePoint(function(point) {
-    point.x = point.x / window.view.zoom;
-    point.y = point.y / window.view.zoom;
+function returnPagePoint(callback){
+  return returnViewPoint(function(point) {
+    point = W.v2w.transformPoint(point.x, point.y);
     callback(point); //calling the callback
   });
-}*/
+}
 //calculate delta
 function calculateDelta(newPoint,startPoint){
   return {x: newPoint.x - startPoint.x, y: newPoint.y - startPoint.y};
@@ -259,31 +250,41 @@ function zoomAndPan(sF,sP){
 //saving transform point and factor to lazy redraw
 function saveTransform(sF,sP){
   window.view.zoom *= sF;   // set zoom
-  console.log("window.scaleFactor AGGIORNATO A: ");
-  console.log(window.view.zoom);
+  //console.log("window.view.zoom AGGIORNATO A: ");
+  //console.log(window.view.zoom);
+
   window.view.center = new Point(window.view.center.x + sP.x,window.view.center.y + sP.y) ;  // set center
   //window.toRedraw = true;
   transformView(window.view,sF,sP);
 }
 
-//var finishTransform = true;
 //update the view
 function transformView(view,sF,sP){
-  //finishTransform = false;
-  var ctx = view.canvas.getContext("2d");
+  //var ctx = view.canvas.getContext("2d");
   
   //make clean
-  /*clearCanvas(window.bCnvs);*/
+  //clearCanvas(window.bCnvs);
+  identity.transform(window.dCtx);
   clearCanvas(view.canvas);
   restoreCleanPage();
 
   // save the states of the canvas: ||-->]
   //ctx.save(); 
 
+  /*console.log("TRASFORMO CON SCALE FACTOR = ");
+  console.log(sF);*/
+
+  //var vCenter = W.w2v.transformPoint(window.view.center.x,window.view.center.y);
+  //console.log("CENTRO AGGIORNATO A: ");
+  //console.log("[" + view.center.x + "," + view.center.y + "]");
+  //W.scaleAt(view.center.x,view.center.y,sF,sF);
+  W.scale(sF,sF);
+  W.w2v.transform(window.dCtx);
+  //W.w2v.transform(window.bCtx);
   //scaling..
-  //ctx.translate(view.center.x/window.view.zoom, view.center.y/window.view.zoom);
-  ctx.scale(sF, sF);
-  //ctx.translate(-view.center.x/window.view.zoom, -view.center.y/window.view.zoom); //??? al limite senza moltiplicazione
+  //ctx.translate(view.center.x, view.center.y);
+  //ctx.scale(sF, sF);
+  //ctx.translate(-view.center.x, -view.center.y);
 
   /*//   Redrawing the background
   if(window.bgnd != "none")
@@ -294,14 +295,51 @@ function transformView(view,sF,sP){
       drawGrid(window.interLines);
   }*/
   //drawing
-  loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
-  
+  //loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
+
+  //DISEGNO I DUE RETTANGOLI
+  //RETTANGOLO VERDE
+  dCtx.beginPath();
+  dCtx.strokeStyle = "green";
+  dCtx.strokeWidth = 15;
+  var bnds = view.getPageBounds();
+  dCtx.rect(bnds.x,bnds.y,bnds.width,bnds.height);
+  dCtx.stroke();
+
+  //CROCE IN CENTRO VERDE
+  var center = W.v2w.transformPoint(view.center.x,view.center.y);
+  dCtx.beginPath();
+  dCtx.moveTo(center.x - 20, center.y);
+  dCtx.lineTo(center.x + 20, center.y);
+  dCtx.stroke();
+  dCtx.beginPath();
+  dCtx.moveTo(center.x, center.y - 20);
+  dCtx.lineTo(center.x, center.y + 20);
+  dCtx.stroke();
+
+  //RETTANGOLO ROSSO
+  dCtx.beginPath();
+  dCtx.strokeStyle = "red";
+  dCtx.strokeWidth = 4;
+  dCtx.rect(view.viewBounds.x,view.viewBounds.y,view.viewBounds.width,view.viewBounds.height);
+  dCtx.stroke();
+
+  //CROCE IN CENTRO ROSSA
+  dCtx.beginPath();
+  dCtx.moveTo(view.center.x - 20, view.center.y);
+  dCtx.lineTo(view.center.x + 20, view.center.y);
+  dCtx.stroke();
+  dCtx.beginPath();
+  dCtx.moveTo(view.center.x, view.center.y - 20);
+  dCtx.lineTo(view.center.x, view.center.y + 20);
+  dCtx.stroke();
+
+
   // restore the states of the canvas: <--||]
   //ctx.restore();
 
   //just redrawed!
   //window.toRedraw = false;
-  //finishTransform = true;
   //view.setCenter(new Point(view.center.x + sP.x, view.center.y + sP.y));
 }
 

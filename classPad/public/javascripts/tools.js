@@ -4,25 +4,24 @@ function Pen(sColor,sWidth,blendMode){
 	this.bM = blendMode || "source-over"; //if blendMode is set use that else use "source-over" as default.
 	var mythis = this;
 	var pressed = false;
-	//var sF;
 
 	//Event listener
 	this.onMouseDown = function(point){
-	  //sF = window.view.zoom;
 	  // GraphLib object 
 	  window.thisPage().drawed.push(new Path({
 	  	strokeColor: mythis.sC,
 	  	strokeWidth: mythis.sW / window.view.zoom,
 	  	blendMode: mythis.bM,
-	  	scaleFactor: window.view.zoom
 	  }));
+
 	  // Canvas
 	  window.dCtx.beginPath(); //new Path()
 	  window.dCtx.setLineDash([]);
 	  window.dCtx.strokeStyle = mythis.sC;
 	  window.dCtx.lineWidth = mythis.sW / window.view.zoom;
 	  window.dCtx.globalCompositeOperation = mythis.bM;
-	  window.dCtx.moveTo(point.x / window.view.zoom, point.y / window.view.zoom);
+	  window.dCtx.moveTo(point.x, point.y);
+
 	  // setting pressed to true
 	  pressed = true;
 	}
@@ -32,10 +31,8 @@ function Pen(sColor,sWidth,blendMode){
 	  {
 		//GraphLib
 		window.thisPage().drawed.last().add(point);
-		//Canvas elements
-		console.log("sto disegnando con WINDOW.VIEW.ZOOM: ");
-  		console.log(window.view.zoom);
-		dCtx.lineTo(point.x / window.view.zoom, point.y / window.view.zoom);
+		//Canvas element
+		dCtx.lineTo(point.x,point.y);
 		dCtx.stroke();
 		// say to not redraw!
 		//window.toRedraw = false;
@@ -44,7 +41,6 @@ function Pen(sColor,sWidth,blendMode){
 
 	this.onMouseUp = function(){
 	  //window.thisPage().drawed.last().simplify();
-	  //paper.view.draw();
 	  //undo/redo variabile
 	  //window.iWasDrawing = true;
 	  /*if(window.thisPage().drawed.length > 0)

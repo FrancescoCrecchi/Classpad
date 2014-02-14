@@ -30,7 +30,7 @@ function multitouchInit() {
    var td2 = new GroundTerm(TouchFeature.TouchDown);
    var startP2,endP2;
    
-   td2.gesture.add(returnPagePoint(function(point){
+   td2.gesture.add(returnViewPoint(function(point){
       startP2 = new Point(point.x, point.y);
       endP2 = startP2;
       sensor.trigger(Abort,{});
@@ -49,7 +49,7 @@ function multitouchInit() {
     trackNet(draw(e.evt.identifier));
     
     // two fingers..
-    returnPagePoint(function(point){
+    returnViewPoint(function(point){
     var startP1 = new Point(point.x, point.y);
     var endP1 = startP1;
     //attaching the pinch net
@@ -66,12 +66,12 @@ function multitouchInit() {
    var tu2 = new GroundTerm(TouchFeature.TouchUp, sameid(id2));
    
   
-  tm1.gesture.add(returnPagePoint(function(point){
+  tm1.gesture.add(returnViewPoint(function(point){
     obj.e1 = new Point(point.x,point.y);
     zoom(obj);
     obj.s1 = obj.e1;
   }));
-  tm2.gesture.add(returnPagePoint(function(point){
+  tm2.gesture.add(returnViewPoint(function(point){
     obj.e2 = new Point(point.x,point.y);
     zoom(obj);
     obj.s2 = obj.e2;
@@ -82,14 +82,24 @@ function multitouchInit() {
 
  //zoom
  function zoom(o){
+   //console.log((o.s1).getDistance(o.s2));
+   var sF = (o.e1).getDistance(o.e2) / (o.s1).getDistance(o.s2);
    //calculating the scale factor
-   window.scaleFactor = (o.e1).getDistance(o.e2) / (o.s1).getDistance(o.s2);
-   //now we have to scale(zoom) the group by that value from a point that is in the middle of the ideal path from s1 to s2
-   window.scalePoint = new Point(((o.s1.x - o.e1.x) + (o.s2.x - o.e2.x))/(2*window.view.zoom),((o.s1.y - o.e1.y) + (o.s2.y - o.e2.y))/(2*window.view.zoom));
+   if((window.view.zoom * sF) > 1/5 && (window.view.zoom * sF) < 5)
+    window.scaleFactor = sF;
+   else
+    window.scaleFactor = 1;
+   //console.log(window.scaleFactor + "||" + window.view.zoom * window.scaleFactor);
 
-   /*var mp1 = new Point((o.s1.x + o.e1.x)/2,(o.s1.y + o.e1.y)/2*window.view.zoom);
-   var mp2 = new Point((o.s2.x + o.e2.x)/2,(o.s2.y + o.e2.y)/2*window.view.zoom);
-   window.scalePoint = new Point((mp1.x + mp2.x)/2,(mp1.y + mp2.y)/2);*/
+   //now we have to scale(zoom) the group by that value from a point that is in the middle of the ideal path from s1 to s2
+   /*window.scalePoint = new Point(((o.s1.x - o.e1.x) + (o.s2.x - o.e2.x))/(2*window.view.zoom),((o.s1.y - o.e1.y) + (o.s2.y - o.e2.y))/(2*window.view.zoom));
+*/
+   var mp1 = new Point((o.s2.x + o.s1.x)/2,(o.s2.y + o.s1.y)/2);
+   var mp2 = new Point((o.e2.x + o.e1.x)/2,(o.e2.y + o.e1.y)/2);
+   window.scalePoint = new Point(mp2.x - mp1.x, mp2.y - mp1.y);
+   // console.log("WINDOW.SCALEPOINT:");
+   // console.log("[" + window.scalePoint.x + "," + window.scalePoint.y + "]");
+
    zoomAndPan(window.scaleFactor, window.scalePoint);
   }
 }

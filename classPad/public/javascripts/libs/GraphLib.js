@@ -1,26 +1,9 @@
-// My library consts by Groups, Paths and PDFs providing a binary three data structure
-// in wich nodes are Groups and Paths/PDFs stay at the bottom, in the leaves.
-// The entire document can be seen as a Group of Paths and PDFs.
-
-/* function Node(){
-	this.left = null;
-	this.right = null;
-	this.obj = null; //Obj (see above)
-}
-Node.prototype.addChild = function(o){ // i just need insertions
-	if(this.left == null)
-		this.left = o;
-	else
-		this.right = o;
-}*/
-
 // Path
 function Path(props){
 	this.points = props.points || [];
 	this.strokeColor = props.strokeColor; //String
 	this.strokeWidth = props.strokeWidth; //String
 	this.blendMode = props.blendMode || "source-over"; 	 //String
-	this.scaleFactor = props.scaleFactor || 1;
 	//this.selected = props.selected || false;
 }
 Path.prototype.add = function(point){
@@ -116,11 +99,17 @@ Rectangle.prototype.contains = function(point){
 //View
 function View(props){
 	this.canvas = props.canvas;
-	this.bounds = props.bounds, // Rectangle
+	this.viewBounds = props.bounds, // Rectangle
 	this.zoom = props.zoomFactor || 1, //Number
-	this.center = props.center,
-	this.viewSize = { //init with the same dimensions of the canvas
-		width: this.bounds.width,
-		height: this.bounds.height
-	}
+	this.center = props.center
+}
+View.prototype.getPageBounds = function(){
+	var XY = W.v2w.transformPoint(this.viewBounds.x,this.viewBounds.y);
+	var WH = W.v2w.transformPoint(this.viewBounds.width,this.viewBounds.height);
+	return new Rectangle({
+		x: XY.x,
+		y: XY.y,
+		width: WH.x,
+		height: WH.y
+	});
 }

@@ -20,6 +20,7 @@ html(lang='en')
     script(src='/javascripts/libs/GestIT.js')
     script(src='/javascripts/libs/GestITouch.js')
     script(src='/javascripts/libs/pdf.js')
+    script(src='/javascripts/libs/MatrixTransforms.js')
     //script(src='/javascripts/libs/compatibility.js')
     //script(src='/javascripts/libs/worker_loader.js')
     
@@ -46,7 +47,7 @@ html(lang='en')
       //commodity variables
       var td1,mdCb;
       var scaleFactor = 1;
-      var scalePoint;
+      var scalePoint = new Point(0,0);
       var interLines = 20;
       var pdfLoaded = false;
       var iWasDrawing;
@@ -56,15 +57,17 @@ html(lang='en')
       var dCnvs,mCnvs,bCnvs,pdfCnvs;
       var dCtx,mCtx,bCtx,pdfCtx;
 
-      //lastSendedObject
-      var lSO;
-
+      //for pdf generation
       var classId = "#{id}"; //getting the id from jade
       var classTitle = "#{title}"; //getting the title from jade
 
       //To redraw at 30fps
       var toRedraw = false;
-      
+
+      //Matrix
+      var W = new WorldTransform();
+      var identity = new Matrix();
+
       //when all DOM is ready
       document.onready = function(){
         lazyInit();
