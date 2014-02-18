@@ -1,6 +1,28 @@
-//Adding methods to Array object
+// Adding methods to Array object
 Array.prototype.last = function(){
   return this[this.length - 1];
+};
+
+Array.prototype.remove = function(el){
+  var index = this.indexOf(el);
+  if(index > -1)
+    this.splice(index,1);
+};
+
+//my indexOf() prototype: first occurrence
+Array.prototype.getIndexOf = function(obj){
+  var found = false;
+  var i = 0;
+  while(i < this.length && !found)
+  {
+    if(this[i] === obj)
+      found = true;
+    else
+      i++;
+  }
+  if(found)
+    return i;
+  return -1;
 };
 
 //Overload toString methods to obtain a JSON string
@@ -32,52 +54,56 @@ function drawPath(path,ctx) {
 };
 
 function drawGrid(offsetY,offsetX){
-  //var the_view = window.pad.bgdScope.view;
-  var inv_zoom = 1.0 / window.view.zoom
-  var bnds = window.view.getPageBounds();
+  var inv_zoom = 1.0 / window.view.zoom;
 
   var mid_pixel_coord = 0.5 * inv_zoom;
 
   console.log("drawGrid");
 
   var bgCanvas = window.bCnvs;
+  var TH = W.v2w.transformPoint(bgCanvas.clientTop,bgCanvas.clientHeight);
+  var LW = W.v2w.transformPoint(bgCanvas.clientLeft,bgCanvas.clientWidth);
+
   if(typeof offsetX != "undefined")
   {
     //vertical lines
-    for(var i=mid_pixel_coord; i < bnds.width; i+=offsetX)
+    for(var i=mid_pixel_coord; i < LW.y - LW.x; i+=offsetX)
       drawPath(new Path({
-        points: [new Point(i, bnds.y), new Point(i,bnds.height)],
+        points: [new Point(i, TH.x), new Point(i,TH.y - TH.x)],
         strokeColor: 'gray',
-        strokeWidth: 1
+        strokeWidth: 1 * inv_zoom
       }),bCtx);
-    for(var i=mid_pixel_coord-offsetX; i > bnds.x; i-=offsetX)
+    for(var i=mid_pixel_coord - offsetX; i > LW.x; i-=offsetX)
       drawPath(new Path({
-        points: [new Point(i,bnds.y), new Point(i,bnds.height)],
+         points: [new Point(i, TH.x), new Point(i,TH.y - TH.x)],
         strokeColor: 'gray',
-        strokeWidth: 1
+        strokeWidth: 1 * inv_zoom
       }),bCtx);
- }
- else
+  }
+  else
     offsetY *=1.5; //rows only
-    //horizontal lines
-    for(var i=mid_pixel_coord; i < bnds.height; i+=offsetY)
-     drawPath(new Path({
-        points: [new Point(bnds.x,i), new Point(bnds.width,i)],
-        strokeColor: 'gray',
-        strokeWidth: 1
-      }),bCtx);
-   for(var i=mid_pixel_coord-offsetY; i > bnds.y; i-=offsetY)
-      drawPath(new Path({
-        points: [new Point(bnds.x,i), new Point(bnds.width,i)],
-        strokeColor: 'gray',
-        strokeWidth: 1
-      }),bCtx);
+  //horizontal lines
+  for(var i=mid_pixel_coord; i < TH.y - TH.x; i+=offsetY)
+   drawPath(new Path({
+      points: [new Point(LW.x,i), new Point(LW.y - LW.x,i)],
+      strokeColor: 'gray',
+      strokeWidth: 1 * inv_zoom
+    }),bCtx);
+  for(var i=mid_pixel_coord-offsetY; i > TH.x; i-=offsetY)
+    drawPath(new Path({
+      points: [new Point(LW.x,i), new Point(LW.y - LW.x,i)],
+      strokeColor: 'gray',
+      strokeWidth: 1 * inv_zoom
+    }),bCtx);
  }
 
 //clear/load canvas (background/paper/fromMaster)
-function clearCanvas(cnvs){  
-  cnvs.getContext("2d").clearRect(0,0,cnvs.width,cnvs.height);
-  //window.toRedraw = true;
+function clearCanvas(cnvs){
+  var ctx = cnvs.getContext("2d");
+  var XY = W.v2w.transformPoint(cnvs.clientLeft,cnvs.clientTop);
+  var WH = W.v2w.transformPoint(cnvs.clientWidth,cnvs.clientHeight);
+
+  ctx.clearRect(XY.x,XY.y,WH.x - XY.x,WH.y - XY.y);
 }
 
 function restoreCleanPage(){
@@ -119,9 +145,10 @@ function loadCanvas(jsonArray,dstArray,ctx){
       strokeColor: obj.strokeColor,
       strokeWidth: obj.strokeWidth,
       blendMode: obj.blendMode,
-      scaleFactor: obj.scaleFactor
     });
-    path.points = obj.points.slice(); 
+    //path.points = obj.points.slice(); 
+    for(var j=0; j < obj.points.length; j++)
+      path.points.push(new Point(obj.points[j].x,obj.points[j].y));
     //drawing path
     drawPath(path,ctx);
     //saving it into memory
@@ -158,6 +185,7 @@ function bind2(tool){
       for(var i = 0; i < l; i++)
         window.selector.selectGroup.children.pop(); 
    }
+   refresh();
  }
  else
     //init multitouch
@@ -166,8 +194,23 @@ function bind2(tool){
   //setting the activeTool
   window.activeTool = tool;
   //adding new events
-  window.mdCb = window.td1.gesture.add(returnPagePoint(window.activeTool.onMouseDown));       //?????????????? RETURN VIEWPOINT E' PER IL SELECTOR?!
+  window.mdCb = window.td1.gesture.add(returnViewPoint(window.activeTool.onMouseDown));
 }
+
+// Redraw the page function!
+function refresh(){
+  //clearing canvases
+  clearCanvas(window.bCnvs);
+  clearCanvas(window.mCnvs);
+  clearCanvas(window.dCnvs);
+  //clearing page data
+  restoreCleanPage();
+  //redraw
+  redrawBackground();
+  loadCanvas(window.thisPage().received,window.thisPage().ofMaster,mCtx);
+  loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
+}
+
 
 //isIn function: check if a path is contained into a rectangle
 function isIn(path,rectangle){
@@ -185,22 +228,6 @@ function isIn(path,rectangle){
   return false;
 }
 
-//my indexOf() prototype: first occurrence
-Array.prototype.getIndexOf = function(obj){
-  var found = false;
-  var i = 0;
-  while(i < this.length && !found)
-  {
-    if(this[i] === obj)
-      found = true;
-    else
-      i++;
-  }
-  if(found)
-    return i;
-  return -1;
-};
-
 //function to parse event (mouse/touch event) into a [x,y] point
 function parseEvent(e){
   var x = e.evt.clientX - e.evt.target.getBoundingClientRect().left;
@@ -216,30 +243,10 @@ function returnViewPoint(callback){
   };
 }
 
-//gets an event and a callback, then register the callback with the parsed point
-function returnPagePoint(callback){
-  return returnViewPoint(function(point) {
-    point = W.v2w.transformPoint(point.x, point.y);
-    callback(point); //calling the callback
-  });
-}
 //calculate delta
 function calculateDelta(newPoint,startPoint){
   return {x: newPoint.x - startPoint.x, y: newPoint.y - startPoint.y};
 }
-
-/*// refesh the 3 layers
-function refresh(){
-  console.log("**************************************************");
-  console.log("REFRESH() FUNCTION CALLED!");
-  console.log("**************************************************");
-	clearCanvas(window.dCnvs);
-  restoreCleanPage();
-  loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
-	window.toRedraw = false;
-  //restore the recently state of the canvas  ||<--]
-  window.dCtx.restore();
-}*/
 
 //we have to scale all of 3 layers canvas!
 function zoomAndPan(sF,sP){
@@ -253,18 +260,30 @@ function saveTransform(sF,sP){
   //console.log("window.view.zoom AGGIORNATO A: ");
   //console.log(window.view.zoom);
 
-  window.view.center = new Point(window.view.center.x + sP.x,window.view.center.y + sP.y) ;  // set center
+  //window.view.center = sP;  // set center
   //window.toRedraw = true;
   transformView(window.view,sF,sP);
 }
+
+function redrawBackground(){
+  //   Redrawing the background
+  if(window.bgnd != "none")
+  {
+    if(window.bgnd == "grid")
+      drawGrid(window.interLines,window.interLines);
+    else
+      drawGrid(window.interLines);
+  }
+}
+
 
 //update the view
 function transformView(view,sF,sP){
   //var ctx = view.canvas.getContext("2d");
   
   //make clean
-  //clearCanvas(window.bCnvs);
-  identity.transform(window.dCtx);
+  clearCanvas(window.bCnvs);
+  //identity.transform(window.dCtx);
   clearCanvas(view.canvas);
   restoreCleanPage();
 
@@ -277,37 +296,28 @@ function transformView(view,sF,sP){
   //var vCenter = W.w2v.transformPoint(window.view.center.x,window.view.center.y);
   //console.log("CENTRO AGGIORNATO A: ");
   //console.log("[" + view.center.x + "," + view.center.y + "]");
-  //W.scaleAt(view.center.x,view.center.y,sF,sF);
-  W.scale(sF,sF);
+  W.scaleAt(sP,sF);
   W.w2v.transform(window.dCtx);
-  //W.w2v.transform(window.bCtx);
-  //scaling..
-  //ctx.translate(view.center.x, view.center.y);
-  //ctx.scale(sF, sF);
-  //ctx.translate(-view.center.x, -view.center.y);
+  W.w2v.transform(window.bCtx);
 
-  /*//   Redrawing the background
-  if(window.bgnd != "none")
-  {
-    if(window.bgnd == "grid")
-      drawGrid(window.interLines,window.interLines);
-    else
-      drawGrid(window.interLines);
-  }*/
   //drawing
-  //loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
+  redrawBackground();
+  loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
 
-  //DISEGNO I DUE RETTANGOLI
+/*  //DISEGNO I DUE RETTANGOLI
+  
   //RETTANGOLO VERDE
   dCtx.beginPath();
   dCtx.strokeStyle = "green";
   dCtx.strokeWidth = 15;
   var bnds = view.getPageBounds();
+  
   dCtx.rect(bnds.x,bnds.y,bnds.width,bnds.height);
   dCtx.stroke();
 
   //CROCE IN CENTRO VERDE
-  var center = W.v2w.transformPoint(view.center.x,view.center.y);
+  var center = view.getPageCenter();
+
   dCtx.beginPath();
   dCtx.moveTo(center.x - 20, center.y);
   dCtx.lineTo(center.x + 20, center.y);
@@ -316,6 +326,7 @@ function transformView(view,sF,sP){
   dCtx.moveTo(center.x, center.y - 20);
   dCtx.lineTo(center.x, center.y + 20);
   dCtx.stroke();
+  // ---------------------------------------------*/
 
   //RETTANGOLO ROSSO
   dCtx.beginPath();
@@ -333,7 +344,7 @@ function transformView(view,sF,sP){
   dCtx.moveTo(view.center.x, view.center.y - 20);
   dCtx.lineTo(view.center.x, view.center.y + 20);
   dCtx.stroke();
-
+  // ---------------------------------------------
 
   // restore the states of the canvas: <--||]
   //ctx.restore();

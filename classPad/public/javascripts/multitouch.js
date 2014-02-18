@@ -20,10 +20,10 @@ function multitouchInit() {
     var tm1 = new GroundTerm(TouchFeature.TouchMove, sameid(id));
     var tu1 = new GroundTerm(TouchFeature.TouchUp, sameid(id));
     //bind
-    tm1.gesture.add(returnPagePoint(window.activeTool.onMouseDrag));
-    tu1.gesture.add(returnPagePoint(window.activeTool.onMouseUp));
+    tm1.gesture.add(returnViewPoint(window.activeTool.onMouseDrag));
+    tu1.gesture.add(returnViewPoint(window.activeTool.onMouseUp));
     //Draw Net
-    return new Choice([new Choice([new Iter(tm1), tu1]), ab]); // !!!!!!!!!!!!!!
+    return new Choice([new Choice([new Iter(tm1), tu1]), ab]);
   };
 
   var pinch = function(id,sp1,ep1){
@@ -94,11 +94,14 @@ function multitouchInit() {
    //now we have to scale(zoom) the group by that value from a point that is in the middle of the ideal path from s1 to s2
    /*window.scalePoint = new Point(((o.s1.x - o.e1.x) + (o.s2.x - o.e2.x))/(2*window.view.zoom),((o.s1.y - o.e1.y) + (o.s2.y - o.e2.y))/(2*window.view.zoom));
 */
-   var mp1 = new Point((o.s2.x + o.s1.x)/2,(o.s2.y + o.s1.y)/2);
-   var mp2 = new Point((o.e2.x + o.e1.x)/2,(o.e2.y + o.e1.y)/2);
-   window.scalePoint = new Point(mp2.x - mp1.x, mp2.y - mp1.y);
+  var mp1 = new Point((o.s2.x + o.s1.x)/2,(o.s2.y + o.s1.y)/2);
+  var mp2 = new Point((o.e2.x + o.e1.x)/2,(o.e2.y + o.e1.y)/2);
+  window.scalePoint = new Point(mp2.x - mp1.x, mp2.y - mp1.y);
    // console.log("WINDOW.SCALEPOINT:");
    // console.log("[" + window.scalePoint.x + "," + window.scalePoint.y + "]");
+
+   //il nuovo centro deve diventare il punto medio tra le mie dita
+   //window.scalePoint = mp1;
 
    zoomAndPan(window.scaleFactor, window.scalePoint);
   }

@@ -7,6 +7,9 @@ function Pen(sColor,sWidth,blendMode){
 
 	//Event listener
 	this.onMouseDown = function(point){
+	  //view point -> world point
+	  point = W.v2w.transformPoint(point.x,point.y);
+
 	  // GraphLib object 
 	  window.thisPage().drawed.push(new Path({
 	  	strokeColor: mythis.sC,
@@ -16,7 +19,7 @@ function Pen(sColor,sWidth,blendMode){
 
 	  // Canvas
 	  window.dCtx.beginPath(); //new Path()
-	  window.dCtx.setLineDash([]);
+	  //window.dCtx.setLineDash([0,0]);
 	  window.dCtx.strokeStyle = mythis.sC;
 	  window.dCtx.lineWidth = mythis.sW / window.view.zoom;
 	  window.dCtx.globalCompositeOperation = mythis.bM;
@@ -27,6 +30,9 @@ function Pen(sColor,sWidth,blendMode){
 	}
 
 	this.onMouseDrag = function(point){
+	  //view point -> world point
+	  point = W.v2w.transformPoint(point.x,point.y);
+	  
 	  if(pressed)
 	  {
 		//GraphLib
@@ -67,23 +73,26 @@ function Selector(){
  	var dragging = false;
   	var mythis = this;
   	var startPoint;
-  	var groupRef;
+  	//var groupRef;
 
     //Event listeners
     
     this.onMouseDown = function(point){
+      //view point -> world point
+	  point = W.v2w.transformPoint(point.x,point.y);
+
       //check hitTest on Group items (if they exists) to drag and drop elements
       if(typeof mythis.selectGroup != "undefined" && mythis.selectGroup.hasChildren() && mythis.selectGroup.hitTest(new Point(point.x,point.y)) != false)
       {
 		//saving the startPoint
 		startPoint = new Point(point.x,point.y);
 		//i have to remember that translation!
-		groupRef = new Array();
-		for(var i = 0; i < window.selector.selectGroup.children.length; i++)
+		//groupRef = new Array();
+		/*for(var i = 0; i < window.selector.selectGroup.children.length; i++)
 		{
 	  		var thisPath = window.selector.selectGroup.children[i];
 	  		groupRef.push(window.thisPage().PgArray.getIndexOf(thisPath.toString())); //pushing the index
-		}
+		}*/
 		//i'm dragging!
 		dragging = true;
 		pressed = false;
@@ -109,6 +118,9 @@ function Selector(){
     }
     
     this.onMouseDrag = function(point){
+      //view point -> world point
+	  point = W.v2w.transformPoint(point.x,point.y);
+
       if(pressed)
       {
 		/*if(typeof mythis.rectPath != "undefined")
@@ -129,6 +141,7 @@ function Selector(){
 		dCtx.setLineDash([]);
 		loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
 		dCtx.strokeStyle = "blue";
+		dCtx.globalCompositeOperation = "source-over";
 		dCtx.lineWidth= 2;///window.pad.drwScope.view.zoom,
 		dCtx.setLineDash([10,4]);
 		dCtx.strokeRect(upPoint.x,upPoint.y,point.x - upPoint.x,point.y - upPoint.y);
@@ -141,10 +154,9 @@ function Selector(){
 	  	mythis.selectGroup.translate(dlt);
 	  	dCtx.setLineDash([]);
 		//updating the thisPage().PgArray
-		for(var i = 0; i < groupRef.length; i++)
-	 		window.thisPage().PgArray[groupRef[i]] = mythis.selectGroup.children[i].toString(); //hope that works!
-	 	clearCanvas(window.dCnvs);
-		loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
+		/*for(var i = 0; i < groupRef.length; i++)
+	 		window.thisPage().PgArray[groupRef[i]] = mythis.selectGroup.children[i].toString(); //hope that works!*/
+	 	refresh();
       }
     }
     
@@ -156,7 +168,7 @@ function Selector(){
 		for(var i = 0; i < window.thisPage().drawed.length; i++)
 		{
 	  		var thisPath = window.thisPage().drawed[i];
-	  		if(isIn(thisPath,mythis.rectangle))
+	  		if(isIn(thisPath,mythis.rectangle) /*&& thisPath.blendMode != "destination-out"*/)
 	 		{
 	    		//thisPath.selected = true;
 	    		//Adding path to the group
@@ -167,13 +179,37 @@ function Selector(){
 		for(var i = 0; i < window.thisPage().loaded.length; i++)
 		{
 	  		var thisPath = window.thisPage().loaded[i];
-	  		if(isIn(thisPath,mythis.rectangle) && thisPath.blendMode != "destination-out")
+	  		if(isIn(thisPath,mythis.rectangle) /*&& thisPath.blendMode != "destination-out"*/)
 	 		{
 	    		//thisPath.selected = true;
 	    		//Adding path to the group
 	    		mythis.selectGroup.addChild(thisPath);
 	 		 }
 		}
+		//highliting the paths in group
+		for(var j=0 ; j <  mythis.selectGroup.children.length; j++)
+		{
+			var p = mythis.selectGroup.children[j];
+			if(p.points.length > 0)
+			{
+				window.dCtx.setLineDash([]);
+				window.dCtx.strokeStyle = "blue";
+				window.dCtx.strokeWidth = 2;
+				window.dCtx.beginPath();
+				window.moveTo(p.points[0].x,p.points[0].y);
+				for(var k = 0; k < p.points.length; k++)
+					window.dCtx.lineTo(p.points[k].x,p.points[k].y);
+				window.dCtx.stroke();
+				//drawing the little circles on points
+				for(var k = 0; k < p.points.length; k++)
+				{
+					window.dCtx.beginPath();
+					window.dCtx.arc(p.points[k].x,p.points[k].y,2,0,2* Math.PI);
+					window.dCtx.stroke();
+				}
+			}
+		}
+
 		//deleting the rectangle
 		// mythis.rectPath.removeSegments();
 		pressed = false;
@@ -189,11 +225,12 @@ function Selector(){
       	for(var i = 0; i < l; i++)
         	window.selector.selectGroup.children.pop(); 
 	
-		//empting the groupref array
+		/*//empting the groupref array
 		var len = groupRef.length;
 		for(var i = 0; i < len; i++)
 			groupRef.pop();
-	
+		*/
+
 		mythis.selectGroup.onMouseUp = null;
 		mythis.selectGroup.onMouseDrag = null;
 		//rebinding selec tool

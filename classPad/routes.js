@@ -16,7 +16,7 @@ routes.createUser = function(req,res){
       else if(!obj)
       	res.send(404,"couldn't create new user! - #1");
       else
-      	res.redirect('/');
+      	res.redirect('/login');
     });
   }
   else

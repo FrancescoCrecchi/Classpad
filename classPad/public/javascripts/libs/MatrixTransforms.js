@@ -18,7 +18,8 @@ function Matrix(a, b, c, d, e, f) {
   
   this.transform = function (ctx) { ctx.setTransform(this.a, this.b, this.c, this.d, this.e, this.f); };
   this.transformPoint = function (x, y) { 
-    return { 'x': this.a * x + this.c * y + this.e, 'y': this.b * x + this.d * y + this.f }; }; 
+    return new Point (this.a * x + this.c * y + this.e, this.b * x + this.d * y + this.f ); 
+  };
 }
 
 var identity = new Matrix();
@@ -59,9 +60,10 @@ function WorldTransform() {
     this.transform(createScaleMatrix(sx, sy), createScaleMatrix(1/sx, 1/sy)); 
   };
 
-  this.scaleAt = function(x,y,sx,sy){
-    this.translate(-x,-y);    //??????????????????????????????????
-    this.scale(sx,sy);
-    this.translate(x,y);
+  this.scaleAt = function(sP,sF){
+    this.translate(-window.view.center.x, -window.view.center.y);
+    this.translate(sP.x,sP.y);
+    this.scale(sF,sF);
+    this.translate(window.view.center.x, window.view.center.y);
   };
 }

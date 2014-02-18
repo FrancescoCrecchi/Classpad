@@ -16,20 +16,29 @@ $(window).ready(function(){
   //================ Buttons ============================
   //size
   $("#small").on("click", function (){
-    window.pen.sW = 7;
-    bind2(window.pen);
+    if(window.activeTool == window.selector)
+      bind2(window.pen);
+    else
+      bind2(window.activeTool);
+    window.activeTool.sW = 7;
     setGlow("#small");
   });
 
   $("#medium").on("click", function (){
-    window.pen.sW = 12;
-    bind2(window.pen);
+    if(window.activeTool == window.selector)
+      bind2(window.pen);
+    else
+      bind2(window.activeTool);
+    window.activeTool.sW = 14;
     setGlow("#medium");
   });
 
   $("#big").on("click", function (){
-    window.pen.sW = 17;
-    bind2(window.pen);
+    if(window.activeTool == window.selector)
+      bind2(window.pen);
+    else
+      bind2(window.activeTool);
+    window.activeTool.sW = 18;
     setGlow("#big");
   });
   //colors

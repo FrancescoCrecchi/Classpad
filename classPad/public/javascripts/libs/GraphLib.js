@@ -1,3 +1,12 @@
+//Point
+function Point(x,y){
+	this.x = x;
+	this.y = y;
+}
+Point.prototype.getDistance = function(p){
+	return Math.sqrt(((p.x - this.x)*(p.x - this.x)) + ((p.y - this.y)*(p.y - this.y)));
+}
+
 // Path
 function Path(props){
 	this.points = props.points || [];
@@ -14,7 +23,7 @@ Path.prototype.contains = function(point){
 	var i = 0;
 	var found = false;
 
-	while(this.points[i] && this.points[i+1] && !found)
+	/*while(this.points[i] && this.points[i+1] && !found)
 	{
 		//si tratta di determinare se il punto appartiene o meno alla retta passante per due punti consecutivi
 		function testPointContained(p1,p2,pTest){
@@ -29,20 +38,18 @@ Path.prototype.contains = function(point){
 			found = true;
 		i++;
 	}
+	return found;*/
+	while(this.points[i] && !found)
+	{
+		if(this.points[i].getDistance(point) < (this.strokeWidth*3)) //*3 cause the touch point is not precise as the mouse input
+			found = true;
+		i++;
+	}
 	return found;
 }
 Path.prototype.move = function(deltaX,deltaY){
 	for(var i=0; i < this.points.length; i++)
 		this.points[i] = new Point(this.points[i].x + deltaX,this.points[i].y + deltaY);
-}
-
-//Point
-function Point(x,y){
-	this.x = x;
-	this.y = y;
-}
-Point.prototype.getDistance = function(p){
-	return Math.sqrt(((p.x - this.x)*(p.x - this.x)) + ((p.y - this.y)*(p.y - this.y)));
 }
 
 //PDF
@@ -78,7 +85,25 @@ Group.prototype.hitTest = function(point){
 }
 Group.prototype.translate = function(delta){
 	for(var i = 0; i < this.children.length; i++)
-		this.children[i].move(delta.x,delta.y);
+		{
+			//create a temp copy of the object
+			var p = new Path({
+				points: this.children[i].points.slice(),
+				strokeColor: this.children[i].strokeColor,
+				strokeWidth: this.children[i].strokeWidth,
+				blendMode: this.children[i].blendMode
+			});
+			//translate by delta each point
+			p.move(delta.x,delta.y);
+			//append the new path at the end of the group
+			this.addChild(p);
+			//append the new path to the PgArray (JSON)
+			window.thisPage().PgArray.push(p.toString());
+			//deleting the old version from the PgArray
+			window.thisPage().PgArray.remove(this.children[i].toString());
+			//remove the old version of the path
+			this.children.remove(this.children[i]);
+		}
 }
 
 // Rectangle
@@ -103,6 +128,10 @@ function View(props){
 	this.zoom = props.zoomFactor || 1, //Number
 	this.center = props.center
 }
+View.prototype.getPageCenter = function(){
+	return W.v2w.transformPoint(this.center.x,this.center.y);
+}
+
 View.prototype.getPageBounds = function(){
 	var XY = W.v2w.transformPoint(this.viewBounds.x,this.viewBounds.y);
 	var WH = W.v2w.transformPoint(this.viewBounds.width,this.viewBounds.height);

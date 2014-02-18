@@ -234,7 +234,7 @@
  }
  .clear {
 	 clear: both;
-	 with: 0px;
+	 width: 0px;
 	 height: 0px;
 	 display: block;
  }
@@ -442,7 +442,8 @@ button#yellow span.fa {
 }
  /* ===[ Canvas ]=== */
  td.canvas {
-	 width: 80%;
+   height: 100%;
+	 width: 100%;
  }
  #cnvsBg {
 	 background: #FFF;

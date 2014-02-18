@@ -129,7 +129,12 @@ database.connect('mongodb://localhost/classPadDB',function() {
     });
     app.post("/register",routes.createUser);
     //MyClasses
-    app.get("/myclasses", midLogin, routes.listClasses);
+    app.get("/myclasses", function(req,res,next){
+      if(req.session.passport.user != undefined)
+        next();
+      else
+        res.redirect('/');
+    }, routes.listClasses);
     //Create class
     app.get("/create_class", midLogin, function(req,res){
       res.render('create_class');
