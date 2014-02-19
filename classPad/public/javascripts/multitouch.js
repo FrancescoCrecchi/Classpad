@@ -89,19 +89,10 @@ function multitouchInit() {
     window.scaleFactor = sF;
    else
     window.scaleFactor = 1;
-   //console.log(window.scaleFactor + "||" + window.view.zoom * window.scaleFactor);
 
-   //now we have to scale(zoom) the group by that value from a point that is in the middle of the ideal path from s1 to s2
-   /*window.scalePoint = new Point(((o.s1.x - o.e1.x) + (o.s2.x - o.e2.x))/(2*window.view.zoom),((o.s1.y - o.e1.y) + (o.s2.y - o.e2.y))/(2*window.view.zoom));
-*/
   var mp1 = new Point((o.s2.x + o.s1.x)/2,(o.s2.y + o.s1.y)/2);
   var mp2 = new Point((o.e2.x + o.e1.x)/2,(o.e2.y + o.e1.y)/2);
   window.scalePoint = new Point(mp2.x - mp1.x, mp2.y - mp1.y);
-   // console.log("WINDOW.SCALEPOINT:");
-   // console.log("[" + window.scalePoint.x + "," + window.scalePoint.y + "]");
-
-   //il nuovo centro deve diventare il punto medio tra le mie dita
-   //window.scalePoint = mp1;
 
    zoomAndPan(window.scaleFactor, window.scalePoint);
   }

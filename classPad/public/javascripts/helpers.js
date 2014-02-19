@@ -61,40 +61,40 @@ function drawGrid(offsetY,offsetX){
   console.log("drawGrid");
 
   var bgCanvas = window.bCnvs;
-  var TH = W.v2w.transformPoint(bgCanvas.clientTop,bgCanvas.clientHeight);
-  var LW = W.v2w.transformPoint(bgCanvas.clientLeft,bgCanvas.clientWidth);
-
+  var TOPLEFT = W.v2w.transformPoint(0,0);
+  var BOTTOMRIGTH = W.v2w.transformPoint(bgCanvas.clientWidth,bgCanvas.clientHeight);
+  
   if(typeof offsetX != "undefined")
   {
     //vertical lines
-    for(var i=mid_pixel_coord; i < LW.y - LW.x; i+=offsetX)
+    for(var i=TOPLEFT.x; i < BOTTOMRIGTH.x; i+=offsetX)
       drawPath(new Path({
-        points: [new Point(i, TH.x), new Point(i,TH.y - TH.x)],
+        points: [new Point(i, TOPLEFT.y), new Point(i,BOTTOMRIGTH.y)],
         strokeColor: 'gray',
         strokeWidth: 1 * inv_zoom
       }),bCtx);
-    for(var i=mid_pixel_coord - offsetX; i > LW.x; i-=offsetX)
+    /*for(var i=mid_pixel_coord - offsetX; i > TOPLEFT.x; i-=offsetX)
       drawPath(new Path({
-         points: [new Point(i, TH.x), new Point(i,TH.y - TH.x)],
+         points: [new Point(i, TOPLEFT.y), new Point(i,BOTTOMRIGTH.y)],
         strokeColor: 'gray',
         strokeWidth: 1 * inv_zoom
-      }),bCtx);
+      }),bCtx);*/
   }
   else
     offsetY *=1.5; //rows only
   //horizontal lines
-  for(var i=mid_pixel_coord; i < TH.y - TH.x; i+=offsetY)
+  for(var i=TOPLEFT.y; i < BOTTOMRIGTH.y; i+=offsetY)
    drawPath(new Path({
-      points: [new Point(LW.x,i), new Point(LW.y - LW.x,i)],
+      points: [new Point(TOPLEFT.x,i), new Point(BOTTOMRIGTH.x,i)],
       strokeColor: 'gray',
       strokeWidth: 1 * inv_zoom
     }),bCtx);
-  for(var i=mid_pixel_coord-offsetY; i > TH.x; i-=offsetY)
+  /*for(var i=mid_pixel_coord-offsetY; i > TOPLEFT.x; i-=offsetY)
     drawPath(new Path({
-      points: [new Point(LW.x,i), new Point(LW.y - LW.x,i)],
+      points: [new Point(TOPLEFT.x,i), new Point(BOTTOMRIGTH.x,i)],
       strokeColor: 'gray',
       strokeWidth: 1 * inv_zoom
-    }),bCtx);
+    }),bCtx);*/
  }
 
 //clear/load canvas (background/paper/fromMaster)
@@ -287,67 +287,14 @@ function transformView(view,sF,sP){
   clearCanvas(view.canvas);
   restoreCleanPage();
 
-  // save the states of the canvas: ||-->]
-  //ctx.save(); 
-
-  /*console.log("TRASFORMO CON SCALE FACTOR = ");
-  console.log(sF);*/
-
-  //var vCenter = W.w2v.transformPoint(window.view.center.x,window.view.center.y);
-  //console.log("CENTRO AGGIORNATO A: ");
-  //console.log("[" + view.center.x + "," + view.center.y + "]");
   W.scaleAt(sP,sF);
-  W.w2v.transform(window.dCtx);
+
   W.w2v.transform(window.bCtx);
+  W.w2v.transform(window.dCtx);
 
   //drawing
   redrawBackground();
   loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
-
-/*  //DISEGNO I DUE RETTANGOLI
-  
-  //RETTANGOLO VERDE
-  dCtx.beginPath();
-  dCtx.strokeStyle = "green";
-  dCtx.strokeWidth = 15;
-  var bnds = view.getPageBounds();
-  
-  dCtx.rect(bnds.x,bnds.y,bnds.width,bnds.height);
-  dCtx.stroke();
-
-  //CROCE IN CENTRO VERDE
-  var center = view.getPageCenter();
-
-  dCtx.beginPath();
-  dCtx.moveTo(center.x - 20, center.y);
-  dCtx.lineTo(center.x + 20, center.y);
-  dCtx.stroke();
-  dCtx.beginPath();
-  dCtx.moveTo(center.x, center.y - 20);
-  dCtx.lineTo(center.x, center.y + 20);
-  dCtx.stroke();
-  // ---------------------------------------------*/
-
-  //RETTANGOLO ROSSO
-  dCtx.beginPath();
-  dCtx.strokeStyle = "red";
-  dCtx.strokeWidth = 4;
-  dCtx.rect(view.viewBounds.x,view.viewBounds.y,view.viewBounds.width,view.viewBounds.height);
-  dCtx.stroke();
-
-  //CROCE IN CENTRO ROSSA
-  dCtx.beginPath();
-  dCtx.moveTo(view.center.x - 20, view.center.y);
-  dCtx.lineTo(view.center.x + 20, view.center.y);
-  dCtx.stroke();
-  dCtx.beginPath();
-  dCtx.moveTo(view.center.x, view.center.y - 20);
-  dCtx.lineTo(view.center.x, view.center.y + 20);
-  dCtx.stroke();
-  // ---------------------------------------------
-
-  // restore the states of the canvas: <--||]
-  //ctx.restore();
 
   //just redrawed!
   //window.toRedraw = false;
@@ -380,7 +327,7 @@ function transMonitor(){
 
 
 //function to fit the zoom to the view
-function fitzoom(){
+/*function fitzoom(){
   var wGroup = new paper.Group();
   //listing drawed paths
   for(var i = 0; i < window.thisPage().drawed.length; i++)
@@ -407,7 +354,7 @@ function fitzoom(){
   window.scalePoint = wGroup.bounds.center.subtract(paper.view.center);
   window.scaleFactor = Math.min((paper.view.bounds.width/wGroup.bounds.width),(paper.view.bounds.height/wGroup.bounds.height));
   saveTransform();
-}
+}*/
 
 /*//function to ask node server to generate pdf
 function paths2send(source_array){
@@ -580,6 +527,7 @@ function initCanvasElements(){
   setCanvasDims("fromMaster");
   setCanvasDims("forPdf");
   setCanvasDims("paper");
+  $("#paper")[0].height = 518;
 
   //init view
   window.view = new View({
