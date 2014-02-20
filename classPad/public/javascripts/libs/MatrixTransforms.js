@@ -20,6 +20,13 @@ function Matrix(a, b, c, d, e, f) {
   this.transformPoint = function (x, y) { 
     return new Point (this.a * x + this.c * y + this.e, this.b * x + this.d * y + this.f ); 
   };
+  //to get a (separate) copy of the current matrix
+  this.getCopy = function(){
+    return new Matrix(
+      this.a, this.b, this.c,
+      this.d, this.e, this.f
+      );
+  };
 }
 
 var identity = new Matrix();
@@ -31,6 +38,21 @@ function createRotateMatrix(alpha) { return new Matrix(Math.cos(alpha), Math.sin
 function WorldTransform() {
   this.w2v = new Matrix();
   this.v2w = new Matrix();
+  this.stack = new Array();
+
+  this.push = function () {
+    this.stack.push(this.w2v);
+    this.stack.push(this.v2w);
+  };
+  
+  this.pop = function (discard) {
+    if (!this.stack.length) return;
+    var v2w = this.stack.pop();
+    var w2v = this.stack.pop();
+    if (!discard) {
+      this.v2w = v2w; this.w2v = w2v;
+    }
+  };
 
   this. reset = function() {
     this.w2v = new Matrix();

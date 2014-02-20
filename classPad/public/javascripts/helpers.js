@@ -42,6 +42,7 @@ function drawPath(path,ctx) {
     ctx.strokeStyle = path.strokeColor;
     ctx.lineWidth = path.strokeWidth;
     ctx.globalCompositeOperation = path.blendMode;
+    ctx.setLineDash([]);
     //drawing
     ctx.moveTo( pts[0].x, pts[0].y);
     for(var i = 0; i < pts.length; i++)
@@ -57,6 +58,7 @@ function drawGrid(offsetY,offsetX){
   var inv_zoom = 1.0 / window.view.zoom;
 
   var mid_pixel_coord = 0.5 * inv_zoom;
+  var W_mpc = W.v2w.transformPoint(mid_pixel_coord,mid_pixel_coord);
 
   console.log("drawGrid");
 
@@ -67,34 +69,34 @@ function drawGrid(offsetY,offsetX){
   if(typeof offsetX != "undefined")
   {
     //vertical lines
-    for(var i=TOPLEFT.x; i < BOTTOMRIGTH.x; i+=offsetX)
+    for(var i=W_mpc.x; i < BOTTOMRIGTH.x; i+=offsetX)
       drawPath(new Path({
         points: [new Point(i, TOPLEFT.y), new Point(i,BOTTOMRIGTH.y)],
         strokeColor: 'gray',
-        strokeWidth: 1 * inv_zoom
+        strokeWidth: inv_zoom
       }),bCtx);
-    /*for(var i=mid_pixel_coord - offsetX; i > TOPLEFT.x; i-=offsetX)
+    for(var i=W_mpc.x - offsetX; i > TOPLEFT.x; i-=offsetX)
       drawPath(new Path({
          points: [new Point(i, TOPLEFT.y), new Point(i,BOTTOMRIGTH.y)],
         strokeColor: 'gray',
-        strokeWidth: 1 * inv_zoom
-      }),bCtx);*/
+        strokeWidth: inv_zoom
+      }),bCtx);
   }
   else
     offsetY *=1.5; //rows only
   //horizontal lines
-  for(var i=TOPLEFT.y; i < BOTTOMRIGTH.y; i+=offsetY)
+  for(var i=W_mpc.y; i < BOTTOMRIGTH.y; i+=offsetY)
    drawPath(new Path({
       points: [new Point(TOPLEFT.x,i), new Point(BOTTOMRIGTH.x,i)],
       strokeColor: 'gray',
-      strokeWidth: 1 * inv_zoom
+      strokeWidth: inv_zoom
     }),bCtx);
-  /*for(var i=mid_pixel_coord-offsetY; i > TOPLEFT.x; i-=offsetY)
+  for(var i=W_mpc.y-offsetY; i > TOPLEFT.x; i-=offsetY)
     drawPath(new Path({
       points: [new Point(TOPLEFT.x,i), new Point(BOTTOMRIGTH.x,i)],
       strokeColor: 'gray',
-      strokeWidth: 1 * inv_zoom
-    }),bCtx);*/
+      strokeWidth: inv_zoom
+    }),bCtx);
  }
 
 //clear/load canvas (background/paper/fromMaster)
@@ -144,7 +146,7 @@ function loadCanvas(jsonArray,dstArray,ctx){
     var path = new Path({
       strokeColor: obj.strokeColor,
       strokeWidth: obj.strokeWidth,
-      blendMode: obj.blendMode,
+      blendMode: obj.blendMode
     });
     //path.points = obj.points.slice(); 
     for(var j=0; j < obj.points.length; j++)
@@ -208,6 +210,7 @@ function refresh(){
   //redraw
   redrawBackground();
   loadCanvas(window.thisPage().received,window.thisPage().ofMaster,mCtx);
+  //loadCanvas(window.thisPage().saved, window.thisPage().restored,dCtx);
   loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
 }
 
@@ -248,22 +251,6 @@ function calculateDelta(newPoint,startPoint){
   return {x: newPoint.x - startPoint.x, y: newPoint.y - startPoint.y};
 }
 
-//we have to scale all of 3 layers canvas!
-function zoomAndPan(sF,sP){
-  //Registering transformations
-  saveTransform(sF,sP);
-}
-
-//saving transform point and factor to lazy redraw
-function saveTransform(sF,sP){
-  window.view.zoom *= sF;   // set zoom
-  //console.log("window.view.zoom AGGIORNATO A: ");
-  //console.log(window.view.zoom);
-
-  //window.view.center = sP;  // set center
-  //window.toRedraw = true;
-  transformView(window.view,sF,sP);
-}
 
 function redrawBackground(){
   //   Redrawing the background
@@ -276,29 +263,45 @@ function redrawBackground(){
   }
 }
 
+//we have to scale all of 3 layers canvas!
+function zoomAndPan(sF,sP){
+  //Registering transformations
+  saveTransform(sF,sP);
+}
+
+//saving transform point and factor to lazy redraw
+function saveTransform(sF,sP){
+  window.view.zoom *= sF;   // set zoom
+  //window.view.center = sP;  // set center
+  //window.toRedraw = true;
+  transformView(sF,sP);
+}
 
 //update the view
-function transformView(view,sF,sP){
+function transformView(sF,sP){
   //var ctx = view.canvas.getContext("2d");
   
   //make clean
   clearCanvas(window.bCnvs);
-  //identity.transform(window.dCtx);
-  clearCanvas(view.canvas);
+  clearCanvas(window.mCnvs);
+  clearCanvas(window.dCnvs);
   restoreCleanPage();
 
+  //transorm matrix
   W.scaleAt(sP,sF);
 
+  //apply the transformation to canvases contexts
   W.w2v.transform(window.bCtx);
+  W.w2v.transform(window.mCtx);
   W.w2v.transform(window.dCtx);
 
-  //drawing
+  //re-drawing
   redrawBackground();
+  loadCanvas(window.thisPage().received,window.thisPage().ofMaster,dCtx);
   loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
 
   //just redrawed!
   //window.toRedraw = false;
-  //view.setCenter(new Point(view.center.x + sP.x, view.center.y + sP.y));
 }
 
 /*//transform!
@@ -327,8 +330,8 @@ function transMonitor(){
 
 
 //function to fit the zoom to the view
-/*function fitzoom(){
-  var wGroup = new paper.Group();
+function fitzoom(){
+  var wGroup = new Group();
   //listing drawed paths
   for(var i = 0; i < window.thisPage().drawed.length; i++)
   {
@@ -347,14 +350,15 @@ function transMonitor(){
     var thisPath = window.thisPage().ofMaster[i];
     wGroup.addChild(thisPath);
   }
-  //now that we have added all paths in view...
-  //paper.view.setCenter(wGroup.bounds.center);
-  //paper.view.setZoom(Math.min(paper.view.zoom,Math.min((paper.view.bounds.width/wGroup.bounds.width),(paper.view.bounds.height/wGroup.bounds.height))));
-  //saving the new center and the new zoom factor into global variables
-  window.scalePoint = wGroup.bounds.center.subtract(paper.view.center);
-  window.scaleFactor = Math.min((paper.view.bounds.width/wGroup.bounds.width),(paper.view.bounds.height/wGroup.bounds.height));
-  saveTransform();
-}*/
+  var TOPLEFT = W.v2w.transformPoint(0,0);
+  var BOTTOMRIGTH = W.v2w.transformPoint(dCnvs.clientWidth,dCnvs.clientHeight);
+  var pageBounds = new Rectangle({x: TOPLEFT.x,
+                                  y: TOPLEFT.y,
+                                  width: BOTTOMRIGTH.x,
+                                  height: BOTTOMRIGTH.y
+                                });
+  wGroup.fitBounds(pageBounds);// i have to transform them in world coordinates?
+}
 
 /*//function to ask node server to generate pdf
 function paths2send(source_array){
@@ -405,8 +409,18 @@ function pdfRequester(){
 
 //Create a temporary canvas with the content of the current page
 function exportTempCanvas(page){
-  /*//creating group
-  var gruppo = Group();*/
+  //creating group
+  var gruppo = new Group();
+  //adding to the group eveny element drawed in the page
+  for(var i = 0; i < page.drawed.length; i++)
+    gruppo.addChild(page.drawed[i]);
+  for(var i = 0; i < page.loaded.length; i++)
+    gruppo.addChild(page.loaded[i]);
+  for(var i = 0; i < page.restored.length; i++)
+    gruppo.addChild(page.restored[i]);
+  for(var i = 0; i < page.ofMaster.length; i++)
+    gruppo.addChild(page.ofMaster[i]);
+
   //create an HIDDEN html temporary canvas to render the content of the page
   var canvas = document.createElement('canvas');
   var ctx = canvas.getContext('2d');
@@ -414,13 +428,9 @@ function exportTempCanvas(page){
   canvas.setAttribute('style','visibility: hidden;');
   document.body.appendChild(canvas);
 
-  //now render the content of the page to the canvas using the loadCanvas function
-  loadCanvas(page.received,page.ofMaster,ctx);
-  loadCanvas(page.PgArray,page.drawed,ctx);
-
-  /*//now that i have group i should fit the view to landscape A4 page format
-  var A4Layout = new Rectangle(0,0,8.27 * 72,11.69 * 72); //in inch 8.27 × 11.69 at 72dpi	
-  // gruppo.fitBounds(A4Layout);*/
+  //now that i have group i should fit the view to landscape A4 page format
+  //var A4Layout = new Rectangle(0,0,8.27 * 72,11.69 * 72); //in inch 8.27 × 11.69 at 72dpi	
+  //gruppo.fitBounds(A4Layout);
 
   /*var res = paths2send(gruppo.children);
   //Deleting groups paths
@@ -527,7 +537,7 @@ function initCanvasElements(){
   setCanvasDims("fromMaster");
   setCanvasDims("forPdf");
   setCanvasDims("paper");
-  $("#paper")[0].height = 518;
+  window.dCnvs.height = window.bCnvs.height;
 
   //init view
   window.view = new View({

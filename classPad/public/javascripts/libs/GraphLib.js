@@ -6,6 +6,11 @@ function Point(x,y){
 Point.prototype.getDistance = function(p){
 	return Math.sqrt(((p.x - this.x)*(p.x - this.x)) + ((p.y - this.y)*(p.y - this.y)));
 }
+//help functionality to get the convex hull algo to work
+Point.prototype.toArray = function(){
+	return [this.x,this.y];
+}
+
 
 // Path
 function Path(props){
@@ -69,6 +74,7 @@ Group.prototype.hasChildren = function(){
 	else
 		return false;
 }
+
 Group.prototype.addChild = function(path){
 	this.children.push(path);
 }
@@ -86,25 +92,168 @@ Group.prototype.hitTest = function(point){
 Group.prototype.translate = function(delta){
 	for(var i = 0; i < this.children.length; i++)
 		{
-			//create a temp copy of the object
+			/*//create a temp copy of the object
 			var p = new Path({
 				points: this.children[i].points.slice(),
 				strokeColor: this.children[i].strokeColor,
 				strokeWidth: this.children[i].strokeWidth,
 				blendMode: this.children[i].blendMode
-			});
+			});*/
+			var p = this.children[i];
 			//translate by delta each point
 			p.move(delta.x,delta.y);
 			//append the new path at the end of the group
-			this.addChild(p);
+			//this.addChild(p);
 			//append the new path to the PgArray (JSON)
-			window.thisPage().PgArray.push(p.toString());
+			//window.thisPage().PgArray.push(p.toString());
 			//deleting the old version from the PgArray
-			window.thisPage().PgArray.remove(this.children[i].toString());
+			//window.thisPage().PgArray.remove(this.children[i].toString());
 			//remove the old version of the path
-			this.children.remove(this.children[i]);
+			//this.children.remove(this.children[i]);
 		}
 }
+
+//implementing the convex hull algorithm
+Group.prototype.getBounds = function(){
+	//commodity functions
+	function getDistant(cpt, bl) {
+    	var Vy = bl[1][0] - bl[0][0];
+    	var Vx = bl[0][1] - bl[1][1];
+    	return (Vx * (cpt[0] - bl[0][0]) + Vy * (cpt[1] -bl[0][1]))
+	}
+
+
+	function findMostDistantPointFromBaseLine(baseLine, points) {
+    	var maxD = 0;
+    	var maxPt = new Array();
+    	var newPoints = new Array();
+    	for (var idx in points) {
+        	var pt = points[idx];
+        	var d = getDistant(pt, baseLine);
+        
+        	if ( d > 0) {
+           		newPoints.push(pt);
+        	} else {
+            	continue;
+        	}
+        
+        	if ( d > maxD ) {
+            	maxD = d;
+            	maxPt = pt;
+        	}
+    	} 
+   		return {'maxPoint':maxPt, 'newPoints':newPoints}
+	}
+
+	//recursive quickhull algo
+	var allBaseLines = new Array();
+	function buildConvexHull(baseLine, points) {
+	    
+	    allBaseLines.push(baseLine)
+	    var convexHullBaseLines = new Array();
+	    var t = findMostDistantPointFromBaseLine(baseLine, points);
+	    if (t.maxPoint.length) // if there is still a point "outside" the base line
+	    { 
+	    	convexHullBaseLines = convexHullBaseLines.concat(buildConvexHull( [baseLine[0],t.maxPoint], t.newPoints));
+	    	convexHullBaseLines = convexHullBaseLines.concat(buildConvexHull( [t.maxPoint,baseLine[1]], t.newPoints));
+	        return convexHullBaseLines;
+	    } else {  // if there is no more point "outside" the base line, the current base line is part of the convex hull
+	        return [baseLine];
+	    }    
+	}
+
+	function getConvexHull(points) {
+	    //find first baseline
+	    var maxX, minX;
+	    var maxPt, minPt;
+	    for (var idx in points) {
+	        var pt = points[idx];
+	        if (pt[0] > maxX || !maxX) {
+	            maxPt = pt;
+	            maxX = pt[0];
+	        }
+	        if (pt[0] < minX || !minX) {
+	            minPt = pt;
+	            minX = pt[0];
+	        }
+	    }
+	    var ch = [].concat(buildConvexHull([minPt, maxPt], points),
+	                       buildConvexHull([maxPt, minPt], points))
+	    return ch;
+	}
+
+	//getting the points on the perimeter of the convex hull of the group
+	var pts = [];
+	for(var i=0; i < this.children.length; i++)
+	 pts = pts.concat(this.children[i].points.slice());
+	for(var i=0; i < pts.length; i++)
+	 pts[i] = pts[i].toArray();
+	//getting the convex hull on the perimeter of the group!
+	var perimeter = getConvexHull(pts);
+	//try to represent that perimeter!
+	//perimeter is an array of 2 points (i think segments)
+	var PtsPerimeter = [];
+	for(var i = 0; i < perimeter.length; i++)
+	{
+		var pnts = [];
+		for(var j = 0; j < perimeter[i].length; j++)
+			pnts.push(new Point(perimeter[i][j][0],perimeter[i][j][1]));
+
+		var p = new Path({
+		points: pnts,
+		strokeColor : "orange",
+		strokeWidth : 5
+		});
+		
+		drawPath(p,window.dCtx);
+		PtsPerimeter = PtsPerimeter.concat(pnts);
+	}
+	//in PtsPerimeter now i should find the points of the convex hull polygon that i have to transform into a rectangle
+	var min = new Point(1000000,1000000),
+		max = new Point(-1,-1);
+	for(var i = 0; i < PtsPerimeter.length; i++)
+	{	
+		var p = PtsPerimeter[i];
+		if(p.x < min.x)
+			min.x = p.x;
+		if(p.y < min.y)
+			min.y = p.y;
+		if(p.x > max.x)
+			max.x = p.x;
+		if(p.y > max.y)
+			max.y = p.y;
+	}
+	//now i should have into the max & min points the two points of the diagonal of the rects so
+	window.dCtx.strokeStyle = "purple";
+	window.dCtx.strokeRect(min.x,min.y,max.x - min.x, max.y - min.y);
+	return new Rectangle({
+		x: min.x,
+		y: min.y,
+		width: max.x - min.x, 
+		height: max.y - min.y
+	});
+};
+
+//fitbounds method
+Group.prototype.fitBounds = function(rect){
+	/*//saving the matrices
+	var v2wcp = W.v2w.getCopy();
+	var w2vcp = W.w2v.getCopy();
+	W.push();
+	W.v2w = v2wcp;
+	W.w2v = w2vcp;
+	//i guess if a really want to restore the previous matrices or not..i think not...*/
+	var groupBounds = this.getBounds(); //i punti sono in coordinate mondo!
+	var viewBounds = rect;
+	//calculating the scalepoint
+	var sP = new Point(viewBounds.x - groupBounds.x,viewBounds.y - groupBounds.y);
+	//calculating the scalefactor
+	var sF = Math.min(viewBounds.width/groupBounds.width,
+					   viewBounds.height/groupBounds.height);
+	//now i'll get the info that i need to apply the scaleAt method
+	transformView(sF,sP);
+};
+
 
 // Rectangle
 function Rectangle(props){

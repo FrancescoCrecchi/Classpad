@@ -42,14 +42,13 @@ html(lang='en')
       var activeTool;
       //View
       var view; //init when canvas is loaded
-      var translatePos; //half canvas point
       
       //commodity variables
       var td1,mdCb;
       var scaleFactor = 1;
       var scalePoint = new Point(0,0);
       var interLines = 20;
-      var pdfLoaded = false;
+      //var pdfLoaded = false;
       var iWasDrawing;
       var bgnd = "none"; //default to none
 
@@ -62,11 +61,11 @@ html(lang='en')
       var classTitle = "#{title}"; //getting the title from jade
 
       //To redraw at 30fps
-      var toRedraw = false;
+      //var toRedraw = false;
 
       //Matrix
       var W = new WorldTransform();
-      var identity = new Matrix();
+      //var identity = new Matrix();
 
       //when all DOM is ready
       document.onready = function(){

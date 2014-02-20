@@ -48,13 +48,13 @@ function Pen(sColor,sWidth,blendMode){
 	this.onMouseUp = function(){
 	  //window.thisPage().drawed.last().simplify();
 	  //undo/redo variabile
-	  //window.iWasDrawing = true;
-	  /*if(window.thisPage().drawed.length > 0)
+	  window.iWasDrawing = true;
+	  if(window.thisPage().drawed.length > 0)
 	  {
 				document.getElementById("undo").disabled = false;
 				if($("#undo").hasClass("disabled"))
 					$("#undo").removeClass("disabled");
-	  }*/
+	  }
 	  //Save the page content
 	  window.thisPage().PgArray.push(window.thisPage().drawed.last().toString()); //toString metod defined in helpers
 	  //Close canvas path
@@ -73,7 +73,7 @@ function Selector(){
  	var dragging = false;
   	var mythis = this;
   	var startPoint;
-  	//var groupRef;
+  	var groupRef;
 
     //Event listeners
     
@@ -87,18 +87,19 @@ function Selector(){
 		//saving the startPoint
 		startPoint = new Point(point.x,point.y);
 		//i have to remember that translation!
-		//groupRef = new Array();
-		/*for(var i = 0; i < window.selector.selectGroup.children.length; i++)
+		groupRef = new Array();
+		for(var i = 0; i < window.selector.selectGroup.children.length; i++)
 		{
 	  		var thisPath = window.selector.selectGroup.children[i];
 	  		groupRef.push(window.thisPage().PgArray.getIndexOf(thisPath.toString())); //pushing the index
-		}*/
+		}
 		//i'm dragging!
 		dragging = true;
 		pressed = false;
       }
       else //start creating a new group
       {
+      	refresh();
 		//deselect eventual paths selected
 		if(typeof mythis.selectGroup != "undefined" && mythis.selectGroup.children.length > 0)
 		{
@@ -138,11 +139,12 @@ function Selector(){
 		while(window.thisPage().drawed.length != 0)
 			window.thisPage().drawed.pop();
 
-		dCtx.setLineDash([]);
+		//drawing the dashed rectangle
+		//dCtx.setLineDash([]);
 		loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
 		dCtx.strokeStyle = "blue";
 		dCtx.globalCompositeOperation = "source-over";
-		dCtx.lineWidth= 2;///window.pad.drwScope.view.zoom,
+		dCtx.lineWidth= 2 / window.view.zoom,
 		dCtx.setLineDash([10,4]);
 		dCtx.strokeRect(upPoint.x,upPoint.y,point.x - upPoint.x,point.y - upPoint.y);
       }
@@ -150,12 +152,11 @@ function Selector(){
       {
 	  	var dlt = calculateDelta(point,startPoint);
 	  	startPoint = new Point(startPoint.x + dlt.x, startPoint.y + dlt.y);
-	  	console.log("DEVO TRANSLARE DI:" + dlt);
 	  	mythis.selectGroup.translate(dlt);
 	  	dCtx.setLineDash([]);
 		//updating the thisPage().PgArray
-		/*for(var i = 0; i < groupRef.length; i++)
-	 		window.thisPage().PgArray[groupRef[i]] = mythis.selectGroup.children[i].toString(); //hope that works!*/
+		for(var i = 0; i < groupRef.length; i++)
+	 		window.thisPage().PgArray[groupRef[i]] = mythis.selectGroup.children[i].toString(); //hope that works!
 	 	refresh();
       }
     }
@@ -186,6 +187,9 @@ function Selector(){
 	    		mythis.selectGroup.addChild(thisPath);
 	 		 }
 		}
+
+		//EVEN RESTORED PATHS!!!!!!!!!!!!!
+
 		//highliting the paths in group
 		for(var j=0 ; j <  mythis.selectGroup.children.length; j++)
 		{
@@ -224,12 +228,12 @@ function Selector(){
      	var l = window.selector.selectGroup.children.length;
       	for(var i = 0; i < l; i++)
         	window.selector.selectGroup.children.pop(); 
-	
-		/*//empting the groupref array
+		
+
+		//empting the groupref array
 		var len = groupRef.length;
 		for(var i = 0; i < len; i++)
 			groupRef.pop();
-		*/
 
 		mythis.selectGroup.onMouseUp = null;
 		mythis.selectGroup.onMouseDrag = null;
