@@ -183,7 +183,7 @@ Group.prototype.getBounds = function(){
 	}
 
 	//getting the points on the perimeter of the convex hull of the group
-	var pts = [];
+	var pts = []; //ALL POINTS ARE IN WORLD COORDINATES
 	for(var i=0; i < this.children.length; i++)
 	 pts = pts.concat(this.children[i].points.slice());
 	for(var i=0; i < pts.length; i++)
@@ -199,13 +199,13 @@ Group.prototype.getBounds = function(){
 		for(var j = 0; j < perimeter[i].length; j++)
 			pnts.push(new Point(perimeter[i][j][0],perimeter[i][j][1]));
 
-		var p = new Path({
+		/*var p = new Path({
 		points: pnts,
 		strokeColor : "orange",
 		strokeWidth : 5
 		});
 		
-		drawPath(p,window.dCtx);
+		drawPath(p,window.dCtx);*/
 		PtsPerimeter = PtsPerimeter.concat(pnts);
 	}
 	//in PtsPerimeter now i should find the points of the convex hull polygon that i have to transform into a rectangle
@@ -224,8 +224,8 @@ Group.prototype.getBounds = function(){
 			max.y = p.y;
 	}
 	//now i should have into the max & min points the two points of the diagonal of the rects so
-	window.dCtx.strokeStyle = "purple";
-	window.dCtx.strokeRect(min.x,min.y,max.x - min.x, max.y - min.y);
+	/*window.dCtx.strokeStyle = "purple";
+	window.dCtx.strokeRect(min.x,min.y,max.x - min.x, max.y - min.y);*/
 	return new Rectangle({
 		x: min.x,
 		y: min.y,
@@ -234,24 +234,42 @@ Group.prototype.getBounds = function(){
 	});
 };
 
-//fitbounds method
-Group.prototype.fitBounds = function(rect){
-	/*//saving the matrices
-	var v2wcp = W.v2w.getCopy();
-	var w2vcp = W.w2v.getCopy();
-	W.push();
-	W.v2w = v2wcp;
-	W.w2v = w2vcp;
-	//i guess if a really want to restore the previous matrices or not..i think not...*/
-	var groupBounds = this.getBounds(); //i punti sono in coordinate mondo!
-	var viewBounds = rect;
-	//calculating the scalepoint
-	var sP = new Point(viewBounds.x - groupBounds.x,viewBounds.y - groupBounds.y);
-	//calculating the scalefactor
-	var sF = Math.min(viewBounds.width/groupBounds.width,
-					   viewBounds.height/groupBounds.height);
-	//now i'll get the info that i need to apply the scaleAt method
-	transformView(sF,sP);
+//fitbounds method, rect in View coordinates
+Group.prototype.fitBounds = function(rectangle){
+
+	/*window.dCtx.strokeWidth = 3;
+	window.dCtx.strokeStyle = 'red';
+	window.dCtx.strokeRect(rectangle.x,rectangle.y,rectangle.width,rectangle.height);
+*/
+	//obtaining bounds of the group of paths in WORLD coordinates
+	var bounds = this.getBounds();
+
+	/*window.dCtx.strokeStyle = 'green';
+	window.dCtx.strokeRect(bounds.x,bounds.y,bounds.width,bounds.height);
+*/
+	//calculating ratios
+	/*var sF = Math.min(rectangle.width / bounds.width, rectangle.height / bounds.height);*/
+	var itemRatio = bounds.height / bounds.width,
+		rectRatio = rectangle.height / rectangle.width,
+		scale = (itemRatio < rectRatio) ? rectangle.width / bounds.width : rectangle.height / bounds.height;
+	var sF = scale;
+
+	var gCenter = new Point(bounds.x + bounds.width/2,bounds.y + bounds.height/2);
+	var rCenter = new Point(rectangle.x + rectangle.width/2,rectangle.y + rectangle.height/2);
+	/*var vgCenter = W.w2v.transformPoint(gCenter.x,gCenter.y);
+	var vrCenter = W.w2v.transformPoint(rCenter.x,rCenter.y);*/
+
+	var sP = new Point(rCenter.x - gCenter.x, rCenter.y - gCenter.y);
+	sP = W.w2v.transformDistance(sP.x,sP.y);
+
+  	//transorm matrix
+  	W.translate(sP.x,sP.y);
+
+  	W.w2v.transform(window.bCtx);
+	W.w2v.transform(window.mCtx);
+ 	W.w2v.transform(window.dCtx);
+
+  	transformView(sF,new Point(0,0));
 };
 
 
@@ -273,21 +291,23 @@ Rectangle.prototype.contains = function(point){
 //View
 function View(props){
 	this.canvas = props.canvas;
-	this.viewBounds = props.bounds, // Rectangle
-	this.zoom = props.zoomFactor || 1, //Number
-	this.center = props.center
-}
-View.prototype.getPageCenter = function(){
-	return W.v2w.transformPoint(this.center.x,this.center.y);
+	this.worldBounds = props.worldBounds,
+	this.worldCenter = props.worldCenter,
+	this.zoom = props.zoomFactor || 1 //Number
 }
 
-View.prototype.getPageBounds = function(){
-	var XY = W.v2w.transformPoint(this.viewBounds.x,this.viewBounds.y);
-	var WH = W.v2w.transformPoint(this.viewBounds.width,this.viewBounds.height);
-	return new Rectangle({
+View.prototype.getViewBounds = function(){
+	var XY = W.w2v.transformPoint(this.worldBounds.x,this.worldBounds.y);
+	var WH = W.w2v.transformDistance(this.worldBounds.width,this.worldBounds.height);
+	return bounds = new Rectangle({
 		x: XY.x,
 		y: XY.y,
 		width: WH.x,
 		height: WH.y
 	});
+}
+
+View.prototype.getViewCenter = function(){
+	var vBnds = this.getViewBounds();
+	return new Point(vBnds.x + vBnds.width/2, vBnds.y + vBnds.height/2);
 }

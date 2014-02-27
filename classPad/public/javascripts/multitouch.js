@@ -85,15 +85,13 @@ function multitouchInit() {
    //console.log((o.s1).getDistance(o.s2));
    var sF = (o.e1).getDistance(o.e2) / (o.s1).getDistance(o.s2);
    //calculating the scale factor
-   if((window.view.zoom * sF) > 1/5 && (window.view.zoom * sF) < 5)
-    window.scaleFactor = sF;
-   else
-    window.scaleFactor = 1;
+   if((window.view.zoom * sF) < 1/5 || (window.view.zoom * sF) > 5)
+    sF = 1;
 
   var mp1 = new Point((o.s2.x + o.s1.x)/2,(o.s2.y + o.s1.y)/2);
   var mp2 = new Point((o.e2.x + o.e1.x)/2,(o.e2.y + o.e1.y)/2);
-  window.scalePoint = new Point(mp2.x - mp1.x, mp2.y - mp1.y);
+  var sP = new Point(mp2.x - mp1.x, mp2.y - mp1.y);
 
-   zoomAndPan(window.scaleFactor, window.scalePoint);
+   zoomAndPan(sF, sP);
   }
 }

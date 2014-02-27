@@ -55,7 +55,12 @@ function drawPath(path,ctx) {
 };
 
 function drawGrid(offsetY,offsetX){
-  var inv_zoom = 1.0 / window.view.zoom;
+  var inv_zoom;
+
+  if(window.view.zoom < 1)
+    inv_zoom =  window.view.zoom;
+  else
+    inv_zoom = 1;
 
   var mid_pixel_coord = 0.5 * inv_zoom;
   var W_mpc = W.v2w.transformPoint(mid_pixel_coord,mid_pixel_coord);
@@ -103,9 +108,9 @@ function drawGrid(offsetY,offsetX){
 function clearCanvas(cnvs){
   var ctx = cnvs.getContext("2d");
   var XY = W.v2w.transformPoint(cnvs.clientLeft,cnvs.clientTop);
-  var WH = W.v2w.transformPoint(cnvs.clientWidth,cnvs.clientHeight);
+  var WH = W.v2w.transformDistance(cnvs.clientWidth,cnvs.clientHeight);
 
-  ctx.clearRect(XY.x,XY.y,WH.x - XY.x,WH.y - XY.y);
+  ctx.clearRect(XY.x,XY.y,WH.x,WH.y);
 }
 
 function restoreCleanPage(){
@@ -271,8 +276,6 @@ function zoomAndPan(sF,sP){
 
 //saving transform point and factor to lazy redraw
 function saveTransform(sF,sP){
-  window.view.zoom *= sF;   // set zoom
-  //window.view.center = sP;  // set center
   //window.toRedraw = true;
   transformView(sF,sP);
 }
@@ -300,6 +303,8 @@ function transformView(sF,sP){
   loadCanvas(window.thisPage().received,window.thisPage().ofMaster,dCtx);
   loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
 
+  //adjust view parameters
+  window.view.zoom *= sF;   // set zoom
   //just redrawed!
   //window.toRedraw = false;
 }
@@ -350,14 +355,17 @@ function fitzoom(){
     var thisPath = window.thisPage().ofMaster[i];
     wGroup.addChild(thisPath);
   }
-  var TOPLEFT = W.v2w.transformPoint(0,0);
-  var BOTTOMRIGTH = W.v2w.transformPoint(dCnvs.clientWidth,dCnvs.clientHeight);
-  var pageBounds = new Rectangle({x: TOPLEFT.x,
-                                  y: TOPLEFT.y,
-                                  width: BOTTOMRIGTH.x,
-                                  height: BOTTOMRIGTH.y
-                                });
-  wGroup.fitBounds(pageBounds);// i have to transform them in world coordinates?
+  
+
+  var XY = W.v2w.transformPoint(window.dCnvs.clientLeft,window.dCnvs.clientTop);
+  var WH = W.v2w.transformDistance(window.dCnvs.clientWidth,window.dCnvs.clientHeight);
+  var r = new Rectangle({
+    x: XY.x,
+    y: XY.y,
+    width: WH.x,
+    height: WH.y
+  });
+  wGroup.fitBounds(r);
 }
 
 /*//function to ask node server to generate pdf
@@ -428,15 +436,20 @@ function exportTempCanvas(page){
   canvas.setAttribute('style','visibility: hidden;');
   document.body.appendChild(canvas);
 
-  //now that i have group i should fit the view to landscape A4 page format
-  //var A4Layout = new Rectangle(0,0,8.27 * 72,11.69 * 72); //in inch 8.27 × 11.69 at 72dpi	
-  //gruppo.fitBounds(A4Layout);
+  //recreating the scene
+  loadCanvas(page.received,page.ofMaster,ctx);
+  loadCanvas(page.PgArray,page.drawed,ctx);
+  loadCanvas(page.saved,page.restored,ctx);
+
+  /*//now that i have group i should fit the view to landscape A4 page format
+  var A4Layout = new Rectangle(0,0,8.27 * 72,11.69 * 72); //in inch 8.27 × 11.69 at 72dpi	
+  gruppo.fitBounds(A4Layout);*/
 
   /*var res = paths2send(gruppo.children);
   //Deleting groups paths
   gruppo.removeChildren();*/
 
-  var res = page.ofMaster.concat(page.drawed);
+  var res = (page.ofMaster.concat(page.drawed)).concat(page.restored);
 
   //remove temporary canvas
   document.body.removeChild(canvas);
@@ -542,12 +555,12 @@ function initCanvasElements(){
   //init view
   window.view = new View({
     canvas: window.dCnvs,
-    bounds: new Rectangle({ //ACHTUNG! Probably we should use a view per canvas so 3/4 views at all.
+    worldBounds: new Rectangle({ 
                   x: dCnvs.clientLeft,
                   y: dCnvs.clientTop,
                   width: dCnvs.clientWidth,
                   height: dCnvs.clientHeight
     }),
-    center: new Point(window.dCnvs.clientLeft + window.dCnvs.clientWidth/2, window.dCnvs.clientTop + window.dCnvs.clientHeight/2)
+    worldCenter: new Point(window.dCnvs.clientLeft + window.dCnvs.clientWidth/2, window.dCnvs.clientTop + window.dCnvs.clientHeight/2)
   });
 }

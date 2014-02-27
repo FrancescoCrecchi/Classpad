@@ -17,9 +17,15 @@ function Matrix(a, b, c, d, e, f) {
   };
   
   this.transform = function (ctx) { ctx.setTransform(this.a, this.b, this.c, this.d, this.e, this.f); };
+
   this.transformPoint = function (x, y) { 
     return new Point (this.a * x + this.c * y + this.e, this.b * x + this.d * y + this.f ); 
   };
+
+  this.transformDistance = function (x, y) { 
+    return new Point (this.a * x + this.c * y, this.b * x + this.d * y); 
+  };
+
   //to get a (separate) copy of the current matrix
   this.getCopy = function(){
     return new Matrix(
@@ -83,9 +89,10 @@ function WorldTransform() {
   };
 
   this.scaleAt = function(sP,sF){
-    this.translate(-window.view.center.x, -window.view.center.y);
+    var c = window.view.getViewCenter();
+    this.translate(-c.x, -c.y);
     this.translate(sP.x,sP.y);
     this.scale(sF,sF);
-    this.translate(window.view.center.x, window.view.center.y);
+    this.translate(c.x, c.y);
   };
 }

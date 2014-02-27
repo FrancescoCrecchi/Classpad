@@ -200,7 +200,7 @@ function Selector(){
 				window.dCtx.strokeStyle = "blue";
 				window.dCtx.strokeWidth = 2;
 				window.dCtx.beginPath();
-				window.moveTo(p.points[0].x,p.points[0].y);
+				window.dCtx.moveTo(p.points[0].x,p.points[0].y);
 				for(var k = 0; k < p.points.length; k++)
 					window.dCtx.lineTo(p.points[k].x,p.points[k].y);
 				window.dCtx.stroke();
