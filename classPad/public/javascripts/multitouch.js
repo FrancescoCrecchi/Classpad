@@ -88,10 +88,15 @@ function multitouchInit() {
    if((window.view.zoom * sF) < 1/5 || (window.view.zoom * sF) > 5)
     sF = 1;
 
-  var mp1 = new Point((o.s2.x + o.s1.x)/2,(o.s2.y + o.s1.y)/2);
-  var mp2 = new Point((o.e2.x + o.e1.x)/2,(o.e2.y + o.e1.y)/2);
-  var sP = new Point(mp2.x - mp1.x, mp2.y - mp1.y);
+   var mp1 = new Point((o.s2.x + o.s1.x)/2,(o.s2.y + o.s1.y)/2);
+   var mp2 = new Point((o.e2.x + o.e1.x)/2,(o.e2.y + o.e1.y)/2);
+
+   var sP = new Point(mp2.x - mp1.x, mp2.y - mp1.y);
 
    zoomAndPan(sF, sP);
   }
+
+  sensor.listen(canvas, TouchFeature.TouchDown, 'mousedown');
+  sensor.listen(canvas, TouchFeature.TouchUp, 'mouseup');
+  sensor.listen(canvas, TouchFeature.TouchMove, 'mousemove');
 }

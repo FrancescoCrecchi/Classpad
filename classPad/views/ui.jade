@@ -45,6 +45,7 @@ html(lang='en')
       
       //commodity variables
       var td1,mdCb;
+      var md;
       var scaleFactor = 1;
       var scalePoint = new Point(0,0);
       var interLines = 20;
@@ -61,7 +62,7 @@ html(lang='en')
       var classTitle = "#{title}"; //getting the title from jade
 
       //To redraw at 30fps
-      //var toRedraw = false;
+      var toRedraw = false;
 
       //Matrix
       var W = new WorldTransform();
@@ -73,10 +74,15 @@ html(lang='en')
         //transMonitor();
         initCanvasElements();
 
-        //document.addEventListener('touchmove',stopScrolling,false);
+        document.addEventListener('touchmove',stopScrolling,false);
         $("#paper").focus();
         $("#black").click();
       }
+
+      $(window).resize(function(){
+        initCanvasElements();
+        refresh();
+      });
       
     script(src='/javascripts/ui.js')
     block head_scripts
