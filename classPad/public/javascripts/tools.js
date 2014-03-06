@@ -60,6 +60,7 @@ function Pen(sColor,sWidth,blendMode){
 	  //Close canvas path
 	  dCtx.closePath();
 	  pressed = false;
+	  refresh();
 	}
 }
 

@@ -35,20 +35,26 @@ Path.prototype.toString = function () {
 function drawPath(path,ctx) {
   //drawing
   ctx.beginPath();
-  if(path.points.length > 0)
+  if(path.points.length > 1)
   {
+    var i;
     //init
-    var pts = path.points;
+    var pts = path.points; 
     ctx.strokeStyle = path.strokeColor;
     ctx.lineWidth = path.strokeWidth;
     ctx.globalCompositeOperation = path.blendMode;
     ctx.setLineDash([]);
     //drawing
     ctx.moveTo( pts[0].x, pts[0].y);
-    for(var i = 0; i < pts.length; i++)
+    for (i = 0; i < pts.length - 2; i ++)
     {
-      ctx.lineTo( pts[i].x,pts[i].y);
+      var xc = (pts[i].x + pts[i + 1].x) / 2;
+      var yc = (pts[i].y + pts[i + 1].y) / 2;
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
     }
+    // curve through the last two points
+    ctx.quadraticCurveTo(pts[i].x, pts[i].y, pts[i+1].x,pts[i+1].y);
+
     ctx.stroke();
     ctx.closePath();
   }  
