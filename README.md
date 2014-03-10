@@ -32,7 +32,6 @@ F.A.Q.
 =======
 
 Q: "How can I use Classpad?"
-
 A: "What you only need to do is to insert the Classpad URL into your device browser."
 
 Q: "Why Classpad is a webapp and what it means?"
