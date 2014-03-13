@@ -15,6 +15,9 @@ module.exports = function(database,httpServer,sessionStore,cookieParser){
       console.log(err);
       return;
     }
+    console.log("===================================================");
+    console.log(socket);
+    console.log("===================================================");
 
     //broadcast the sync adv
     socket.on('hello',function(id){

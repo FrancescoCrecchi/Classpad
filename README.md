@@ -37,5 +37,5 @@ A: "What you only need to do is to insert the Classpad URL into your device brow
 Q: "Why Classpad is a webapp and what it means?"
 A: "To let Classpad be usable from the most of users, we designed Classpad to be platform independent engeenering it as a webapp so you only need a web-browser (de-facto installed by default in every device you may have). As a webapp you don't need to download it from Apple/Google/Windows store because its logic and functionalities are accessible from your web browser. Generally speaking you may say that it is a website."
 
-Q: "How mouch does it costs?"
+Q: "How much does it costs?"
 A: "Classpad is open-source, and based on open-source tools, so it's completely free!"

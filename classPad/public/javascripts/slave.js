@@ -51,7 +51,7 @@ function lazyInit(){
         window.pad.Pages[data.cPg].received = data.PgArray;   //!!!!!!!!!!!!!!!!!!!!!!!!
         console.log("Pad integrated!");
 
-        //clearing the ofMaster paths
+       /* //clearing the ofMaster paths
         var ofML_i = window.pad.Pages[data.cPg].ofMaster.length;
         for(var j=0; j < ofML_i; j++)
           window.pad.Pages[data.cPg].ofMaster.pop();
@@ -61,7 +61,8 @@ function lazyInit(){
          //redrawing the middle canvas
       	 loadCanvas(window.thisPage().received,window.thisPage().ofMaster,mCtx);
       	 //refresh();
-        }
+        }*/
+        refresh();
         console.log("Pad updated!");
       });
     });
