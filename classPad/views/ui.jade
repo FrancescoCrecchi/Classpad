@@ -50,8 +50,9 @@ html(lang='en')
       var scalePoint = new Point(0,0);
       var interLines = 20;
       //var pdfLoaded = false;
-      var iWasDrawing;
+      var iWasDrawing; //for undo/redo purpose
       var bgnd = "none"; //default to none
+      var imWriting; //to check for refresh
 
       //canvases properties
       var dCnvs,mCnvs,bCnvs,pdfCnvs;
@@ -164,7 +165,7 @@ html(lang='en')
                   span.label small
                  button#medium.medium-pen
                   span.fa.fa-circle
-                  span.label medium
+                  span.label mid
                  button#big.large-pen
                   span.fa.fa-circle
                   span.label large

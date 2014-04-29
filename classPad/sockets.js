@@ -56,7 +56,7 @@ module.exports = function(database,httpServer,sessionStore,cookieParser){
               console.log("===================================================");
               console.log(clss);
               console.log("===================================================");
-      	      socket.broadcast.to(id).emit('mDraw',{'data': data,'id':id}); //data = array di primitive grafiche del mCanvas
+      	      socket.broadcast.to(id) .emit('mDraw',{'data': data,'id':id}); //data = array di primitive grafiche del mCanvas
       	      console.log("MDRAW MESSAGE SENT IN BROADCAST!"); 
       	    }
     	    });

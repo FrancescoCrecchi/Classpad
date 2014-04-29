@@ -7,6 +7,10 @@ function Pen(sColor,sWidth,blendMode){
 
 	//Event listener
 	this.onMouseDown = function(point){
+
+	  //imWriting true
+	  window.imWriting = true;
+
 	  //view point -> world point
 	  point = W.v2w.transformPoint(point.x,point.y);
 
@@ -46,6 +50,8 @@ function Pen(sColor,sWidth,blendMode){
 	}
 
 	this.onMouseUp = function(){
+	  //imWriting false
+	  window.imWriting = false;
 	  //window.thisPage().drawed.last().simplify();
 	  //undo/redo variabile
 	  window.iWasDrawing = true;

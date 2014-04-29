@@ -212,6 +212,7 @@ function bind2(tool){
 
 // Redraw the page function!
 function refresh(){
+  if(!window.imWriting) {
   //clearing canvases
   clearCanvas(window.bCnvs);
   clearCanvas(window.mCnvs);
@@ -223,6 +224,7 @@ function refresh(){
   loadCanvas(window.thisPage().received,window.thisPage().ofMaster,mCtx);
   //loadCanvas(window.thisPage().saved, window.thisPage().restored,dCtx);
   loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
+  }
 }
 
 
