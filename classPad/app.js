@@ -45,7 +45,7 @@ var cookieParser = express.cookieParser(sessionconf.secret);
 app.configure(function() { 
   // all environments
   //setLocalStrategy
-  app.set('port', process.env.PORT || 80);
+  app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.locals.pretty=true;
@@ -151,6 +151,12 @@ database.connect('mongodb://localhost/classPadDB',function() {
     app.post("/changeVisibility", routes.changeVisibility);
     //Render Pdf
     app.post("/exportAsPdf",routes.exportAsPdf);
+    //Download Pdf
+    app.get("/:file(*)",function(req,res){
+      var file = req.params.file;
+      res.download(file, function(){
+      });
+    });          
     
     //Starting server
     httpServer.listen(app.get('port'));

@@ -442,7 +442,7 @@ button#yellow span.fa {
 }
  /* ===[ Canvas ]=== */
  td.canvas {
-    height: 85%;
+   height: 100%;
 	 width: 100%;
  }
  #cnvsBg {
@@ -517,15 +517,4 @@ button#yellow span.fa {
   -moz-box-shadow: 0 0 5px 5px #00f;
   -webkit-box-shadow: 0 0 5px 5px #00f;
   box-shadow: 0 0 5px 5px #00f;
-}
-
-.footer {
-   background: rgba(235,235,235,1);
-   text-align: center;
-   border: 1px rgba(0,0,0,0.5);
-   padding: 0 0 0 0px;
-   margin: 0 0 0 0px;
-   font-family: "Lobster Two", cursive;
-   color: rgba(90, 104, 127, 1);
-   font-style: italic;
 }

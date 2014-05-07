@@ -2,7 +2,6 @@ var routes ={};
 var auth;
 var database;
 var PDFDocument = require('pdfkit');
-var fs = require('fs');
 
 //Create User (registration)
 routes.createUser = function(req,res){
@@ -149,17 +148,6 @@ routes.exportAsPdf = function(req,res){
     //in the req.body i expect to find the page array of the pad so for every page in the pad
     var pad = JSON.parse(req.body.pad);
 
-    var preamble = "";
-    if(req.user && req.user.username)
-      preamble = req.body.classTitle +"_"+ req.user.username +"_"+ new Date().toJSON();
-    else
-      preamble = req.body.classTitle +"_"+ "unknownUser" +"_"+ new Date().toJSON();
-
-    res.setHeader('Content-disposition', 'attachment; filename=' + preamble + '.pdf');
-
-    var stream = doc.pipe(res);
-    // var stream = doc.pipe(fs.createWriteStream('files/' + preamble + '.pdf'));
-    
     //for each page in pad
     for(var i = 0; i < pad.pages.length; i++)
     {
@@ -183,10 +171,14 @@ routes.exportAsPdf = function(req,res){
 	      }
       }
     }
-    //finalize PDF file
-    doc.end();
-
-    // stream.on('finish', function () { res.redirect('files/' + preamble +'.pdf'); });
+    res.setHeader('Content-Type', 'application/pdf'); 
+    var preamble = "";
+    if(req.user && req.user.username)
+      preamble = req.body.classTitle +"_"+ req.user.username +"_"+ new Date().toJSON();
+    else
+      preamble = req.body.classTitle +"_"+ "unknownUser" +"_"+ new Date().toJSON();
+    doc.write('files/' + preamble + '.pdf');
+    res.redirect('files/' + preamble +'.pdf');
   }
   else
     res.send(500,"couldn't create PDF!- #0");

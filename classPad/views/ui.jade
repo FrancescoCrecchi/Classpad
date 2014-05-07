@@ -75,7 +75,7 @@ html(lang='en')
         //transMonitor();
         initCanvasElements();
 
-        $("#paper")[0].addEventListener('touchmove',stopScrolling,false);
+        document.addEventListener('touchmove',stopScrolling,false);
         $("#paper").focus();
         $("#black").click();
       }
@@ -186,5 +186,3 @@ html(lang='en')
               canvas#forPdf
               canvas#fromMaster
               canvas#paper
-  div.footer
-    p.footer Created by Francesco Crecchi

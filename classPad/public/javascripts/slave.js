@@ -3,25 +3,10 @@ function lazyInit(){
   if(typeof socket != "undefined")
   {
     //hello message
-    var handshaked = false;
-
-    var Helloer = setInterval(function(){
-      if(!handshaked)
-      {
-        console.log("TRYING TO SEND hello MESSAGE!");
-        socket.emit("hello",window.classId);
-        handshaked = true;
-      }
-      else
-      {
-        clearInterval(Helloer);
-        console.log("handshaked");
-      }
-    },1000); //try to send the 'hello' message every second since reply
+    socket.emit("hello",window.classId);
 
     //registering on HELLO message callback 
     socket.on('HELLO',function(pad){
-      // console.log("HELLO MESSAGE RECEIVED!");
       for(var i = 0; i < pad.Pages.length; i++)
       {
         window.pad.Pages[i] = new Page();
