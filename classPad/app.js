@@ -151,12 +151,6 @@ database.connect('mongodb://localhost/classPadDB',function() {
     app.post("/changeVisibility", routes.changeVisibility);
     //Render Pdf
     app.post("/exportAsPdf",routes.exportAsPdf);
-    //Download Pdf
-    app.get("/:file(*)",function(req,res){
-      var file = req.params.file;
-      res.download(file, function(){
-      });
-    });          
     
     //Starting server
     httpServer.listen(app.get('port'));
