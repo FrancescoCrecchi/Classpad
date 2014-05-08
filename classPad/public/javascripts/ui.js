@@ -88,6 +88,11 @@ $(window).ready(function(){
     bind2(window.selector);
     setGlow("#select");
   });
+
+  $("#hand").on("click",function(){
+    bind2(window.hand);
+    setGlow("#hand");
+  });
   //============== Background ============================= 
   $("#grid").on("click", function(){
     clearCanvas(window.bCnvs);

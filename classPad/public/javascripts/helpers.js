@@ -85,13 +85,13 @@ function drawGrid(offsetY,offsetX){
         points: [new Point(i, TOPLEFT.y), new Point(i,BOTTOMRIGTH.y)],
         strokeColor: 'gray',
         strokeWidth: inv_zoom
-      }),bCtx);
+      }),window.bCtx);
     for(var i=W_mpc.x - offsetX; i > TOPLEFT.x; i-=offsetX)
       drawPath(new Path({
          points: [new Point(i, TOPLEFT.y), new Point(i,BOTTOMRIGTH.y)],
         strokeColor: 'gray',
         strokeWidth: inv_zoom
-      }),bCtx);
+      }),window.bCtx);
   }
   else
     offsetY *=1.5; //rows only
@@ -101,13 +101,13 @@ function drawGrid(offsetY,offsetX){
       points: [new Point(TOPLEFT.x,i), new Point(BOTTOMRIGTH.x,i)],
       strokeColor: 'gray',
       strokeWidth: inv_zoom
-    }),bCtx);
-  for(var i=W_mpc.y-offsetY; i > TOPLEFT.x; i-=offsetY)
+    }),window.bCtx);
+  for(var i=W_mpc.y-offsetY; i > TOPLEFT.y; i-=offsetY)
     drawPath(new Path({
       points: [new Point(TOPLEFT.x,i), new Point(BOTTOMRIGTH.x,i)],
       strokeColor: 'gray',
       strokeWidth: inv_zoom
-    }),bCtx);
+    }),window.bCtx);
  }
 
 //clear/load canvas (background/paper/fromMaster)
@@ -302,6 +302,9 @@ function transformView(sF,sP){
   W.scaleAt(sP,sF);
 
   //apply the transformation to canvases contexts
+  console.log("==================================");
+  console.log(W.w2v);
+  console.log("==================================");
   W.w2v.transform(window.bCtx);
   W.w2v.transform(window.mCtx);
   W.w2v.transform(window.dCtx);

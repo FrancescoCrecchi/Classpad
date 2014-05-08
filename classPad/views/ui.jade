@@ -25,10 +25,10 @@ html(lang='en')
     //script(src='/javascripts/libs/worker_loader.js')
     
     script(src='/javascripts/pad.js')
-    script(src='/javascripts/tools.js')
-    script(src='/javascripts/multitouch.js')
     script(src='/javascripts/libs/GraphLib.js')
     script(src='/javascripts/helpers.js')
+    script(src='/javascripts/tools.js')
+    script(src='/javascripts/multitouch.js')
 
     script(type='text/javascript').
       
@@ -39,6 +39,8 @@ html(lang='en')
       var pen = new Pen("black",7); //init
       var eraser = new Pen("black",10,"destination-out"); //init
       var selector = new Selector(); //init
+      var hand = new HandScroller(); //init
+
       var activeTool;
       //View
       var view; //init when canvas is loaded
@@ -179,6 +181,9 @@ html(lang='en')
                  button#select.btn.btn-large 
                   span.fa.fa-pencil-square-o
                   span.label select
+                 button#hand.btn.btn-large 
+                  span.fa.fa-pencil-square-o
+                  span.label hand
                .clear
            td.canvas    
             #cnvsBg.well.well-10

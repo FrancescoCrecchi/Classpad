@@ -6,6 +6,14 @@ function Point(x,y){
 Point.prototype.getDistance = function(p){
 	return Math.sqrt(((p.x - this.x)*(p.x - this.x)) + ((p.y - this.y)*(p.y - this.y)));
 }
+
+Point.prototype.getDistanceAlongAxes = function(p){
+	return {
+		x: (p.x - this.x),
+		y: (p.y - this.y)
+	};
+}
+
 //help functionality to get the convex hull algo to work
 Point.prototype.toArray = function(){
 	return [this.x,this.y];

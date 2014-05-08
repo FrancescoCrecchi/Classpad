@@ -250,3 +250,28 @@ function Selector(){
       }
     }
   }
+
+  function HandScroller(){
+  	var startPoint;
+  	var pressed = false;
+  	var K = 1; //empyric tests
+
+  	this.onMouseDown = function(point){
+  		pressed = true;
+	  	startPoint = new Point(point.x,point.y);
+  	};
+
+	this.onMouseDrag = function(point){
+		if(pressed)
+		{
+	  		var endPoint = new Point(point.x,point.y);
+	  		var sP = endPoint.getDistanceAlongAxes(startPoint);
+	  		zoomAndPan(1,new Point(-sP.x/K,-sP.y/K)); //im interested only in pan
+	  		startPoint = endPoint;
+		}
+  	};  
+
+  	this.onMouseUp = function(){
+  		pressed = false;
+  	}
+  }
