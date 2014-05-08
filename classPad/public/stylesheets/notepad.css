@@ -276,13 +276,12 @@
 	 /*text-shadow: rgba(0,0,0,0.2) -1px -1px, rgba(255,255,255,1) 1px 1px;*/
 	 color: rgba(90, 104, 127, 1);
 	 font-style: italic;
-	 padding-left: 40px;
 	 line-height: 40px;
  }
  .navbar .subtitle {
 	 font-size: 12px;
 	 font-style: italic;
-	 padding-left: 55px;	
+	 padding-left: 10%;	
 	color: rgba(118, 124, 141, 1);
 	margin-top:-5px; 
  }
@@ -304,7 +303,7 @@
  /* ===[ BUTTONS ]=== */
  .btn-toolbar {
 	 float: right;
-	 width: 650px;
+   padding-right: 5%;
 	font-family: "Lato", "Helvetica Neue", sans-serif;
  }
   .btn-toolbar .button-section {
@@ -341,10 +340,11 @@
 	 overflow: hidden;
  }
  .left-buttons {
-	 width: 10%;
+	 width: 15%;
 	 background: rgba(0,0,0,0.5);
 	 min-width: 158px;
  }
+ 
  .left-buttons .btn-toolbar,
  .left-buttons button,
  .left-buttons .btn-group {
@@ -442,7 +442,7 @@ button#yellow span.fa {
 }
  /* ===[ Canvas ]=== */
  td.canvas {
-    height: 85%;
+   height: 100%;
 	 width: 100%;
  }
  #cnvsBg {
@@ -528,4 +528,9 @@ button#yellow span.fa {
    font-family: "Lobster Two", cursive;
    color: rgba(90, 104, 127, 1);
    font-style: italic;
+}
+
+.responsive-container {
+  padding-left: 5%;
+  padding-bottom: 5%;
 }

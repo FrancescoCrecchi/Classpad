@@ -93,6 +93,14 @@ $(window).ready(function(){
     bind2(window.hand);
     setGlow("#hand");
   });
+  //============== Zoom ============================= 
+  $("#plus").on("click",function(){
+    zoomAndPan(2,new Point(0,0)); //only scale
+  });
+
+  $("#minus").on("click",function(){
+    zoomAndPan(1/2,new Point(0,0)); //only scale
+  });
   //============== Background ============================= 
   $("#grid").on("click", function(){
     clearCanvas(window.bCnvs);
@@ -156,7 +164,7 @@ $(window).ready(function(){
     if(!$("#undo").hasClass("disabled"))
      $("#undo").addClass("disabled");
     }
-    refresh();
+    window.toRedraw = true;
   });
   
   var tmpArray = new Array();
@@ -190,7 +198,7 @@ $(window).ready(function(){
       if(!$("#redo").hasClass("disabled"))
 	     $("#redo").addClass("disabled");
     }
-    refresh();
+    window.toRedraw = true;
   });
   // ========================================= FIT ZOOM ========================================
   $("#fitzoom").on("click", function(){

@@ -8,9 +8,6 @@ function Pen(sColor,sWidth,blendMode){
 	//Event listener
 	this.onMouseDown = function(point){
 
-	  //imWriting true
-	  window.imWriting = true;
-
 	  //view point -> world point
 	  point = W.v2w.transformPoint(point.x,point.y);
 
@@ -50,8 +47,7 @@ function Pen(sColor,sWidth,blendMode){
 	}
 
 	this.onMouseUp = function(){
-	  //imWriting false
-	  window.imWriting = false;
+
 	  //window.thisPage().drawed.last().simplify();
 	  //undo/redo variabile
 	  window.iWasDrawing = true;
@@ -66,7 +62,7 @@ function Pen(sColor,sWidth,blendMode){
 	  //Close canvas path
 	  dCtx.closePath();
 	  pressed = false;
-	  refresh();
+	  window.toRedraw = true;
 	}
 }
 
@@ -106,7 +102,7 @@ function Selector(){
       }
       else //start creating a new group
       {
-      	refresh();
+      	window.toRedraw = true;
 		//deselect eventual paths selected
 		if(typeof mythis.selectGroup != "undefined" && mythis.selectGroup.children.length > 0)
 		{
@@ -164,7 +160,7 @@ function Selector(){
 		//updating the thisPage().PgArray
 		for(var i = 0; i < groupRef.length; i++)
 	 		window.thisPage().PgArray[groupRef[i]] = mythis.selectGroup.children[i].toString(); //hope that works!
-	 	refresh();
+	 	window.toRedraw = true;
       }
     }
     

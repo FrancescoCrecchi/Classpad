@@ -61,6 +61,7 @@ function multitouchInit() {
 
  //pinch functionality
  function bind_pinch(id1,id2,obj){
+  
    var tm1 = new GroundTerm(TouchFeature.TouchMove, sameid(id1));
    var tm2 = new GroundTerm(TouchFeature.TouchMove, sameid(id2));
    var tu2 = new GroundTerm(TouchFeature.TouchUp, sameid(id2));

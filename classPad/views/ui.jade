@@ -54,7 +54,6 @@ html(lang='en')
       //var pdfLoaded = false;
       var iWasDrawing; //for undo/redo purpose
       var bgnd = "none"; //default to none
-      var imWriting; //to check for refresh
 
       //canvases properties
       var dCnvs,mCnvs,bCnvs,pdfCnvs;
@@ -74,8 +73,9 @@ html(lang='en')
       //when all DOM is ready
       document.onready = function(){
         lazyInit();
-        //transMonitor();
         initCanvasElements();
+
+        transMonitor();
 
         $("#paper")[0].addEventListener('touchmove',stopScrolling,false);
         $("#paper").focus();
@@ -85,6 +85,7 @@ html(lang='en')
       $(window).resize(function(){
         initCanvasElements();
         refresh();
+        //window.toRedraw = true;
       });
       
     script(src='/javascripts/ui.js')
@@ -101,6 +102,17 @@ html(lang='en')
               a.brand(href='/myclasses') ClassPad 
               .subtitle the best shared digital paper
           .btn-toolbar
+            table.button-section
+             tr
+              td
+               .btn-group
+                 button#plus.btn.btn-inverse
+                   i.fa.fa-plus
+                 button#minus.btn.btn-inverse
+                   i.fa.fa-minus
+                 .clear
+             tr
+              td.descr zoom
             table.button-section
              tr
               td
@@ -182,7 +194,7 @@ html(lang='en')
                   span.fa.fa-pencil-square-o
                   span.label select
                  button#hand.btn.btn-large 
-                  span.fa.fa-pencil-square-o
+                  span.fa.fa-hand-o-up
                   span.label hand
                .clear
            td.canvas    

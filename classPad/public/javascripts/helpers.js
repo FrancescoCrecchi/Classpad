@@ -68,13 +68,15 @@ function drawGrid(offsetY,offsetX){
   else
     inv_zoom = 1;
 
-  var mid_pixel_coord = 0.5 * inv_zoom;
-  var W_mpc = W.v2w.transformPoint(mid_pixel_coord,mid_pixel_coord);
+  //var mid_pixel_coord = 0.5 * inv_zoom;
+  //var W_mpc = W.v2w.transformDistance(mid_pixel_coord,mid_pixel_coord);
+  W_mpc = new Point(0,0);
 
   console.log("drawGrid");
 
   var bgCanvas = window.bCnvs;
   var TOPLEFT = W.v2w.transformPoint(0,0);
+  console.log(TOPLEFT);
   var BOTTOMRIGTH = W.v2w.transformPoint(bgCanvas.clientWidth,bgCanvas.clientHeight);
   
   if(typeof offsetX != "undefined")
@@ -212,7 +214,6 @@ function bind2(tool){
 
 // Redraw the page function!
 function refresh(){
-  if(!window.imWriting) {
   //clearing canvases
   clearCanvas(window.bCnvs);
   clearCanvas(window.mCnvs);
@@ -224,7 +225,7 @@ function refresh(){
   loadCanvas(window.thisPage().received,window.thisPage().ofMaster,mCtx);
   //loadCanvas(window.thisPage().saved, window.thisPage().restored,dCtx);
   loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
-  }
+  window.toRedraw = false;
 }
 
 
@@ -284,7 +285,7 @@ function zoomAndPan(sF,sP){
 
 //saving transform point and factor to lazy redraw
 function saveTransform(sF,sP){
-  //window.toRedraw = true;
+  window.toRedraw = true;
   transformView(sF,sP);
 }
 
@@ -293,26 +294,23 @@ function transformView(sF,sP){
   //var ctx = view.canvas.getContext("2d");
   
   //make clean
-  clearCanvas(window.bCnvs);
-  clearCanvas(window.mCnvs);
-  clearCanvas(window.dCnvs);
-  restoreCleanPage();
+  // clearCanvas(window.bCnvs);
+  // clearCanvas(window.mCnvs);
+  // clearCanvas(window.dCnvs);
+  // restoreCleanPage();
 
   //transorm matrix
   W.scaleAt(sP,sF);
 
   //apply the transformation to canvases contexts
-  console.log("==================================");
-  console.log(W.w2v);
-  console.log("==================================");
   W.w2v.transform(window.bCtx);
   W.w2v.transform(window.mCtx);
   W.w2v.transform(window.dCtx);
 
   //re-drawing
-  redrawBackground();
-  loadCanvas(window.thisPage().received,window.thisPage().ofMaster,dCtx);
-  loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
+  // redrawBackground();
+  // loadCanvas(window.thisPage().received,window.thisPage().ofMaster,dCtx);
+  // loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
 
   //adjust view parameters
   window.view.zoom *= sF;   // set zoom
@@ -320,29 +318,20 @@ function transformView(sF,sP){
   //window.toRedraw = false;
 }
 
-/*//transform!
-function TransformAll(){
-  //   Redrawing the background
-  if(window.bgnd != "none")
-  {
-    clearCanvas(bCnvs);
-    if(window.bgnd == "grid")
-      drawGrid(window.interLines,window.interLines);
-    else
-      drawGrid(window.interLines);
-  }
+//transform!
+function TransformAll(){ 
   refresh();
-}*/
+}
 
 //watchdog function to check toRedraw variable 
-/*function watchDogTransform(){
-  if(window.toRedraw != false && finishTransform)
-    transformView(window.view,window.scaleFactor,window.scalePoint);
+function watchDogTransform(){
+  if(window.toRedraw != false)
+    TransformAll();
 }
 
 function transMonitor(){
   setInterval(watchDogTransform,33.33); //execute the function 30 times in a second
-}*/
+}
 
 
 //function to fit the zoom to the view
@@ -377,6 +366,7 @@ function fitzoom(){
     height: WH.y
   });
   wGroup.fitBounds(r);
+  window.toRedraw = true;
 }
 
 /*//function to ask node server to generate pdf

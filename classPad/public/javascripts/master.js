@@ -24,7 +24,8 @@ function lazyInit(){
 });
   
 // =================== FWD ===================================================
-  document.getElementById("fwd").onclick = function(){
+document.getElementById("fwd").onclick = function(){
+  fitzoom();
   /*//check if some restored paths to save
   if(window.thisPage().restored.length > 0)
   {
@@ -86,6 +87,7 @@ function lazyInit(){
 
 // ================= Rwd =============================
 $("#rwd").on("click", function(){
+  fitzoom();
   /*//check if some restored paths to save
   if(window.thisPage().restored.length > 0)
   {
