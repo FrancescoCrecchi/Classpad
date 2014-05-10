@@ -21,10 +21,12 @@ html(lang='en')
     script(src='/javascripts/libs/GestITouch.js')
     script(src='/javascripts/libs/pdf.js')
     script(src='/javascripts/libs/MatrixTransforms.js')
+    script(src='/javascripts/libs/jquery.lightbox_me.js')
     //script(src='/javascripts/libs/compatibility.js')
     //script(src='/javascripts/libs/worker_loader.js')
     
     script(src='/javascripts/pad.js')
+    script(src='/javascripts/helpers.js')
     script(src='/javascripts/libs/GraphLib.js')
     script(src='/javascripts/helpers.js')
     script(src='/javascripts/tools.js')
@@ -40,6 +42,7 @@ html(lang='en')
       var eraser = new Pen("black",10,"destination-out"); //init
       var selector = new Selector(); //init
       var hand = new HandScroller(); //init
+      var insertImage = new InsertImage(); //init
 
       var activeTool;
       //View
@@ -69,6 +72,9 @@ html(lang='en')
       //Matrix
       var W = new WorldTransform();
       //var identity = new Matrix();
+
+      //Images rect
+      var tL,bR;
 
       //when all DOM is ready
       document.onready = function(){
@@ -196,6 +202,9 @@ html(lang='en')
                  button#hand.btn.btn-large 
                   span.fa.fa-hand-o-up
                   span.label hand
+                 button#addImage.btn.btn-large 
+                  span.fa.fa-hand-o-up
+                  span.label image
                .clear
            td.canvas    
             #cnvsBg.well.well-10
@@ -203,5 +212,15 @@ html(lang='en')
               canvas#forPdf
               canvas#fromMaster
               canvas#paper
+
+  #ImportFromURL(style='display: none; left: 50%; margin-left: -223px; z-index: 1002; position: fixed; top: 50%; margin-top: -159px;')
+    h3#MboxLabel Insert image URL:
+      #URLform
+          input.text#URLfield
+      br
+      #actions
+        a.form_button#cancel(href='#') Cancel
+        a.form_button#import(href='#') Import
+
   div.footer
     p.footer Created by Francesco Crecchi

@@ -25,7 +25,7 @@ function lazyInit(){
   
 // =================== FWD ===================================================
 document.getElementById("fwd").onclick = function(){
-  fitzoom();
+  // fitzoom();
   /*//check if some restored paths to save
   if(window.thisPage().restored.length > 0)
   {
@@ -87,7 +87,7 @@ document.getElementById("fwd").onclick = function(){
 
 // ================= Rwd =============================
 $("#rwd").on("click", function(){
-  fitzoom();
+  // fitzoom();
   /*//check if some restored paths to save
   if(window.thisPage().restored.length > 0)
   {

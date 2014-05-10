@@ -65,6 +65,11 @@ Path.prototype.move = function(deltaX,deltaY){
 		this.points[i] = new Point(this.points[i].x + deltaX,this.points[i].y + deltaY);
 }
 
+//Overload toString methods to obtain a JSON string
+Path.prototype.toString = function () {
+  return JSON.stringify(this);
+};
+
 //PDF
 function PDF(){
 	this.url = null; //String
@@ -319,3 +324,24 @@ View.prototype.getViewCenter = function(){
 	var vBnds = this.getViewBounds();
 	return new Point(vBnds.x + vBnds.width/2, vBnds.y + vBnds.height/2);
 }
+
+//Image
+function URLImage(props){
+	this.URL = props.URL;
+	this.topLeft = props.topLeft;
+	this.bottomRight = props.bottomRight;
+}
+URLImage.prototype.insertInCtx = function(ctx){
+	var mythis = this;
+	var img = new Image();
+	img.src = this.URL;
+	img.onload = function(){
+		var delta = mythis.topLeft.getDistanceAlongAxes(mythis.bottomRight);
+		ctx.drawImage(img,mythis.topLeft.x,mythis.topLeft.y,delta.x,delta.y);
+	};
+};
+
+//Overload toString methods to obtain a JSON string
+URLImage.prototype.toString = function () {
+  return JSON.stringify(this);
+};

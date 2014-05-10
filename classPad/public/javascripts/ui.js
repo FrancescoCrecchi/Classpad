@@ -93,6 +93,32 @@ $(window).ready(function(){
     bind2(window.hand);
     setGlow("#hand");
   });
+
+  $("#addImage").on("click", function(){ 
+    bind2(window.insertImage);
+    setGlow("#addImage");
+  }); 
+
+  $("#cancel").on("click", function(){
+    window.toRedraw = true;
+    $('#ImportFromURL').trigger('close');
+  });
+
+ $("#import").on("click", function(){
+    //creating the new image
+    var img = new URLImage({
+      URL: $("#URLfield")[0].value,
+      topLeft: window.tL,
+      bottomRight: window.bR
+    })
+    //adding to the URLImages
+    //window.thisPage().URLImages.push(img);
+    //adding to the pad state
+    window.thisPage().PgArray.push(img.toString());
+    window.toRedraw = true;
+
+    $('#ImportFromURL').trigger('close');
+  });
   //============== Zoom ============================= 
   $("#plus").on("click",function(){
     zoomAndPan(2,new Point(0,0)); //only scale
@@ -121,7 +147,6 @@ $(window).ready(function(){
     window.bgnd = "none";
     // refresh();
   });
- 
   // ===================== Undo / Redo ========================
   $("#undo").on("click", function(){
     if((!window.iWasDrawing && window.thisPage().restored.length > 0) || (window.iWasDrawing && window.thisPage().drawed.length === 0 && window.thisPage().restored.length > 0))
@@ -224,3 +249,5 @@ $(window).ready(function(){
   document.getElementById("redo").disabled = true;
   $("#redo").addClass("disabled");
 });
+
+

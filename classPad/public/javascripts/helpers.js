@@ -25,12 +25,6 @@ Array.prototype.getIndexOf = function(obj){
   return -1;
 };
 
-//Overload toString methods to obtain a JSON string
-Path.prototype.toString = function () {
-  return JSON.stringify(this);
-};
-
-
 //function to draw a path
 function drawPath(path,ctx) {
   //drawing
@@ -78,7 +72,10 @@ function drawGrid(offsetY,offsetX){
   var TOPLEFT = W.v2w.transformPoint(0,0);
   console.log(TOPLEFT);
   var BOTTOMRIGTH = W.v2w.transformPoint(bgCanvas.clientWidth,bgCanvas.clientHeight);
-  
+
+  console.log(bgCanvas.clientWidth);
+  console.log(bgCanvas.clientHeight);
+
   if(typeof offsetX != "undefined")
   {
     //vertical lines
@@ -127,6 +124,7 @@ function restoreCleanPage(){
   var ldL = window.thisPage().loaded.length;
   var rsL = window.thisPage().restored.length;
   var ofML = window.thisPage().ofMaster.length;
+  // var urlI = window.thisPage().URLImages.length;
   //cleaning drawed paths
   if(dwL > 0)
     for(var i=0; i < dwL; i++)
@@ -146,6 +144,11 @@ function restoreCleanPage(){
   if(ofML > 0)
     for(var i=0; i < ofML; i++)
       window.thisPage().ofMaster.pop();
+
+  //clearing URLImages
+  // if(urlI > 0)
+  //   for(var i=0; i < urlI; i++)
+  //     window.thisPage().URLImages.pop();  
 }
 
 
@@ -156,18 +159,31 @@ function loadCanvas(jsonArray,dstArray,ctx){
     var path_i_str = jsonArray[i];
     var obj = JSON.parse(path_i_str); //Object
     // casting the generic object
-    var path = new Path({
+    if(obj.URL)
+    {
+      var urlI = new URLImage({
+        URL: obj.URL,
+        topLeft: new Point(obj.topLeft.x,obj.topLeft.y),
+        bottomRight: new Point(obj.bottomRight.x,obj.bottomRight.y)
+      });
+      urlI.insertInCtx(ctx);
+      dstArray.push(urlI);
+    }
+    else
+    {
+      var path = new Path({
       strokeColor: obj.strokeColor,
       strokeWidth: obj.strokeWidth,
       blendMode: obj.blendMode
-    });
-    //path.points = obj.points.slice(); 
-    for(var j=0; j < obj.points.length; j++)
-      path.points.push(new Point(obj.points[j].x,obj.points[j].y));
-    //drawing path
-    drawPath(path,ctx);
-    //saving it into memory
-    dstArray.push(path);
+      });
+      //path.points = obj.points.slice(); 
+      for(var j=0; j < obj.points.length; j++)
+        path.points.push(new Point(obj.points[j].x,obj.points[j].y));
+      //drawing path
+      drawPath(path,ctx);
+      //saving it into memory
+      dstArray.push(path);
+    }
   }
 }
 
@@ -527,6 +543,14 @@ function thisPage(){
 
 //Commodity function to set the canvas size based on page lauyout
 function setCanvasDims(id){
+  // console.log("TAG");
+  // console.log($("#" + id).width());
+  // console.log($("#" + id).height());
+  // console.log("DOM ELEM");
+  // console.log($("#" + id)[0].clientWidth);
+  // console.log($("#" + id)[0].clientHeight);
+  // $("#" + id)[0].width = $("#" + id).width();
+  // $("#" + id)[0].height = $("#" + id).width();
   $("#" + id)[0].width = $("#" + id).css("width").replace('px','');
   $("#" + id)[0].height = $("#" + id).css("height").replace('px','');
 }

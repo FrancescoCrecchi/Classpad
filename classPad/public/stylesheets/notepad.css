@@ -343,6 +343,8 @@
 	 width: 15%;
 	 background: rgba(0,0,0,0.5);
 	 min-width: 158px;
+   vertical-align: top;
+   padding-top: 2%;
  }
  
  .left-buttons .btn-toolbar,
@@ -534,3 +536,36 @@ button#yellow span.fa {
   padding-left: 5%;
   padding-bottom: 5%;
 }
+
+#ImportFromURL {
+    -moz-border-radius: 6px;
+    background: #eef2f7;
+    -webkit-border-radius: 6px;
+    border: 1px solid #536376;
+    -webkit-box-shadow: rgba(0,0,0,.6) 0px 2px 12px;
+    -moz-box-shadow:  rgba(0,0,0,.6) 0px 2px 12px;
+    padding: 14px 22px;
+    width: 400px;
+    position: relative;
+    display: none;
+  }
+
+  #MboxLabel{
+    font-family: FontAwesome;
+    color: rgba(90, 104, 127, 1);
+  }
+
+  #actions {
+        float: left;
+        position: absolute;
+        right: 0;
+        height: 31px;
+        bottom: 20px;
+    }
+
+  #actions a.form_button {
+      float: left;
+      width: 93px; height: 31px;
+      margin-right: 15px;
+      color: rgba(90, 104, 127, 1);
+  }

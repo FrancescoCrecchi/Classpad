@@ -4,6 +4,7 @@ function Pen(sColor,sWidth,blendMode){
 	this.bM = blendMode || "source-over"; //if blendMode is set use that else use "source-over" as default.
 	var mythis = this;
 	var pressed = false;
+	var tempPath;
 
 	//Event listener
 	this.onMouseDown = function(point){
@@ -12,11 +13,17 @@ function Pen(sColor,sWidth,blendMode){
 	  point = W.v2w.transformPoint(point.x,point.y);
 
 	  // GraphLib object 
-	  window.thisPage().drawed.push(new Path({
+	  // window.thisPage().drawed.push(new Path({
+	  // 	strokeColor: mythis.sC,
+	  // 	strokeWidth: mythis.sW / window.view.zoom,
+	  // 	blendMode: mythis.bM,
+	  // }));
+	  
+	  tempPath = new Path({
 	  	strokeColor: mythis.sC,
 	  	strokeWidth: mythis.sW / window.view.zoom,
 	  	blendMode: mythis.bM,
-	  }));
+	  });
 
 	  // Canvas
 	  window.dCtx.beginPath(); //new Path()
@@ -37,7 +44,7 @@ function Pen(sColor,sWidth,blendMode){
 	  if(pressed)
 	  {
 		//GraphLib
-		window.thisPage().drawed.last().add(point);
+		tempPath.add(point);
 		//Canvas element
 		dCtx.lineTo(point.x,point.y);
 		dCtx.stroke();
@@ -51,14 +58,14 @@ function Pen(sColor,sWidth,blendMode){
 	  //window.thisPage().drawed.last().simplify();
 	  //undo/redo variabile
 	  window.iWasDrawing = true;
-	  if(window.thisPage().drawed.length > 0)
+	  if(window.thisPage().PgArray.length > 0)
 	  {
 				document.getElementById("undo").disabled = false;
 				if($("#undo").hasClass("disabled"))
 					$("#undo").removeClass("disabled");
 	  }
 	  //Save the page content
-	  window.thisPage().PgArray.push(window.thisPage().drawed.last().toString()); //toString metod defined in helpers
+	  window.thisPage().PgArray.push(tempPath.toString()); //toString metod defined in helpers
 	  //Close canvas path
 	  dCtx.closePath();
 	  pressed = false;
@@ -244,10 +251,10 @@ function Selector(){
 		bind2(window.selector); 
 		dragging = false;
       }
-    }
-  }
+   	}
+ }
 
-  function HandScroller(){
+function HandScroller(){
   	var startPoint;
   	var pressed = false;
   	var K = 1; //empyric tests
@@ -270,4 +277,60 @@ function Selector(){
   	this.onMouseUp = function(){
   		pressed = false;
   	}
-  }
+}
+
+function InsertImage(){
+	var startPoint;
+	var pressed = false;
+
+	this.onMouseDown = function(point){
+      //view point -> world point
+	  startPoint = W.v2w.transformPoint(point.x,point.y);
+	  pressed = true;
+	}
+
+	this.onMouseDrag = function(point){
+      //view point -> world point
+	  point = W.v2w.transformPoint(point.x,point.y);
+      if(pressed)
+      {
+      	//on canvas
+		clearCanvas(window.dCnvs);
+		while(window.thisPage().drawed.length != 0)
+			window.thisPage().drawed.pop();
+
+		//drawing the dashed rectangle
+		//dCtx.setLineDash([]);
+		loadCanvas(window.thisPage().PgArray,window.thisPage().drawed,dCtx);
+		dCtx.strokeStyle = "red";
+		dCtx.globalCompositeOperation = "source-over";
+		dCtx.lineWidth= 2 / window.view.zoom,
+		dCtx.setLineDash([10,4]);
+		dCtx.strokeRect(startPoint.x,startPoint.y,point.x - startPoint.x,point.y - startPoint.y);
+
+		//saving endPoint
+		endPoint = new Point(point.x,point.y);
+      }
+	}
+
+	this.onMouseUp = function(point){
+		point = W.v2w.transformPoint(point.x,point.y);
+		var endPoint = new Point(point.x,point.y);
+
+		if(startPoint.getDistance(endPoint) > 10)
+		{
+			//show the form and get the url
+			$('#ImportFromURL').lightbox_me({
+				centered: true,
+			 });
+			window.tL = startPoint;
+			window.bR = endPoint;
+			// window.thisPage().URLImages.push(new URLImage({
+			// topLeft: startPoint,
+			// bottomRight: endPoint
+			// }));
+		}
+		pressed = false;
+		startPoint = endPoint;
+	}
+}

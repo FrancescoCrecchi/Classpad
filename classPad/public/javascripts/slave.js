@@ -90,7 +90,7 @@ function lazyInit(){
 
   // =================== FWD ===================================================
   $("#fwd").on("click", function(){
-    fitzoom();
+    // fitzoom();
     //check if some restored paths to save
     /*if(window.thisPage().restored.length > 0)
     {
@@ -161,7 +161,7 @@ function lazyInit(){
 
 // ================= Rwd =============================
 $("#rwd").on("click", function(){
-  fitzoom();
+  // fitzoom();
   document.getElementById("fwd").disabled = false;
   if($("#fwd").hasClass("disabled"))
    $("#fwd").removeClass("disabled");
