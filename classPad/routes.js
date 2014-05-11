@@ -3,6 +3,7 @@ var auth;
 var database;
 var PDFDocument = require('pdfkit');
 var fs = require('fs');
+var request = require('request');
 
 //Create User (registration)
 routes.createUser = function(req,res){
@@ -156,7 +157,10 @@ routes.exportAsPdf = function(req,res){
       preamble = req.body.classTitle +"_"+ "unknownUser" +"_"+ new Date().toJSON();
 
     res.setHeader('Content-disposition', 'attachment; filename=' + preamble + '.pdf');
+    res.setHeader('Content-Type','application/pdf');
+    res.setHeader('Access-Control-Allow-Origin','*');
 
+    //pipe generated pdf into response
     var stream = doc.pipe(res);
     // var stream = doc.pipe(fs.createWriteStream('files/' + preamble + '.pdf'));
     
@@ -168,22 +172,40 @@ routes.exportAsPdf = function(req,res){
       //for each graphic primitives in the page
     	for(var j = 0; j < pad.pages[i].length; j++)
     	{
+        console.log("E' UN PATH!");
     	  var pg = pad.pages[i][j];
-        
-        doc.strokeColor(pg.blendMode == 'destination-out' ? 'white' : pg.strokeColor);
-        doc.lineWidth(pg.strokeWidth);
-
-        var pts = pg.points;
-        if(pts.length > 0)
+        if(!pg.URL) //e' un Path
         {
-        doc.moveTo(pts[0].x,pts[0].y);
-        for(var z = 1; z < pts.length; z++)
-          doc.lineTo(pts[z].x,pts[z].y);
-        doc.stroke();
-	      }
+          doc.strokeColor(pg.blendMode == 'destination-out' ? 'white' : pg.strokeColor);
+          doc.lineWidth(pg.strokeWidth);
+
+          var pts = pg.points;
+          if(pts.length > 0)
+          {
+            doc.moveTo(pts[0].x,pts[0].y);
+            for(var z = 1; z < pts.length; z++)
+              doc.lineTo(pts[z].x,pts[z].y);
+            doc.stroke();
+          }
+        }
+        // else
+        // {
+        //   //e' un immagine
+        //   console.log("E' UN'IMMAGINE!");
+        //   request({
+        //     url: pg.URL,
+        //     encoding: null //prevent request from converting response into string
+        //   }, function(err, response, body) {
+        //     if (err) throw err;
+        //     // Inject image
+        //     console.log(body);
+        //     doc.image(body,pg.topLeft.x,pg.topLeft.y);
+        //   });
+        // }
       }
     }
     //finalize PDF file
+    console.log("DOC END!");
     doc.end();
 
     // stream.on('finish', function () { res.redirect('files/' + preamble +'.pdf'); });
