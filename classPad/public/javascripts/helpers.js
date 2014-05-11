@@ -161,6 +161,7 @@ function loadCanvas(jsonArray,dstArray,ctx){
     // casting the generic object
     if(obj.URL)
     {
+      console.log("REDRAWING AN IMAGE!");
       var urlI = new URLImage({
         URL: obj.URL,
         topLeft: new Point(obj.topLeft.x,obj.topLeft.y),
@@ -216,7 +217,7 @@ function bind2(tool){
       for(var i = 0; i < l; i++)
         window.selector.selectGroup.children.pop(); 
    }
-   refresh();
+   window.toRedraw = true;
  }
  else
     //init multitouch
