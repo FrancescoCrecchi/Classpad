@@ -21,7 +21,7 @@
     "send": "0.1.4",
     "url": "0.7.9",
     "connect-mongo": "0.3.3",
-    "mongoose": "3.8.0",
+    "mongoose": "5.7.13",
     "passport": "0.1.17",
     "passport-local": "0.1.6",
     "pdfkit": "*"
