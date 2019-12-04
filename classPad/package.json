@@ -14,7 +14,7 @@
     "methods": "0.0.1",
     "debug": "0.7.2",
     "mime": "1.2.11",
-    "fresh": "0.2.0",
+    "fresh": "0.5.2",
     "range-parser": "0.0.4",
     "cookie-signature": "1.0.1",
     "cookie": "0.1.0",
